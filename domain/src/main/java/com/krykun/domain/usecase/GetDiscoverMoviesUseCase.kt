@@ -7,7 +7,7 @@ class GetDiscoverMoviesUseCase @Inject constructor(
     private val moviesRemoteRepo: MoviesRemoteRepo
 ) {
 
-    operator fun invoke(
+    fun getMovies(
         country: String? = null,
         language: String? = null,
         category: String? = null

@@ -3,10 +3,12 @@ package com.krykun.movieapp
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.capgemini.servicebooking.presentation.theme.DiscoverAppTheme
-import com.krykun.movieapp.feature.discovermovies.presentation.DiscoverMoviesViewModel
-import com.krykun.movieapp.feature.discovermovies.view.DiscoverMoviesView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.colorResource
+import com.krykun.movieapp.theme.DiscoverAppTheme
 import com.krykun.movieapp.feature.main.MainView
 import dagger.hilt.android.AndroidEntryPoint
 

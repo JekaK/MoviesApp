@@ -19,11 +19,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         category: String?
     ): Flow<PagingData<MovieItem>> {
         return Pager(
-            PagingConfig(20)
-        ) {
-            MoviesPagingSource(
-                apiService = apiService,
-            )
-        }.flow
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                MoviesPagingSource(
+                    apiService = apiService,
+                )
+            }
+        ).flow
     }
 }

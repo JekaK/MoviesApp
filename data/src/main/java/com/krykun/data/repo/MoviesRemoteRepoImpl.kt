@@ -24,8 +24,8 @@ class MoviesRemoteRepoImpl @Inject constructor(
             language = language,
             category = category
         ).map {
-            it.map {
-                it.toMovieDiscoverItem()
+            it.map { movieItem ->
+                movieItem.toMovieDiscoverItem()
             }
         }
     }

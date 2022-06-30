@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteRepo {
     fun getDiscoverMovies(
-        country: String? = null,
-        language: String? = null,
-        category: String? = null
+        country: String?,
+        language: String?,
+        category: String?
     ): Flow<PagingData<MovieDiscoverItem>>
 }

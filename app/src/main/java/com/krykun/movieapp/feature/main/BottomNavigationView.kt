@@ -54,7 +54,8 @@ fun BottomNavigationView(
                 icon = it.icon,
                 onClick = {
                     navController.navigate(it.route)
-                }, isSelected = currentRoute == it.route
+                },
+                isSelected = currentRoute == it.route
             )
         }
     }

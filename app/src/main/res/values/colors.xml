@@ -11,4 +11,5 @@
     <color name="bottom_bar_end">#3c4955</color>
     <color name="tint_unselected">#778089</color>
     <color name="selected_container">#f8424b</color>
+    <color name="container_background">#2b333e</color>
 </resources>

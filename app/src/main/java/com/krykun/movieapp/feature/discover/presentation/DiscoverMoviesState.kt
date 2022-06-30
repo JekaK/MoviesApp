@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.discovermovies.presentation
+package com.krykun.movieapp.feature.discover.presentation
 
 import com.krykun.domain.model.MovieDiscoverItem
 
