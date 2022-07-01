@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -42,6 +43,8 @@ import kotlin.math.absoluteValue
 @Composable
 fun UpcomingView(viewModel: UpcomingMoviesViewModel) {
     val movies = viewModel.getDiscoverMovies.collectAsLazyPagingItems()
+
+    val state = rememberUpdatedState(newValue = movies.loadState.refresh)
     val lazyListState = rememberPagerState()
     val scope = rememberCoroutineScope()
 
@@ -128,17 +131,21 @@ fun UpcomingView(viewModel: UpcomingMoviesViewModel) {
         }
     }
 
+    //TODO remove this when HorizontalPager will remember scroll position when recomposing
     DisposableEffect(key1 = true) {
         onDispose {
             viewModel.currentPage.value = lazyListState.currentPage
             viewModel.scrollOffset.value = lazyListState.currentPageOffset
         }
     }
-    LaunchedEffect(key1 = true) {
-        lazyListState.scrollToPage(
-            viewModel.currentPage.value,
-            viewModel.scrollOffset.value
-        )
+    //TODO remove this when HorizontalPager will remember scroll position when recomposing
+    LaunchedEffect(key1 = state.value) {
+        if (state.value is LoadState.NotLoading) {
+            lazyListState.scrollToPage(
+                viewModel.currentPage.value,
+                viewModel.scrollOffset.value
+            )
+        }
     }
 
     viewModel.collectSideEffect {

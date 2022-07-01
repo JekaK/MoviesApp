@@ -13,7 +13,7 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
     private val apiService: ApiService
 ) : MoviesRemoteDataSource {
 
-    override fun getDiscoverMovies(
+    override fun getUpcomingMovies(
         country: String?,
         language: String?,
         category: String?

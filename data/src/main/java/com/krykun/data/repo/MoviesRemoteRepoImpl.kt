@@ -14,12 +14,12 @@ class MoviesRemoteRepoImpl @Inject constructor(
     private val remoteDataSource: MoviesRemoteDataSource
 ) : MoviesRemoteRepo {
 
-    override fun getDiscoverMovies(
+    override fun getUpcomingMovies(
         country: String?,
         language: String?,
         category: String?
     ): Flow<PagingData<MovieDiscoverItem>> {
-        return remoteDataSource.getDiscoverMovies(
+        return remoteDataSource.getUpcomingMovies(
             country = country,
             language = language,
             category = category

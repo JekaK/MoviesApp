@@ -5,7 +5,7 @@ import com.krykun.domain.model.MovieDiscoverItem
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteRepo {
-    fun getDiscoverMovies(
+    fun getUpcomingMovies(
         country: String?,
         language: String?,
         category: String?

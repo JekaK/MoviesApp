@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.discover.presentation.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -39,7 +41,6 @@ class UpcomingMoviesViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             replay = 1
         )
-
 
     fun triggerOnPageChanged(index: Int) = intent {
         if (index != state.value.discoverMoviesState.currentPageIndex) {

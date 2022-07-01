@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteDataSource {
 
-    fun getDiscoverMovies(
+    fun getUpcomingMovies(
         country: String?,
         language: String?,
         category: String?

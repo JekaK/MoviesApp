@@ -11,7 +11,7 @@ class GetUpcommingMoviesUseCase @Inject constructor(
         country: String? = null,
         language: String? = null,
         category: String? = null
-    ) = moviesRemoteRepo.getDiscoverMovies(
+    ) = moviesRemoteRepo.getUpcomingMovies(
         country = country,
         language = language,
         category = category
