@@ -28,7 +28,7 @@ import com.skydoves.landscapist.coil.CoilImage
 fun UpcomingItemView(moviesItem: MovieDiscoverItem) {
     Box(
         modifier = Modifier
-            .width(170.dp)
+            .width(200.dp)
             .background(colorResource(id = R.color.container_background))
     ) {
         CoilImage(
@@ -61,20 +61,20 @@ fun UpcomingItemView(moviesItem: MovieDiscoverItem) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-//            Text(
-//                text = moviesItem.title ?: "",
-//                color = Color.White,
-//                modifier = Modifier.padding(
-//                    start = 12.dp,
-//                    end = 12.dp,
-//                    top = 12.dp,
-//                    bottom = 15.dp
-//                ),
-//                fontWeight = FontWeight.SemiBold,
-//                fontSize = 14.sp,
-//                maxLines = 1,
-//                overflow = TextOverflow.Ellipsis
-//            )
+            Text(
+                text = moviesItem.mappedGenreIds.joinToString(separator = " | "),
+                color = Color.White,
+                modifier = Modifier.padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 6.dp,
+                    bottom = 15.dp
+                ),
+                fontWeight = FontWeight.Normal,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
         }
     }

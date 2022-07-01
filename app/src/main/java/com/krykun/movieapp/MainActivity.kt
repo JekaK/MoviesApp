@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import com.krykun.movieapp.theme.DiscoverAppTheme
 import com.krykun.movieapp.feature.main.MainView
+import com.krykun.movieapp.navigation.SetupNavGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DiscoverAppTheme {
-                MainView()
+                SetupNavGraph()
             }
         }
     }

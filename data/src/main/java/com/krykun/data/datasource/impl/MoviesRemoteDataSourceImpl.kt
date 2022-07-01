@@ -5,6 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.krykun.data.api.ApiService
 import com.krykun.data.datasource.MoviesRemoteDataSource
+import com.krykun.data.mappers.GenresMapper.toGenre
+import com.krykun.data.model.Genre
 import com.krykun.data.model.MovieItem
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -26,5 +28,9 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
                 )
             }
         ).flow
+    }
+
+    override suspend fun getGenres(): List<Genre> {
+        return apiService.getGenres().genres ?: listOf()
     }
 }

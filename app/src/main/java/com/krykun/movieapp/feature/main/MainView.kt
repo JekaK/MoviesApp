@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.krykun.movieapp.R
 import com.krykun.movieapp.navigation.BottomNavigation
-import com.krykun.movieapp.navigation.Screen
+import com.krykun.movieapp.navigation.BottomNavGraph
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -38,9 +38,9 @@ fun MainView() {
                     BottomNavigationView(
                         navController = navController,
                         listOf(
-                            Screen.Discover(),
-                            Screen.Search(),
-                            Screen.Favourite()
+                            BottomNavGraph.Discover(),
+                            BottomNavGraph.Search(),
+                            BottomNavGraph.Favourite()
                         )
                     )
                 }

@@ -22,6 +22,6 @@ object DataSourceModule {
 
     @Provides
     @Singleton
-    fun provideLosesRemoteData(remoteDataSource: MoviesRemoteDataSource): MoviesRemoteRepo =
+    fun provideMoviesRemoteRepo(remoteDataSource: MoviesRemoteDataSource): MoviesRemoteRepo =
         MoviesRemoteRepoImpl(remoteDataSource)
 }

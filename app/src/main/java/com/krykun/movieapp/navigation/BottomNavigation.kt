@@ -31,9 +31,9 @@ fun BottomNavigation(
     val screenWidth = with(LocalDensity.current) { configuration.screenWidthDp.dp.roundToPx() }
     AnimatedNavHost(
         navController = navController,
-        startDestination = Screen.Discover().route
+        startDestination = BottomNavGraph.Discover().route
     ) {
-        composable(route = Screen.Discover().route,
+        composable(route = BottomNavGraph.Discover().route,
             enterTransition = {
                 slideInHorizontally(initialOffsetX = { -screenWidth })
             },
@@ -52,30 +52,30 @@ fun BottomNavigation(
                 upcomingMoviesViewModel = upcomingMoviesViewModel
             )
         }
-        composable(route = Screen.Search().route,
+        composable(route = BottomNavGraph.Search().route,
             enterTransition = {
-                if (this.initialState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
+                if (this.initialState.destination.hierarchy.any { it.route == BottomNavGraph.Discover().route }) {
                     slideInHorizontally(initialOffsetX = { screenWidth })
                 } else {
                     slideInHorizontally(initialOffsetX = { -screenWidth })
                 }
             },
             exitTransition = {
-                if (this.targetState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
+                if (this.targetState.destination.hierarchy.any { it.route == BottomNavGraph.Discover().route }) {
                     slideOutHorizontally(targetOffsetX = { screenWidth })
                 } else {
                     slideOutHorizontally(targetOffsetX = { -screenWidth })
                 }
             },
             popEnterTransition = {
-                if (this.initialState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
+                if (this.initialState.destination.hierarchy.any { it.route == BottomNavGraph.Discover().route }) {
                     slideInHorizontally(initialOffsetX = { screenWidth })
                 } else {
                     slideInHorizontally(initialOffsetX = { -screenWidth })
                 }
             },
             popExitTransition = {
-                if (this.targetState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
+                if (this.targetState.destination.hierarchy.any { it.route == BottomNavGraph.Discover().route }) {
                     slideOutHorizontally(targetOffsetX = { screenWidth })
                 } else {
                     slideOutHorizontally(targetOffsetX = { -screenWidth })
@@ -83,7 +83,7 @@ fun BottomNavigation(
             }) {
             EmptyView()
         }
-        composable(route = Screen.Favourite().route,
+        composable(route = BottomNavGraph.Favourite().route,
             enterTransition = {
                 slideInHorizontally(initialOffsetX = { screenWidth })
             },

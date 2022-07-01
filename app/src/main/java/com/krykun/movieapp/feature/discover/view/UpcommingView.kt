@@ -61,7 +61,7 @@ fun UpcomingView(viewModel: UpcomingMoviesViewModel) {
                 .verticalGradientScrim(
                     color = MaterialTheme.colors.primary,
                     startYPercentage = 1f,
-                    endYPercentage = 0f
+                    endYPercentage = 0.5f
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -81,7 +81,7 @@ fun UpcomingView(viewModel: UpcomingMoviesViewModel) {
                     state = lazyListState,
                     modifier = Modifier
                         .fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 120.dp),
+                    contentPadding = PaddingValues(horizontal = 110.dp),
                 ) { page ->
                     viewModel.triggerOnPageChanged(lazyListState.currentPage)
                     Card(
