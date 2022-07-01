@@ -44,7 +44,8 @@ fun BottomNavigationView(
                         colorResource(id = R.color.bottom_bar_end)
                     )
                 )
-            ),
+            )
+        ,
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -15,7 +15,8 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
+import com.krykun.movieapp.feature.discover.presentation.viewmodel.DiscoverMoviesViewModel
+import com.krykun.movieapp.feature.discover.presentation.viewmodel.UpcomingMoviesViewModel
 import com.krykun.movieapp.feature.discover.view.DiscoverView
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -24,6 +25,8 @@ fun BottomNavigation(
     navController: NavHostController
 ) {
     val viewModel: DiscoverMoviesViewModel = hiltViewModel()
+    val upcomingMoviesViewModel: UpcomingMoviesViewModel = hiltViewModel()
+
     val configuration = LocalConfiguration.current
     val screenWidth = with(LocalDensity.current) { configuration.screenWidthDp.dp.roundToPx() }
     AnimatedNavHost(
@@ -44,7 +47,10 @@ fun BottomNavigation(
                 slideOutHorizontally(targetOffsetX = { screenWidth })
             }
         ) {
-            DiscoverView(viewModel = viewModel)
+            DiscoverView(
+                viewModel = viewModel,
+                upcomingMoviesViewModel = upcomingMoviesViewModel
+            )
         }
         composable(route = Screen.Search().route,
             enterTransition = {

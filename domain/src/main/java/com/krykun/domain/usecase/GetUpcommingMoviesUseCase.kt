@@ -3,7 +3,7 @@ package com.krykun.domain.usecase
 import com.krykun.domain.repositories.MoviesRemoteRepo
 import javax.inject.Inject
 
-class GetDiscoverMoviesUseCase @Inject constructor(
+class GetUpcommingMoviesUseCase @Inject constructor(
     private val moviesRemoteRepo: MoviesRemoteRepo
 ) {
 
