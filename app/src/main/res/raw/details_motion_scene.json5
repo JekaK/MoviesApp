@@ -1,0 +1,114 @@
+{
+  ConstraintSets: {
+    start: {
+      content: {
+        width: 'spread',
+        height: 'spread',
+        top: ['parent', 'top', 150],
+        bottom: ['parent', 'bottom'],
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        translationZ: 0,
+        custom: {
+          corner: 180,
+        }
+      },
+      film_image: {
+        width: 100,
+        height: 180,
+        start: ['parent','start',32],
+        top: ['parent','top', 100],
+        translationZ: 1,
+        custom: {
+          corner: 20,
+        }
+      },
+      circle: {
+        width: 56,
+        height: 56,
+        top: ['content','top'],
+        bottom: ['content','top'],
+        end: ['parent','end', 16],
+        translationZ: 1
+      },
+      title: {
+        width: 'wrap',
+        height: 'wrap',
+        top: ['content', 'top'],
+        start: ['film_image', 'end', 16],
+        end: ['parent', 'end', 16],
+        translationZ: 1,
+        custom: {
+          fontSize: 22,
+        }
+      }
+    },
+    end: {
+      content: {
+        width: 'spread',
+        height: 'spread',
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom'],
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        custom: {
+          corner: 0
+        },
+        translationZ: 1
+      },
+      film_image: {
+        width: 100,
+        height: 180,
+        start: ['parent','start',32],
+        top: ['parent','top', 100],
+        translationZ: 0,
+        custom: {
+          corner: 0
+        }
+      },
+      circle: {
+        width: 0,
+        height: 0,
+        top: ['content','top'],
+        bottom: ['content','top'],
+        end: ['parent','end', 36],
+        translationZ: 1
+      },
+      title: {
+        width: 'wrap',
+        height: 70,
+        top: ['parent', 'top'],
+        start: ['parent', 'start', 16],
+        end: ['parent', 'end', 16],
+        translationZ: 1,
+        custom: {
+          fontSize: 28
+        }
+      }
+    }
+
+  },
+  Transitions: {
+    default : {
+      from: 'start',
+      to : 'end',
+      KeyFrames: {
+        KeyPositions: [
+          {
+            target: ['film_image'],
+            frames: [50],
+            percentX: [0.0],
+            percentY: [-0.01],
+          }
+        ],
+        KeyAttributes: [
+          {
+            target: ['film_image'],
+            frames: [50],
+            rotationZ: [55]
+          }
+        ]
+      }
+    }
+  }
+}

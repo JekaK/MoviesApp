@@ -1,6 +1,7 @@
 package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,19 +18,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.movieapp.R
+import com.krykun.movieapp.navigation.Screen
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 
 
 @Composable
-fun UpcomingItemView(moviesItem: MovieDiscoverItem) {
+fun UpcomingItemView(
+    moviesItem: MovieDiscoverItem,
+    navHostController: NavHostController,
+) {
     Box(
         modifier = Modifier
             .width(200.dp)
             .background(colorResource(id = R.color.container_background))
+            .clickable {
+                navHostController.navigate(Screen.MovieDetails.route)
+            }
     ) {
         CoilImage(
             imageModel = Constants.IMAGE_BASE_URL + moviesItem.posterPath,

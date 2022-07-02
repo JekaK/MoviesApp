@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.krykun.movieapp.R
-import com.krykun.movieapp.navigation.BottomNavGraph
+import com.krykun.movieapp.navigation.Screen
 
 @Composable
 fun BottomNavigationView(
     navController: NavController,
-    items: List<BottomNavGraph>
+    items: List<Screen>
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

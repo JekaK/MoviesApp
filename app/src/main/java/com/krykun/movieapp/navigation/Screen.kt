@@ -6,7 +6,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class BottomNavGraph(
+sealed class Screen(
     open val title: String = "",
     open val icon: ImageVector = Icons.Default.Home,
     open val route: String
@@ -14,23 +14,21 @@ sealed class BottomNavGraph(
     data class Discover(
         override val title: String = "Discover",
         override val icon: ImageVector = Icons.Filled.Home,
-        override val route: String = "discover_screen"
-    ) : BottomNavGraph(route = route)
+        override val route: String = "discover_bottom_screen"
+    ) : Screen(route = route)
 
     data class Search(
         override val title: String = "Search",
         override val icon: ImageVector = Icons.Filled.Search,
-        override val route: String = "search_screen"
-    ) : BottomNavGraph(route = route)
+        override val route: String = "search_bottom_screen"
+    ) : Screen(route = route)
 
     data class Favourite(
         override val title: String = "Favourite",
         override val icon: ImageVector = Icons.Filled.Favorite,
-        override val route: String = "favourite_screen"
-    ) : BottomNavGraph(route = route)
-}
+        override val route: String = "favourite_bottom_screen"
+    ) : Screen(route = route)
 
-sealed class Screen(open val route: String) {
     object Splash : Screen(route = "splash_screen")
-    object Main : Screen(route = "main_screen")
+    object MovieDetails : Screen(route = "details_screen")
 }

@@ -3,14 +3,21 @@ package com.krykun.movieapp.feature.discover.presentation.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.usecase.GetUpcomingMoviesUseCase
+import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -31,15 +38,30 @@ class UpcomingMoviesViewModel @Inject constructor(
     var currentPage = mutableStateOf(0)
 
     var scrollOffset = mutableStateOf(0f)
+    lateinit var getDiscoverMovies: Flow<PagingData<MovieDiscoverItem>>
 
-    val getDiscoverMovies =
-        getDiscoverMoviesUseCase.getMovies(genres = appState.value.baseMoviesState.genres)
-            .cachedIn(scope = viewModelScope)
-            .shareIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                replay = 1
-            )
+
+    init {
+        var job: Job? = null
+        job = viewModelScope.launch {
+            container.stateFlow.value
+                .takeWhenChanged {
+                    it.baseMoviesState.genres
+                }
+                .collect {
+                    getDiscoverMovies =
+                        getDiscoverMoviesUseCase.getMovies(genres = appState.value.baseMoviesState.genres)
+                            .cachedIn(scope = viewModelScope)
+                            .shareIn(
+                                scope = viewModelScope,
+                                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                                replay = 1
+                            )
+                    job?.cancel()
+                }
+        }
+    }
+
 
     fun triggerOnPageChanged(index: Int) = intent {
         if (index != state.value.discoverMoviesState.currentPageIndex) {

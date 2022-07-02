@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,42 +8,54 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.krykun.movieapp.R
-import com.krykun.movieapp.navigation.BottomNavigation
-import com.krykun.movieapp.navigation.BottomNavGraph
+import com.krykun.movieapp.navigation.MainNavigation
+import com.krykun.movieapp.navigation.Screen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainView() {
-    val navController = rememberAnimatedNavController()
+fun MainView(navController: NavHostController = rememberAnimatedNavController()) {
+    val isBottomBarVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    isBottomBarVisible.value = navBackStackEntry?.destination?.route?.contains("bottom") == true
 
     Scaffold(
         bottomBar = {
-            Column(
-                modifier = Modifier.background(
-                    color = colorResource(id = R.color.container_background)
-                )
-            ) {
+            AnimatedVisibility(visible = isBottomBarVisible.value) {
                 Column(
-                    modifier = Modifier
-                        .padding(
-                            start = 10.dp,
-                            end = 10.dp,
-                            bottom = 10.dp
-                        )
-                ) {
-                    BottomNavigationView(
-                        navController = navController,
-                        listOf(
-                            BottomNavGraph.Discover(),
-                            BottomNavGraph.Search(),
-                            BottomNavGraph.Favourite()
-                        )
+                    modifier = Modifier.background(
+                        color = colorResource(id = R.color.container_background)
                     )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(
+                                start = 10.dp,
+                                end = 10.dp,
+                                bottom = 10.dp
+                            )
+                    ) {
+                        BottomNavigationView(
+                            navController = navController,
+                            listOf(
+                                Screen.Discover(),
+                                Screen.Search(),
+                                Screen.Favourite()
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -54,7 +67,7 @@ fun MainView() {
                     color = colorResource(id = R.color.container_background)
                 )
         ) {
-            BottomNavigation(
+            MainNavigation(
                 navController = navController
             )
         }

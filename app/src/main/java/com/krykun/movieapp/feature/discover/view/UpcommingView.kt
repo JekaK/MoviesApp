@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -41,7 +42,10 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
-fun UpcomingView(viewModel: UpcomingMoviesViewModel) {
+fun UpcomingView(
+    viewModel: UpcomingMoviesViewModel,
+    navHostController: NavHostController,
+) {
     val movies = viewModel.getDiscoverMovies.collectAsLazyPagingItems()
 
     val state = rememberUpdatedState(newValue = movies.loadState.refresh)
@@ -124,7 +128,12 @@ fun UpcomingView(viewModel: UpcomingMoviesViewModel) {
                             },
                         shape = RoundedCornerShape(20.dp)
                     ) {
-                        movies[page]?.let { UpcomingItemView(moviesItem = it) }
+                        movies[page]?.let {
+                            UpcomingItemView(
+                                moviesItem = it,
+                                navHostController = navHostController
+                            )
+                        }
                     }
                 }
             }
