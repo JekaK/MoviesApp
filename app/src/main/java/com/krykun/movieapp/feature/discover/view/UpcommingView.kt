@@ -16,14 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.pager.*
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.movieapp.R
@@ -47,7 +46,6 @@ fun UpcomingView(
     navHostController: NavHostController,
 ) {
     val movies = viewModel.getDiscoverMovies.collectAsLazyPagingItems()
-
     val state = rememberUpdatedState(newValue = movies.loadState.refresh)
     val lazyListState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -56,6 +54,19 @@ fun UpcomingView(
     val dominantColorState = rememberDominantColorState { color ->
         color.contrastAgainst(surfaceColor) >= 3f
     }
+
+    viewModel.collectSideEffect {
+        handleSideEffects(
+            it,
+            movies,
+            dominantColorState,
+            lazyListState,
+            state,
+            viewModel,
+            scope
+        )
+    }
+    viewModel.dispatchScreenOpen()
 
     DynamicThemePrimaryColorsFromImage(dominantColorState) {
         Column(
@@ -143,44 +154,50 @@ fun UpcomingView(
     //TODO remove this when HorizontalPager will remember scroll position when recomposing
     DisposableEffect(key1 = true) {
         onDispose {
-            viewModel.currentPage.value = lazyListState.currentPage
-            viewModel.scrollOffset.value = lazyListState.currentPageOffset
-        }
-    }
-    //TODO remove this when HorizontalPager will remember scroll position when recomposing
-    LaunchedEffect(key1 = state.value) {
-        if (state.value is LoadState.NotLoading) {
-            lazyListState.scrollToPage(
-                viewModel.currentPage.value,
-                viewModel.scrollOffset.value
-            )
+            viewModel.setCurrentPage(lazyListState.currentPage)
+            viewModel.setScrollOffset(lazyListState.currentPageOffset)
+            viewModel.setScreenClosed()
         }
     }
 
-    viewModel.collectSideEffect {
-        handleSideEffects(
-            it,
-            movies,
-            dominantColorState,
-            scope
-        )
-    }
 }
 
-
+@OptIn(ExperimentalPagerApi::class)
 private fun handleSideEffects(
     sideEffects: DiscoverMoviesSideEffects,
     movies: LazyPagingItems<MovieDiscoverItem>,
     dominantColorState: DominantColorState,
+    lazyListState: PagerState,
+    state: State<LoadState>,
+    viewModel: UpcomingMoviesViewModel,
     scope: CoroutineScope
 ) {
     when (sideEffects) {
+        is DiscoverMoviesSideEffects.ScreenOpen -> {
+            val mutableLiveData: MutableLiveData<State<LoadState>> by lazy {
+                MutableLiveData<State<LoadState>>(state)
+            }
+            var observer: Observer<State<LoadState>> = Observer {}
+            observer = Observer<State<LoadState>> {
+                if (it.value is LoadState.NotLoading) {
+                    viewModel.getCurrentPageAndScrollOffset()
+                    mutableLiveData.removeObserver(observer)
+                }
+            }
+            mutableLiveData.observeForever(observer)
+        }
         is DiscoverMoviesSideEffects.TriggerOnPageChanged -> {
             scope.launch {
                 dominantColorState.updateColorsFromImageUrl(
                     Constants.IMAGE_BASE_URL +
                             movies[sideEffects.index]?.backdropPath
                 )
+            }
+        }
+        is DiscoverMoviesSideEffects.GetCurrentPageAndScrollOffset -> {
+            val (currentPage, offset) = sideEffects.currentPageAndOffset
+            scope.launch {
+                lazyListState.scrollToPage(currentPage, offset)
             }
         }
     }

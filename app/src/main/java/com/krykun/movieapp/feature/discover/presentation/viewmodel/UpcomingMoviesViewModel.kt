@@ -1,9 +1,7 @@
 package com.krykun.movieapp.feature.discover.presentation.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.krykun.domain.model.MovieDiscoverItem
@@ -35,13 +33,12 @@ class UpcomingMoviesViewModel @Inject constructor(
     override val container =
         container<MutableStateFlow<AppState>, DiscoverMoviesSideEffects>(appState)
 
-    var currentPage = mutableStateOf(0)
-
-    var scrollOffset = mutableStateOf(0f)
     lateinit var getDiscoverMovies: Flow<PagingData<MovieDiscoverItem>>
 
-
     init {
+        intent {
+            postSideEffect(DiscoverMoviesSideEffects.ScreenOpen)
+        }
         var job: Job? = null
         job = viewModelScope.launch {
             container.stateFlow.value
@@ -62,6 +59,65 @@ class UpcomingMoviesViewModel @Inject constructor(
         }
     }
 
+    fun setScreenClosed() = intent {
+        reduce {
+            state.value = state.value.copy(
+                discoverMoviesState = state.value.discoverMoviesState.copy(
+                    isOpen = false
+                )
+            )
+            state
+        }
+    }
+
+    fun dispatchScreenOpen() = intent {
+        if (!state.value.discoverMoviesState.isOpen) {
+            reduce {
+                state.value = state.value.copy(
+                    discoverMoviesState = state.value.discoverMoviesState.copy(
+                        isOpen = true
+                    )
+                )
+                state
+            }
+            postSideEffect(DiscoverMoviesSideEffects.ScreenOpen)
+        }
+    }
+
+    fun setScrollOffset(scrollOffset: Float) = intent {
+        reduce {
+            state.value = state.value.copy(
+                discoverMoviesState = state.value.discoverMoviesState.copy(
+                    scrollOffset = scrollOffset
+                )
+            )
+            state
+        }
+    }
+
+    fun getCurrentPageAndScrollOffset() = intent {
+        postSideEffect(
+            DiscoverMoviesSideEffects.GetCurrentPageAndScrollOffset(
+                Pair<Int, Float>(
+                    state.value.discoverMoviesState.currentPageIndex,
+                    state.value.discoverMoviesState.scrollOffset
+                )
+            )
+        )
+    }
+
+    fun setCurrentPage(index: Int) = intent {
+        if (index != state.value.discoverMoviesState.currentPageIndex) {
+            reduce {
+                state.value = state.value.copy(
+                    discoverMoviesState = state.value.discoverMoviesState.copy(
+                        currentPageIndex = index
+                    )
+                )
+                state
+            }
+        }
+    }
 
     fun triggerOnPageChanged(index: Int) = intent {
         if (index != state.value.discoverMoviesState.currentPageIndex) {
