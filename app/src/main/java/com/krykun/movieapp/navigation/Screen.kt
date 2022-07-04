@@ -30,5 +30,8 @@ sealed class Screen(
     ) : Screen(route = route)
 
     object Splash : Screen(route = "splash_screen")
-    object MovieDetails : Screen(route = "details_screen")
+
+    data class MovieDetails(
+        override val route: String = "details_screen",
+    ) : Screen(route = route)
 }

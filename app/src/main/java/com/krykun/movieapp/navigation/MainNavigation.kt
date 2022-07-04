@@ -1,32 +1,32 @@
 package com.krykun.movieapp.navigation
 
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.krykun.movieapp.feature.discover.presentation.viewmodel.DiscoverMoviesViewModel
 import com.krykun.movieapp.feature.discover.presentation.viewmodel.UpcomingMoviesViewModel
 import com.krykun.movieapp.feature.discover.view.DiscoverView
-import com.krykun.movieapp.feature.main.MainView
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewModel
 import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMotionApi::class)
 @Composable
 fun MainNavigation(
     navController: NavHostController = rememberAnimatedNavController()
@@ -42,72 +42,6 @@ fun MainNavigation(
         navController = navController,
         startDestination = Screen.Splash.route
     ) {
-        composable(route = Screen.Discover().route,
-            enterTransition = {
-                slideInHorizontally(initialOffsetX = { -screenWidth })
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -screenWidth })
-            },
-            popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -screenWidth })
-            },
-            popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { screenWidth })
-            }
-        ) {
-            DiscoverView(
-                viewModel = viewModel,
-                upcomingMoviesViewModel = upcomingMoviesViewModel,
-                navHostController = navController
-            )
-        }
-        composable(route = Screen.Search().route,
-            enterTransition = {
-                if (this.initialState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
-                    slideInHorizontally(initialOffsetX = { screenWidth })
-                } else {
-                    slideInHorizontally(initialOffsetX = { -screenWidth })
-                }
-            },
-            exitTransition = {
-                if (this.targetState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
-                    slideOutHorizontally(targetOffsetX = { screenWidth })
-                } else {
-                    slideOutHorizontally(targetOffsetX = { -screenWidth })
-                }
-            },
-            popEnterTransition = {
-                if (this.initialState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
-                    slideInHorizontally(initialOffsetX = { screenWidth })
-                } else {
-                    slideInHorizontally(initialOffsetX = { -screenWidth })
-                }
-            },
-            popExitTransition = {
-                if (this.targetState.destination.hierarchy.any { it.route == Screen.Discover().route }) {
-                    slideOutHorizontally(targetOffsetX = { screenWidth })
-                } else {
-                    slideOutHorizontally(targetOffsetX = { -screenWidth })
-                }
-            }) {
-            EmptyView()
-        }
-        composable(route = Screen.Favourite().route,
-            enterTransition = {
-                slideInHorizontally(initialOffsetX = { screenWidth })
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { screenWidth })
-            },
-            popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { screenWidth })
-            },
-            popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { screenWidth })
-            }) {
-            EmptyView()
-        }
         composable(
             route = Screen.Splash.route,
         ) {
@@ -116,7 +50,76 @@ fun MainNavigation(
                 viewModel = splashScreenViewModel
             )
         }
-        composable(route = Screen.MovieDetails.route) {
+        composable(route = Screen.Discover().route) {
+            DiscoverView(
+                viewModel = viewModel,
+                upcomingMoviesViewModel = upcomingMoviesViewModel,
+                navHostController = navController
+            )
+        }
+        composable(route = Screen.Search().route) {
+            EmptyView()
+        }
+        composable(route = Screen.Favourite().route) {
+            EmptyView()
+        }
+        composable(
+            route = Screen.MovieDetails().route + "/{x}/{y}",
+            arguments = listOf(navArgument("x") {
+                type = NavType.FloatType
+            },
+                navArgument("y") {
+                    type = NavType.FloatType
+                }),
+            enterTransition = {
+                val x = this.targetState.arguments?.getFloat("x")
+                val y = this.targetState.arguments?.getFloat("y")
+
+                scaleIn(
+                    animationSpec = tween(300),
+                    transformOrigin = TransformOrigin(
+                        pivotFractionX = x ?: 0f,
+                        pivotFractionY = y ?: 0f
+                    )
+                )
+            },
+            exitTransition = {
+                val x = this.targetState.arguments?.getFloat("x")
+                val y = this.targetState.arguments?.getFloat("y")
+
+                scaleOut(
+                    animationSpec = tween(300),
+                    transformOrigin = TransformOrigin(
+                        pivotFractionX = x ?: 0f,
+                        pivotFractionY = y ?: 0f
+                    )
+                )
+            },
+            popEnterTransition = {
+                val x = this.targetState.arguments?.getFloat("x")
+                val y = this.targetState.arguments?.getFloat("y")
+
+                scaleIn(
+                    animationSpec = tween(300),
+                    transformOrigin = TransformOrigin(
+                        pivotFractionX = x ?: 0f,
+                        pivotFractionY = y ?: 0f
+                    )
+                )
+            },
+            popExitTransition = {
+                val x = this.targetState.arguments?.getFloat("x")
+                val y = this.targetState.arguments?.getFloat("y")
+
+                scaleOut(
+                    animationSpec = tween(300),
+                    transformOrigin = TransformOrigin(
+                        pivotFractionX = x ?: 0f,
+                        pivotFractionY = y ?: 0f
+                    )
+                )
+            }
+        ) { backStackEntry ->
             MovieDetailsView()
         }
     }

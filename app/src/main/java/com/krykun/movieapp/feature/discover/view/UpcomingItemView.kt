@@ -1,28 +1,34 @@
 package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.movieapp.R
+import com.krykun.movieapp.feature.discover.data.ScreenCoordinates
 import com.krykun.movieapp.navigation.Screen
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
@@ -33,12 +39,41 @@ fun UpcomingItemView(
     moviesItem: MovieDiscoverItem,
     navHostController: NavHostController,
 ) {
+    val configuration = LocalConfiguration.current
+
+    val screenHeight = configuration.screenHeightDp
+    val screenWidth = configuration.screenWidthDp
+
+    val screenWidthInPx = with(LocalDensity.current) { screenWidth.dp.roundToPx() }
+    val screenHeightInPx = with(LocalDensity.current) { screenHeight.dp.roundToPx() }
+
+    val parentOffsetState = remember {
+        mutableStateOf(Offset(0f, 0f))
+    }
+
     Box(
         modifier = Modifier
             .width(200.dp)
             .background(colorResource(id = R.color.container_background))
-            .clickable {
-                navHostController.navigate(Screen.MovieDetails.route)
+            .onGloballyPositioned {
+                val offset = it.positionInRoot()
+                parentOffsetState.value = offset
+            }
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    navHostController.currentBackStackEntry
+                        ?.arguments?.putParcelable(
+                            "coordinates", ScreenCoordinates(
+                                xFraction = it.x / (screenWidthInPx),
+                                yFraction = parentOffsetState.value.y / (screenHeightInPx)
+                            )
+                        )
+                    navHostController.navigate(
+                        "${Screen.MovieDetails().route}/${
+                            it.x / (screenWidthInPx)
+                        }/${parentOffsetState.value.y / (screenHeightInPx)}"
+                    )
+                })
             }
     ) {
         CoilImage(

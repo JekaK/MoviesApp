@@ -19,21 +19,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import com.krykun.movieapp.R
-
-@OptIn(ExperimentalMotionApi::class)
-@Composable
-fun MovieDetailsView() {
-    CollapseScreenDemo()
-}
+import com.krykun.movieapp.custom.CircularRevealLayout
 
 @ExperimentalMotionApi
 @Composable
-fun CollapseScreenDemo() {
+fun MovieDetailsView() {
     var animateToEnd by remember {
         mutableStateOf(false)
     }
@@ -47,54 +45,64 @@ fun CollapseScreenDemo() {
             .readBytes()
             .decodeToString()
     }
-    MotionLayout(
-        motionScene = MotionScene(content = motionScene),
-        progress = progress,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black),
+    val configuration = LocalConfiguration.current
+
+    val screenHeight = configuration.screenHeightDp
+    val screenWidth = configuration.screenWidthDp
+
+    CircularRevealLayout(
+        coordinateX = with(LocalDensity.current) { screenWidth.dp.toPx() } / 2,
+        coordinateY = with(LocalDensity.current) { screenHeight.dp.toPx() } / 2,
     ) {
-        val contentAttr = motionProperties(id = "content")
-        val titleAttr = motionProperties(id = "title")
-        val imageAttr = motionProperties(id = "film_image")
-
-        Box(
+        MotionLayout(
+            motionScene = MotionScene(content = motionScene),
+            progress = progress,
             modifier = Modifier
-                .layoutId("content")
-                .clip(
-                    RoundedCornerShape(
-                        topStart = contentAttr.value
-                            .int("corner")
-                            .toFloat()
+                .fillMaxSize()
+                .background(Color.Black),
+        ) {
+            val contentAttr = motionProperties(id = "content")
+            val titleAttr = motionProperties(id = "title")
+            val imageAttr = motionProperties(id = "film_image")
+
+            Box(
+                modifier = Modifier
+                    .layoutId("content")
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = contentAttr.value
+                                .int("corner")
+                                .toFloat()
+                        )
                     )
-                )
-                .background(Color.LightGray)
-                .clickable { animateToEnd = !animateToEnd }
-        )
-        Box(
-            modifier = Modifier
-                .layoutId("film_image")
-                .clip(
-                    RoundedCornerShape(
-                        imageAttr.value
-                            .int("corner")
-                            .toFloat()
+                    .background(Color.LightGray)
+                    .clickable { animateToEnd = !animateToEnd }
+            )
+            Box(
+                modifier = Modifier
+                    .layoutId("film_image")
+                    .clip(
+                        RoundedCornerShape(
+                            imageAttr.value
+                                .int("corner")
+                                .toFloat()
+                        )
                     )
-                )
-                .background(Color.Green)
-        )
+                    .background(Color.Green)
+            )
 
-        Text(
-            text = "MotionLayout example",
-            fontSize = titleAttr.value.fontSize("fontSize"),
-            modifier = Modifier.layoutId("title")
-        )
+            Text(
+                text = "MotionLayout example",
+                fontSize = titleAttr.value.fontSize("fontSize"),
+                modifier = Modifier.layoutId("title")
+            )
 
-        Box(
-            modifier = Modifier
-                .layoutId("circle")
-                .clip(CircleShape)
-                .background(Color.Red)
-        )
+            Box(
+                modifier = Modifier
+                    .layoutId("circle")
+                    .clip(CircleShape)
+                    .background(Color.Red)
+            )
+        }
     }
 }
