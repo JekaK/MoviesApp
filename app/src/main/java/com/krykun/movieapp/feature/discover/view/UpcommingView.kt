@@ -2,6 +2,7 @@ package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -10,8 +11,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +39,7 @@ import com.krykun.movieapp.ext.contrastAgainst
 import com.krykun.movieapp.ext.lerp
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
 import com.krykun.movieapp.feature.discover.presentation.viewmodel.UpcomingMoviesViewModel
+import com.krykun.movieapp.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -51,6 +59,18 @@ fun UpcomingView(
     val surfaceColor = MaterialTheme.colors.surface
     val dominantColorState = rememberDominantColorState { color ->
         color.contrastAgainst(surfaceColor) >= 3f
+    }
+
+    val configuration = LocalConfiguration.current
+
+    val screenHeight = configuration.screenHeightDp
+    val screenWidth = configuration.screenWidthDp
+
+    val screenWidthInPx = with(LocalDensity.current) { screenWidth.dp.roundToPx() }
+    val screenHeightInPx = with(LocalDensity.current) { screenHeight.dp.roundToPx() }
+
+    val parentOffsetState = remember {
+        mutableStateOf(Offset(0f, 0f))
     }
 
     DynamicThemePrimaryColorsFromImage(dominantColorState) {
@@ -127,7 +147,20 @@ fun UpcomingView(
                         movies[page]?.let {
                             UpcomingItemView(
                                 moviesItem = it,
-                                navHostController = navHostController
+                                modifier = Modifier
+                                    .onGloballyPositioned {
+                                        val offset = it.positionInRoot()
+                                        parentOffsetState.value = offset
+                                    }
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(onTap = {
+                                            if (page == lazyListState.currentPage ||
+                                                page == lazyListState.currentPageOffset.absoluteValue.toInt()
+                                            ) {
+                                                navHostController.navigate(Screen.MovieDetails().route)
+                                            }
+                                        })
+                                    }
                             )
                         }
                     }

@@ -1,7 +1,10 @@
 package com.krykun.movieapp.feature.main
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +24,12 @@ import com.krykun.movieapp.R
 import com.krykun.movieapp.navigation.MainNavigation
 import com.krykun.movieapp.navigation.Screen
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainView(navController: NavHostController = rememberAnimatedNavController()) {
+fun MainView(
+    navController: NavHostController = rememberAnimatedNavController()
+) {
     val isBottomBarVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -33,7 +39,11 @@ fun MainView(navController: NavHostController = rememberAnimatedNavController())
 
     Scaffold(
         bottomBar = {
-            AnimatedVisibility(visible = isBottomBarVisible.value) {
+            AnimatedVisibility(
+                visible = isBottomBarVisible.value,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+            ) {
                 Column(
                     modifier = Modifier.background(
                         color = colorResource(id = R.color.container_background)
@@ -62,13 +72,13 @@ fun MainView(navController: NavHostController = rememberAnimatedNavController())
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(innerPadding)
+//                .padding(innerPadding)
                 .background(
                     color = colorResource(id = R.color.container_background)
-                )
+                ),
         ) {
             MainNavigation(
-                navController = navController
+                navController = navController,
             )
         }
     }
