@@ -1,9 +1,9 @@
 package com.krykun.data.datasource
 
 import androidx.paging.PagingData
-import com.krykun.data.model.Genre
-import com.krykun.data.model.MovieItem
-import com.krykun.domain.model.MovieDiscoverItem
+import com.krykun.data.model.genre.Genre
+import com.krykun.data.model.moviedetails.MovieDetailsResponse
+import com.krykun.data.model.movielistitem.MovieItem
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteDataSource {
@@ -15,4 +15,6 @@ interface MoviesRemoteDataSource {
     ): Flow<PagingData<MovieItem>>
 
     suspend fun getGenres(): List<Genre>
+
+    suspend fun getMovieDetails(movieId: Int): MovieDetailsResponse
 }

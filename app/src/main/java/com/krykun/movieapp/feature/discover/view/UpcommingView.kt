@@ -17,8 +17,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,15 +58,6 @@ fun UpcomingView(
     val dominantColorState = rememberDominantColorState { color ->
         color.contrastAgainst(surfaceColor) >= 3f
     }
-
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenHeightDp
-    val screenWidth = configuration.screenWidthDp
-
-    val screenWidthInPx = with(LocalDensity.current) { screenWidth.dp.roundToPx() }
-    val screenHeightInPx = with(LocalDensity.current) { screenHeight.dp.roundToPx() }
-
     val parentOffsetState = remember {
         mutableStateOf(Offset(0f, 0f))
     }
@@ -157,6 +146,10 @@ fun UpcomingView(
                                             if (page == lazyListState.currentPage ||
                                                 page == lazyListState.currentPageOffset.absoluteValue.toInt()
                                             ) {
+                                                viewModel.setMovieDetailsId(
+                                                    movies.itemSnapshotList.items[lazyListState.currentPage].id
+                                                        ?: -1
+                                                )
                                                 navHostController.navigate(Screen.MovieDetails().route)
                                             }
                                         })

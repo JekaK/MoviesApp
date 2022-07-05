@@ -1,9 +1,7 @@
 package com.krykun.data.mappers
 
-import com.krykun.data.model.MovieItem
+import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.domain.model.MovieDiscoverItem
-import java.text.SimpleDateFormat
-import java.util.*
 
 object DiscoverMoviesMapper {
 

@@ -5,8 +5,10 @@ import androidx.paging.map
 import com.krykun.data.datasource.MoviesRemoteDataSource
 import com.krykun.data.mappers.DiscoverMoviesMapper.toMovieDiscoverItem
 import com.krykun.data.mappers.GenresMapper.toGenre
+import com.krykun.data.mappers.MovieDetailMapper.toMovieDetails
 import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
+import com.krykun.domain.model.moviedetails.MovieDetails
 import com.krykun.domain.repositories.MoviesRemoteRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -46,4 +48,7 @@ class MoviesRemoteRepoImpl @Inject constructor(
             }
     }
 
+    override suspend fun getMovieDetails(movieId: Int): MovieDetails {
+        return remoteDataSource.getMovieDetails(movieId).toMovieDetails()
+    }
 }

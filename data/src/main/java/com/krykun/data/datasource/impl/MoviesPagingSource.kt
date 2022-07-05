@@ -3,7 +3,7 @@ package com.krykun.data.datasource.impl
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.krykun.data.api.ApiService
-import com.krykun.data.model.MovieItem
+import com.krykun.data.model.movielistitem.MovieItem
 
 class MoviesPagingSource(
     private val apiService: ApiService,

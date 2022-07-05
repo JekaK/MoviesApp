@@ -1,4 +1,4 @@
-package com.krykun.data.model
+package com.krykun.data.model.genre
 
 
 import com.google.gson.annotations.SerializedName

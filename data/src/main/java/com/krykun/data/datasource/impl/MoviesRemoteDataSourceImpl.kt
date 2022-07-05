@@ -5,10 +5,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.krykun.data.api.ApiService
 import com.krykun.data.datasource.MoviesRemoteDataSource
-import com.krykun.data.mappers.GenresMapper.toGenre
-import com.krykun.data.model.Genre
-import com.krykun.data.model.MovieItem
+import com.krykun.data.model.genre.Genre
+import com.krykun.data.model.moviedetails.MovieDetailsResponse
+import com.krykun.data.model.movielistitem.MovieItem
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import javax.inject.Inject
 
 class MoviesRemoteDataSourceImpl @Inject constructor(
@@ -32,5 +33,9 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getGenres(): List<Genre> {
         return apiService.getGenres().genres ?: listOf()
+    }
+
+    override suspend fun getMovieDetails(movieId: Int): MovieDetailsResponse {
+        return apiService.getMovieDetails(movieId)
     }
 }

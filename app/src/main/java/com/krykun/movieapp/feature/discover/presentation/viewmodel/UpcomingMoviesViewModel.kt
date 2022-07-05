@@ -27,8 +27,7 @@ import javax.inject.Inject
 class UpcomingMoviesViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     getDiscoverMoviesUseCase: GetUpcomingMoviesUseCase
-) : ViewModel(),
-    ContainerHost<MutableStateFlow<AppState>, DiscoverMoviesSideEffects> {
+) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, DiscoverMoviesSideEffects> {
 
     override val container =
         container<MutableStateFlow<AppState>, DiscoverMoviesSideEffects>(appState)
@@ -102,6 +101,17 @@ class UpcomingMoviesViewModel @Inject constructor(
                 state
             }
             postSideEffect(DiscoverMoviesSideEffects.TriggerOnPageChanged(index))
+        }
+    }
+
+    fun setMovieDetailsId(movieId: Int) = intent {
+        reduce {
+            state.value = state.value.copy(
+                movieDetailsState = state.value.movieDetailsState.copy(
+                    movieId = movieId
+                )
+            )
+            state
         }
     }
 }

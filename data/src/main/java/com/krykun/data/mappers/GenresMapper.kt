@@ -1,10 +1,17 @@
 package com.krykun.data.mappers
 
-import com.krykun.data.model.Genre
+import com.krykun.data.model.genre.Genre
 
 object GenresMapper {
     fun Genre.toGenre(): com.krykun.domain.model.Genre {
         return com.krykun.domain.model.Genre(
+            id = id ?: 0,
+            name = name ?: ""
+        )
+    }
+
+    fun Genre.toMovieDetailsGenre(): com.krykun.domain.model.moviedetails.Genre {
+        return com.krykun.domain.model.moviedetails.Genre(
             id = id ?: 0,
             name = name ?: ""
         )

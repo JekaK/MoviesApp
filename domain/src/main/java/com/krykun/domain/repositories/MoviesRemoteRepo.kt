@@ -3,6 +3,7 @@ package com.krykun.domain.repositories
 import androidx.paging.PagingData
 import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
+import com.krykun.domain.model.moviedetails.MovieDetails
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteRepo {
@@ -14,4 +15,6 @@ interface MoviesRemoteRepo {
     ): Flow<PagingData<MovieDiscoverItem>>
 
     suspend fun getGenres(): List<Genre>
+
+    suspend fun getMovieDetails(movieId: Int): MovieDetails
 }
