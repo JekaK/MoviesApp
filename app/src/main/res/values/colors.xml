@@ -12,4 +12,7 @@
     <color name="tint_unselected">#778089</color>
     <color name="selected_container">#f8424b</color>
     <color name="container_background">#2b333e</color>
+    <color name="star_yellow">#fcc418</color>
+    <color name="reviews_color">#51ce66</color>
+    <color name="light_gray_color">#d1d1dc</color>
 </resources>

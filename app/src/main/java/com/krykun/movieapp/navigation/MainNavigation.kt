@@ -56,7 +56,7 @@ fun MainNavigation(
         composable(
             route = Screen.MovieDetails().route,
         ) {
-            MovieDetailsView()
+            MovieDetailsView(navHostController = navController)
         }
     }
 }

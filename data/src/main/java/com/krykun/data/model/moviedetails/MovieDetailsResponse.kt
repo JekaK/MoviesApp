@@ -2,11 +2,7 @@ package com.krykun.data.model.moviedetails
 
 
 import com.google.gson.annotations.SerializedName
-import com.krykun.domain.model.moviedetails.BelongsToCollection
-import com.krykun.domain.model.moviedetails.Genre
-import com.krykun.domain.model.moviedetails.ProductionCompany
-import com.krykun.domain.model.moviedetails.ProductionCountry
-import com.krykun.domain.model.moviedetails.SpokenLanguage
+import com.krykun.data.model.genre.Genre
 
 data class MovieDetailsResponse(
     @SerializedName("adult")

@@ -1,18 +1,26 @@
 package com.krykun.data.mappers
 
-import com.krykun.data.mappers.GenresMapper.toGenre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
-import com.krykun.domain.model.Genre
-import com.krykun.domain.model.moviedetails.MovieDetails
+import com.krykun.domain.model.moviedetails.*
 
 object MovieDetailMapper {
     fun MovieDetailsResponse.toMovieDetails(): MovieDetails {
         return MovieDetails(
             adult = adult,
             backdropPath = backdropPath,
-            belongsToCollection = belongsToCollection,
+            belongsToCollection = BelongsToCollection(
+                backdropPath = belongsToCollection?.backdropPath,
+                id = belongsToCollection?.id,
+                name = belongsToCollection?.name,
+                posterPath = belongsToCollection?.posterPath
+            ),
             budget = budget,
-            genres = this.genres,
+            genres = genres?.map {
+                Genre(
+                    id = it?.id,
+                    name = it?.name
+                )
+            },
             homepage = homepage,
             id = id,
             imdbId = imdbId,
@@ -21,12 +29,30 @@ object MovieDetailMapper {
             overview = overview,
             popularity = popularity,
             posterPath = posterPath,
-            productionCompanies = productionCompanies,
-            productionCountries = productionCountries,
+            productionCompanies = productionCompanies?.map {
+                ProductionCompany(
+                    id = it?.id,
+                    logoPath = it?.logoPath,
+                    name = it?.name,
+                    originCountry = it?.originCountry
+                )
+            },
+            productionCountries = productionCountries?.map {
+                ProductionCountry(
+                    iso31661 = it?.iso31661,
+                    name = it?.name,
+                )
+            },
             releaseDate = releaseDate,
             revenue = revenue,
             runtime = runtime,
-            spokenLanguages = spokenLanguages,
+            spokenLanguages = spokenLanguages?.map {
+                SpokenLanguage(
+                    englishName = it?.englishName,
+                    iso6391 = it?.iso6391,
+                    name = it?.name
+                )
+            },
             status = status,
             tagline = tagline,
             title = title,
