@@ -1,6 +1,7 @@
 package com.krykun.movieapp.feature.moviedetails.presentation
 
 import androidx.lifecycle.ViewModel
+import com.krykun.domain.usecase.GetCastDetailsUseCase
 import com.krykun.domain.usecase.GetMovieDetailsUseCase
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
-    private val getMovieDetailsUseCase: GetMovieDetailsUseCase
+    private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
+    private val getCastDetailsUseCase: GetCastDetailsUseCase
 ) : ViewModel(),
     ContainerHost<MutableStateFlow<AppState>, MovieDetailsSideEffects> {
     override val container =
@@ -27,7 +29,10 @@ class MovieDetailsViewModel @Inject constructor(
 
     private fun loadMovieDetails() = intent {
         postSideEffect(MovieDetailsSideEffects.ShowLoadingState)
+        val castResult = getCastDetailsUseCase.getCastDetails(state.value.movieDetailsState.movieId)
         val result = getMovieDetailsUseCase.getMovieDetail(state.value.movieDetailsState.movieId)
+            .copy(cast = castResult)
+
 //        if (result) {
 //
 //        } else {

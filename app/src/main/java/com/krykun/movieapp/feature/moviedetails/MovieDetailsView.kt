@@ -6,7 +6,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -20,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +32,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +42,8 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
+import com.krykun.domain.model.castdetails.Cast
+import com.krykun.domain.model.castdetails.Crew
 import com.krykun.domain.model.moviedetails.MovieDetails
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
@@ -46,6 +54,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import java.text.SimpleDateFormat
 import java.util.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMotionApi
 @Composable
 fun MovieDetailsView(
@@ -71,45 +80,95 @@ fun MovieDetailsView(
             isRatingVisible
         )
     }
+    CompositionLocalProvider(
+        LocalOverScrollConfiguration provides null
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            BackBtn(navHostController = navHostController)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollSate)
+            ) {
+                HeaderView(
+                    backdropPath = movieData.value?.backdropPath ?: ""
+                )
+                RatingView(
+                    isRatingVisible = isRatingVisible,
+                    screenWidth = screenWidth,
+                    movieData = movieData
+                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+                        TitleView(movieData)
+                    }
+                    LazyRow {
+                        items(count = movieData.value?.genres?.size ?: 0) { index ->
+                            Text(
+                                text = movieData.value?.genres?.get(index)?.name ?: "",
+                                modifier = Modifier
+                                    .padding(
+                                        start = if (index == 0) {
+                                            24.dp
+                                        } else {
+                                            2.dp
+                                        },
+                                        end = 2.dp,
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.LightGray,
+                                        shape = CircleShape
+                                    )
+                                    .padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        top = 5.dp,
+                                        bottom = 5.dp
+                                    ),
+                                color = colorResource(id = R.color.white),
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        BackBtn(navHostController = navHostController)
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollSate)
-        ) {
-            HeaderView(
-                backdropPath = movieData.value?.backdropPath ?: ""
-            )
-            RatingView(
-                isRatingVisible = isRatingVisible,
-                screenWidth = screenWidth,
-                movieData = movieData
-            )
-            Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
-                TitleView(movieData)
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    text = stringResource(R.string.plot_summary),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = movieData.value?.overview ?: "",
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 14.sp
-                )
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(
-                    text = stringResource(R.string.cast_and_crew),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
+                                )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+                    Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = stringResource(R.string.plot_summary),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = movieData.value?.overview ?: "",
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = stringResource(R.string.cast_and_crew),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+                LazyRow {
+                    itemsIndexed(
+                        movieData.value?.cast?.castAndCrew ?: listOf()
+                    ) { index, item ->
+                        if (item is Cast) {
+                            CastView(castItem = item)
+                        } else {
+                            CrewView(crewItem = item as Crew)
+                        }
+                    }
+                }
             }
         }
     }
@@ -145,27 +204,84 @@ fun TitleView(movieData: MutableState<MovieDetails?>) {
         )
     }
     Spacer(modifier = Modifier.height(24.dp))
+}
 
-    Row {
-        movieData.value?.genres?.forEachIndexed { index, genre ->
-            Text(
-                text = genre?.name ?: "",
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = Color.LightGray,
-                        shape = CircleShape
-                    )
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 5.dp,
-                        bottom = 5.dp
-                    ),
-                color = colorResource(id = R.color.white),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-        }
+@Composable
+fun CastView(castItem: Cast) {
+    Column(
+        modifier = Modifier
+            .height(250.dp)
+            .width(150.dp)
+            .padding(start = 6.dp, end = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CoilImage(
+            imageModel = Constants.IMAGE_BASE_URL + castItem.profilePath,
+            contentDescription = null,
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
+            circularReveal = CircularReveal(duration = 500),
+            placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+            error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = castItem.name ?: "",
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+            fontSize = 14.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = castItem.character ?: "",
+            fontWeight = FontWeight.Normal,
+            color = Color.White.copy(alpha = 0.7f),
+            fontSize = 10.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+
+@Composable
+fun CrewView(crewItem: Crew) {
+    Column(
+        modifier = Modifier
+            .height(250.dp)
+            .width(150.dp)
+    ) {
+        CoilImage(
+            imageModel = Constants.IMAGE_BASE_URL + crewItem.profilePath,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            circularReveal = CircularReveal(duration = 500),
+            placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+            error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = crewItem.name ?: "",
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+            fontSize = 14.sp
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = crewItem.department ?: "",
+            fontWeight = FontWeight.Normal,
+            color = Color.White.copy(alpha = 0.7f),
+            fontSize = 10.sp
+        )
     }
 }
 

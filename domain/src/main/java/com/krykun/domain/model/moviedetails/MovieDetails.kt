@@ -1,5 +1,8 @@
 package com.krykun.domain.model.moviedetails
 
+import com.krykun.domain.model.castdetails.Cast
+import com.krykun.domain.model.castdetails.CastDetails
+
 
 data class MovieDetails(
     val adult: Boolean? = null,
@@ -27,4 +30,5 @@ data class MovieDetails(
     val video: Boolean? = null,
     val voteAverage: Double? = null,
     val voteCount: Int? = null,
+    val cast: CastDetails? = null
 )

@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.krykun.data.api.ApiService
 import com.krykun.data.datasource.MoviesRemoteDataSource
+import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
@@ -37,5 +38,9 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getMovieDetails(movieId: Int): MovieDetailsResponse {
         return apiService.getMovieDetails(movieId)
+    }
+
+    override suspend fun getCastDetails(movieId: Int): CastDetailsResponse {
+        return apiService.getCastDetails(movieId)
     }
 }

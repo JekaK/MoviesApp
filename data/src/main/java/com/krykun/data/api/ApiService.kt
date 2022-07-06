@@ -1,6 +1,7 @@
 package com.krykun.data.api
 
 import com.krykun.data.model.BasicMoviesResponse
+import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.GenresResponse
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
@@ -23,4 +24,7 @@ interface ApiService {
 
     @GET("movie/{id}")
     suspend fun getMovieDetails(@Path("id") movieId: Int): MovieDetailsResponse
+
+    @GET("movie/{id}/credits")
+    suspend fun getCastDetails(@Path("id") movieId: Int): CastDetailsResponse
 }
