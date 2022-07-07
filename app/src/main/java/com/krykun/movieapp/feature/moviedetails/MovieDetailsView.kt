@@ -1,6 +1,7 @@
 package com.krykun.movieapp.feature.moviedetails
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
@@ -23,7 +24,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -50,11 +50,13 @@ import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEff
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMotionApi
 @Composable
 fun MovieDetailsView(
@@ -65,21 +67,59 @@ fun MovieDetailsView(
     val movieData = remember {
         mutableStateOf<MovieDetails?>(null)
     }
+    val movieDetailsState = remember {
+        mutableStateOf(MovieDetailsState.LOADING)
+    }
+    val scope = rememberCoroutineScope()
 
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val scrollSate = rememberScrollState()
     val isRatingVisible = remember {
         mutableStateOf(false)
+    }
+    Crossfade(targetState = movieDetailsState.value) {
+        when (it) {
+            MovieDetailsState.LOADING -> {
+                LoadingView()
+            }
+            MovieDetailsState.DEFAULT -> {
+                MovieDetailsView(
+                    movieData = movieData,
+                    navHostController = navHostController,
+                    isRatingVisible = isRatingVisible
+                )
+            }
+            MovieDetailsState.ERROR -> {
+
+            }
+        }
     }
 
     viewModel.collectSideEffect {
         handleSideEffects(
             it,
             movieData,
-            isRatingVisible
+            isRatingVisible,
+            movieDetailsState,
+            scope
         )
     }
+}
+
+enum class MovieDetailsState {
+    LOADING,
+    DEFAULT,
+    ERROR
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun MovieDetailsView(
+    movieData: MutableState<MovieDetails?>,
+    navHostController: NavHostController,
+    isRatingVisible: MutableState<Boolean>
+) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val scrollSate = rememberScrollState()
     CompositionLocalProvider(
         LocalOverScrollConfiguration provides null
     ) {
@@ -172,8 +212,8 @@ fun MovieDetailsView(
             }
         }
     }
-}
 
+}
 
 @Composable
 fun TitleView(movieData: MutableState<MovieDetails?>) {
@@ -307,7 +347,7 @@ fun HeaderView(backdropPath: String) {
 
 @Composable
 fun RatingView(
-    isRatingVisible: State<Boolean>,
+    isRatingVisible: MutableState<Boolean>,
     screenWidth: Dp,
     movieData: MutableState<MovieDetails?>
 ) {
@@ -459,18 +499,26 @@ fun handleSideEffects(
     sideEffects: MovieDetailsSideEffects,
     movieData: MutableState<MovieDetails?>,
     isRatingVisible: MutableState<Boolean>,
-
-    ) {
+    movieDetailsState: MutableState<MovieDetailsState>,
+    scope: CoroutineScope,
+) {
     when (sideEffects) {
         is MovieDetailsSideEffects.ShowLoadingState -> {
-
+            movieDetailsState.value =
+                MovieDetailsState.LOADING
         }
         is MovieDetailsSideEffects.ShowErrorState -> {
-
+            movieDetailsState.value =
+                MovieDetailsState.ERROR
         }
         is MovieDetailsSideEffects.ShowMovieData -> {
             movieData.value = sideEffects.movieDetails
-            isRatingVisible.value = true
+            movieDetailsState.value =
+                MovieDetailsState.DEFAULT
+            scope.launch {
+                delay(300)
+                isRatingVisible.value = true
+            }
         }
     }
 }

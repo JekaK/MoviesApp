@@ -5,6 +5,7 @@ import com.krykun.domain.usecase.GetCastDetailsUseCase
 import com.krykun.domain.usecase.GetMovieDetailsUseCase
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
