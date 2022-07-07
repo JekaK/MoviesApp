@@ -40,11 +40,11 @@ class SplashScreenViewModel @Inject constructor(
 
     fun makeInitialDelay() = intent {
         val response = getMovieGenresUseCase.getMovieGenres()
-        if (response.isNotEmpty()) {
+        if (response.isSuccess) {
             reduce {
                 state.value = state.value.copy(
                     baseMoviesState = state.value.baseMoviesState.copy(
-                        genres = response
+                        genres = response.getOrNull() ?: listOf()
                     )
                 )
                 state

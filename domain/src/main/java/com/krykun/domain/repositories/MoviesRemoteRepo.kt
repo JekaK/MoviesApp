@@ -15,9 +15,9 @@ interface MoviesRemoteRepo {
         genres: List<Genre>
     ): Flow<PagingData<MovieDiscoverItem>>
 
-    suspend fun getGenres(): List<Genre>
+    suspend fun getGenres(): Result<List<Genre>>
 
-    suspend fun getMovieDetails(movieId: Int): MovieDetails
+    suspend fun getMovieDetails(movieId: Int): Result<MovieDetails>
 
-    suspend fun getCastDetails(movieId: Int): CastDetails
+    suspend fun getCastDetails(movieId: Int): Result<CastDetails>
 }

@@ -2,6 +2,8 @@ package com.krykun.movieapp.feature.discover.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.krykun.domain.model.MovieDiscoverItem
@@ -112,6 +114,18 @@ class UpcomingMoviesViewModel @Inject constructor(
                 )
             )
             state
+        }
+    }
+
+    fun handleLoadState(loadStates: LoadStates) = intent {
+        val errorLoadState = arrayOf(
+            loadStates.append,
+            loadStates.prepend,
+            loadStates.refresh
+        ).filterIsInstance(LoadState.Error::class.java).firstOrNull()
+        val throwable = errorLoadState?.error
+        if (throwable != null) {
+            postSideEffect(DiscoverMoviesSideEffects.TryReloadUpcomingPage)
         }
     }
 }

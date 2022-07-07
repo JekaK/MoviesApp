@@ -10,20 +10,24 @@ class MoviesPagingSource(
 ) : PagingSource<Int, MovieItem>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieItem> {
-        val nextPageNumber = params.key ?: 1
-        val response = apiService.getDiscoverMovies(
-            page = nextPageNumber,
-        )
-        return LoadResult.Page(
-            data = response.results as List<MovieItem>,
-            prevKey = null,
-            nextKey = when {
-                (response.page + 1) <= response.totalPages -> {
-                    response.page + 1
+        try {
+            val nextPageNumber = params.key ?: 1
+            val response = apiService.getDiscoverMovies(
+                page = nextPageNumber,
+            )
+            return LoadResult.Page(
+                data = response.results as List<MovieItem>,
+                prevKey = null,
+                nextKey = when {
+                    (response.page + 1) <= response.totalPages -> {
+                        response.page + 1
+                    }
+                    else -> null
                 }
-                else -> null
-            }
-        )
+            )
+        } catch (e: Exception) {
+            return LoadResult.Error(e)
+        }
     }
 
     override fun getRefreshKey(state: PagingState<Int, MovieItem>): Int? {

@@ -33,6 +33,7 @@ import com.krykun.movieapp.custom.DominantColorState
 import com.krykun.movieapp.custom.DynamicThemePrimaryColorsFromImage
 import com.krykun.movieapp.custom.rememberDominantColorState
 import com.krykun.movieapp.custom.verticalGradientScrim
+import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.ext.contrastAgainst
 import com.krykun.movieapp.ext.lerp
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
@@ -49,7 +50,7 @@ fun UpcomingView(
     viewModel: UpcomingMoviesViewModel,
     navHostController: NavHostController,
 ) {
-    val movies = viewModel.getDiscoverMovies.collectAsLazyPagingItems()
+    val movies = viewModel.getDiscoverMovies.collectAndHandleState(viewModel::handleLoadState)
     val state = rememberUpdatedState(newValue = movies.loadState.refresh)
     val lazyListState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -198,10 +199,12 @@ private fun handleSideEffects(
     when (sideEffects) {
         is DiscoverMoviesSideEffects.TriggerOnPageChanged -> {
             scope.launch {
-                dominantColorState.updateColorsFromImageUrl(
-                    Constants.IMAGE_BASE_URL +
-                            movies[sideEffects.index]?.backdropPath
-                )
+                if (movies.itemCount >= sideEffects.index) {
+                    dominantColorState.updateColorsFromImageUrl(
+                        Constants.IMAGE_BASE_URL +
+                                movies[sideEffects.index]?.backdropPath
+                    )
+                }
             }
         }
         is DiscoverMoviesSideEffects.GetCurrentPageAndScrollOffset -> {
@@ -209,6 +212,9 @@ private fun handleSideEffects(
             scope.launch {
                 lazyListState.scrollToPage(currentPage, 0f)
             }
+        }
+        is DiscoverMoviesSideEffects.TryReloadUpcomingPage -> {
+            movies.retry()
         }
     }
 }

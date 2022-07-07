@@ -15,10 +15,10 @@ interface MoviesRemoteDataSource {
         category: String?
     ): Flow<PagingData<MovieItem>>
 
-    suspend fun getGenres(): List<Genre>
+    suspend fun getGenres(): Result<List<Genre>>
 
-    suspend fun getMovieDetails(movieId: Int): MovieDetailsResponse
+    suspend fun getMovieDetails(movieId: Int):  Result<MovieDetailsResponse>
 
-    suspend fun getCastDetails(movieId: Int): CastDetailsResponse
+    suspend fun getCastDetails(movieId: Int): Result< CastDetailsResponse>
 
 }

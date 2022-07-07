@@ -10,7 +10,6 @@ import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 import javax.inject.Inject
 
 class MoviesRemoteDataSourceImpl @Inject constructor(
@@ -32,15 +31,30 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         ).flow
     }
 
-    override suspend fun getGenres(): List<Genre> {
-        return apiService.getGenres().genres ?: listOf()
+    override suspend fun getGenres(): Result<List<Genre>> {
+        val result = apiService.getGenres()
+        return if (result.isSuccessful) {
+            Result.success(result.body()?.genres ?: listOf())
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
     }
 
-    override suspend fun getMovieDetails(movieId: Int): MovieDetailsResponse {
-        return apiService.getMovieDetails(movieId)
+    override suspend fun getMovieDetails(movieId: Int): Result<MovieDetailsResponse> {
+        val result = apiService.getMovieDetails(movieId)
+        return if (result.isSuccessful) {
+            Result.success(result.body()!!)
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
     }
 
-    override suspend fun getCastDetails(movieId: Int): CastDetailsResponse {
-        return apiService.getCastDetails(movieId)
+    override suspend fun getCastDetails(movieId: Int): Result<CastDetailsResponse> {
+        val result = apiService.getCastDetails(movieId)
+        return if (result.isSuccessful) {
+            Result.success(result.body()!!)
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
     }
 }

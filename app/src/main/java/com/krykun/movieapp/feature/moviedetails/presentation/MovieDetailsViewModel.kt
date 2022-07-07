@@ -5,7 +5,6 @@ import com.krykun.domain.usecase.GetCastDetailsUseCase
 import com.krykun.domain.usecase.GetMovieDetailsUseCase
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -32,22 +31,26 @@ class MovieDetailsViewModel @Inject constructor(
         postSideEffect(MovieDetailsSideEffects.ShowLoadingState)
         val castResult = getCastDetailsUseCase.getCastDetails(state.value.movieDetailsState.movieId)
         val result = getMovieDetailsUseCase.getMovieDetail(state.value.movieDetailsState.movieId)
-            .copy(cast = castResult)
 
-//        if (result) {
-//
-//        } else {
-//            postSideEffect(MovieDetailsSideEffects.ShowErrorState)
-//        }
-        reduce {
-            state.value = state.value.copy(
-                movieDetailsState = MovieDetailsState(
-                    movieData = result
+        if (result.isSuccess && castResult.isSuccess) {
+            val verifiedResponse = result.map {
+                it.copy(
+                    cast = castResult.getOrNull()
                 )
-            )
-            state
+            }
+            reduce {
+                state.value = state.value.copy(
+                    movieDetailsState = MovieDetailsState(
+                        movieData = verifiedResponse.getOrNull()
+                    )
+                )
+                state
+            }
+            postSideEffect(MovieDetailsSideEffects.ShowMovieData(verifiedResponse.getOrNull()))
+        } else {
+            postSideEffect(MovieDetailsSideEffects.ShowErrorState)
         }
-        postSideEffect(MovieDetailsSideEffects.ShowMovieData(result))
+
     }
 
 }

@@ -5,4 +5,6 @@ sealed class DiscoverMoviesSideEffects {
     data class GetCurrentPageAndScrollOffset(
         val currentPageAndOffset: Int
     ) : DiscoverMoviesSideEffects()
+
+    object TryReloadUpcomingPage : DiscoverMoviesSideEffects()
 }

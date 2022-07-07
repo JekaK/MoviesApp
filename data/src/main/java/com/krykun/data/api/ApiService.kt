@@ -5,6 +5,7 @@ import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.GenresResponse
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -20,11 +21,11 @@ interface ApiService {
     ): BasicMoviesResponse<MovieItem>
 
     @GET("genre/movie/list")
-    suspend fun getGenres(): GenresResponse
+    suspend fun getGenres(): Response<GenresResponse>
 
     @GET("movie/{id}")
-    suspend fun getMovieDetails(@Path("id") movieId: Int): MovieDetailsResponse
+    suspend fun getMovieDetails(@Path("id") movieId: Int): Response<MovieDetailsResponse>
 
     @GET("movie/{id}/credits")
-    suspend fun getCastDetails(@Path("id") movieId: Int): CastDetailsResponse
+    suspend fun getCastDetails(@Path("id") movieId: Int): Response<CastDetailsResponse>
 }

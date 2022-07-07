@@ -3,6 +3,7 @@ package com.krykun.data.di
 import android.content.Context
 import com.krykun.data.R
 import com.krykun.data.ext.hasNetwork
+import com.krykun.data.interceptor.ConnectivityInterceptor
 import com.krykun.data.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -13,6 +14,7 @@ import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -55,6 +57,7 @@ object NetworkModule {
                 chain.proceed(request)
             }
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(ConnectivityInterceptor(context))
             .addInterceptor(Interceptor { chain ->
                 val original: Request = chain.request()
                 val originalHttpUrl: HttpUrl = original.url
@@ -69,6 +72,10 @@ object NetworkModule {
                 val request = requestBuilder.build()
                 chain.proceed(request)
             })
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .connectionPool(ConnectionPool(0, 5, TimeUnit.MINUTES))
+            .protocols(listOf(Protocol.HTTP_1_1))
             .build()
     }
 

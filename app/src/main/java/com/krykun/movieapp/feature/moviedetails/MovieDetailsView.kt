@@ -88,7 +88,7 @@ fun MovieDetailsView(
                 )
             }
             MovieDetailsState.ERROR -> {
-
+                ErrorView()
             }
         }
     }
@@ -513,8 +513,7 @@ fun handleSideEffects(
         }
         is MovieDetailsSideEffects.ShowMovieData -> {
             movieData.value = sideEffects.movieDetails
-            movieDetailsState.value =
-                MovieDetailsState.DEFAULT
+            movieDetailsState.value = MovieDetailsState.DEFAULT
             scope.launch {
                 delay(300)
                 isRatingVisible.value = true
