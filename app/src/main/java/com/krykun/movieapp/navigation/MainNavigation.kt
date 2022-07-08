@@ -11,12 +11,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.krykun.movieapp.feature.discover.presentation.viewmodel.DiscoverMoviesViewModel
-import com.krykun.movieapp.feature.discover.presentation.viewmodel.UpcomingMoviesViewModel
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
 import com.krykun.movieapp.feature.discover.view.DiscoverView
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewModel
 import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
+import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
+import com.krykun.movieapp.feature.upcoming.presentation.UpcomingMoviesViewModel
 
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMotionApi::class)
@@ -27,6 +28,7 @@ fun MainNavigation(
     val viewModel: DiscoverMoviesViewModel = hiltViewModel()
     val upcomingMoviesViewModel: UpcomingMoviesViewModel = hiltViewModel()
     val splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
+    val trendingViewModel: TrendingViewModel = hiltViewModel()
 
     AnimatedNavHost(
         navController = navController,
@@ -44,6 +46,7 @@ fun MainNavigation(
             DiscoverView(
                 viewModel = viewModel,
                 upcomingMoviesViewModel = upcomingMoviesViewModel,
+                trendingViewModel = trendingViewModel,
                 navHostController = navController
             )
         }

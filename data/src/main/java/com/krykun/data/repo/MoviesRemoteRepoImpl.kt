@@ -7,10 +7,12 @@ import com.krykun.data.mappers.CastDetailsMapper.toCastDetails
 import com.krykun.data.mappers.DiscoverMoviesMapper.toMovieDiscoverItem
 import com.krykun.data.mappers.GenresMapper.toGenre
 import com.krykun.data.mappers.MovieDetailMapper.toMovieDetails
+import com.krykun.data.mappers.TrendingMoviesMapper.toTrendingMovie
 import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.model.castdetails.CastDetails
 import com.krykun.domain.model.moviedetails.MovieDetails
+import com.krykun.domain.model.trending.TrendingMovie
 import com.krykun.domain.repositories.MoviesRemoteRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -32,13 +34,7 @@ class MoviesRemoteRepoImpl @Inject constructor(
             category = category
         ).map {
             it.map { movieItem ->
-                movieItem.toMovieDiscoverItem()
-                    .copy(
-                        mappedGenreIds = movieItem.genreIds
-                            ?.map {
-                                it?.toGenre(genres) ?: ""
-                            } ?: listOf()
-                    )
+                movieItem.toMovieDiscoverItem(genres)
             }
         }
     }
@@ -60,6 +56,16 @@ class MoviesRemoteRepoImpl @Inject constructor(
     override suspend fun getCastDetails(movieId: Int): Result<CastDetails> {
         return remoteDataSource.getCastDetails(movieId).map {
             it.toCastDetails()
+        }
+    }
+
+    override fun getTrendingMovies(
+        genres: List<Genre>
+    ): Flow<PagingData<TrendingMovie>> {
+        return remoteDataSource.getTrendingMovies().map {
+            it.map { movieItem ->
+                movieItem.toTrendingMovie(genres)
+            }
         }
     }
 }

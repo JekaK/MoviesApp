@@ -8,13 +8,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavHostController
 import com.krykun.movieapp.R
-import com.krykun.movieapp.feature.discover.presentation.viewmodel.DiscoverMoviesViewModel
-import com.krykun.movieapp.feature.discover.presentation.viewmodel.UpcomingMoviesViewModel
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
+import com.krykun.movieapp.feature.upcoming.presentation.UpcomingMoviesViewModel
+import com.krykun.movieapp.feature.discover.view.upcoming.UpcomingView
+import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
+import com.krykun.movieapp.feature.trending.view.TrendingView
 
 @Composable
 fun DiscoverView(
     viewModel: DiscoverMoviesViewModel,
     upcomingMoviesViewModel: UpcomingMoviesViewModel,
+    trendingViewModel: TrendingViewModel,
     navHostController: NavHostController
 ) {
     Column(
@@ -24,6 +28,11 @@ fun DiscoverView(
     ) {
         UpcomingView(
             viewModel = upcomingMoviesViewModel,
+            navHostController = navHostController
+        )
+
+        TrendingView(
+            viewModel = trendingViewModel,
             navHostController = navHostController
         )
     }

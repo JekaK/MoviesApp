@@ -5,6 +5,7 @@ import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.model.castdetails.CastDetails
 import com.krykun.domain.model.moviedetails.MovieDetails
+import com.krykun.domain.model.trending.TrendingMovie
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteRepo {
@@ -20,4 +21,8 @@ interface MoviesRemoteRepo {
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetails>
 
     suspend fun getCastDetails(movieId: Int): Result<CastDetails>
+
+    fun getTrendingMovies(
+        genres: List<Genre>
+    ): Flow<PagingData<TrendingMovie>>
 }

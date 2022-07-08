@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.discover.view
+package com.krykun.movieapp.feature.discover.view.upcoming
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.accompanist.pager.*
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.MovieDiscoverItem
@@ -37,7 +36,8 @@ import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.ext.contrastAgainst
 import com.krykun.movieapp.ext.lerp
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
-import com.krykun.movieapp.feature.discover.presentation.viewmodel.UpcomingMoviesViewModel
+import com.krykun.movieapp.feature.upcoming.presentation.UpcomingMoviesSideEffects
+import com.krykun.movieapp.feature.upcoming.presentation.UpcomingMoviesViewModel
 import com.krykun.movieapp.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -190,14 +190,14 @@ fun UpcomingView(
 
 @OptIn(ExperimentalPagerApi::class)
 private fun handleSideEffects(
-    sideEffects: DiscoverMoviesSideEffects,
+    sideEffects: UpcomingMoviesSideEffects,
     movies: LazyPagingItems<MovieDiscoverItem>,
     dominantColorState: DominantColorState,
     lazyListState: PagerState,
     scope: CoroutineScope
 ) {
     when (sideEffects) {
-        is DiscoverMoviesSideEffects.TriggerOnPageChanged -> {
+        is UpcomingMoviesSideEffects.TriggerOnPageChanged -> {
             scope.launch {
                 if (movies.itemCount >= sideEffects.index) {
                     dominantColorState.updateColorsFromImageUrl(
@@ -207,13 +207,13 @@ private fun handleSideEffects(
                 }
             }
         }
-        is DiscoverMoviesSideEffects.GetCurrentPageAndScrollOffset -> {
+        is UpcomingMoviesSideEffects.GetCurrentUpcomingPageAndScrollOffset -> {
             val currentPage = sideEffects.currentPageAndOffset
             scope.launch {
                 lazyListState.scrollToPage(currentPage, 0f)
             }
         }
-        is DiscoverMoviesSideEffects.TryReloadUpcomingPage -> {
+        is UpcomingMoviesSideEffects.TryReloadUpcomingPage -> {
             movies.retry()
         }
     }

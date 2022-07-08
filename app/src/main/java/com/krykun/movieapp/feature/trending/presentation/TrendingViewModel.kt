@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.discover.presentation.viewmodel
+package com.krykun.movieapp.feature.trending.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,10 +6,9 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.krykun.domain.model.MovieDiscoverItem
-import com.krykun.domain.usecase.GetUpcomingMoviesUseCase
+import com.krykun.domain.model.trending.TrendingMovie
+import com.krykun.domain.usecase.GetTrendingMoviesUseCase
 import com.krykun.movieapp.ext.takeWhenChanged
-import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -26,15 +25,15 @@ import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
-class UpcomingMoviesViewModel @Inject constructor(
+class TrendingViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
-    getDiscoverMoviesUseCase: GetUpcomingMoviesUseCase
-) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, DiscoverMoviesSideEffects> {
+    getTrendingMoviesUseCase: GetTrendingMoviesUseCase
+) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, TrendingMoviesSideEffects> {
 
     override val container =
-        container<MutableStateFlow<AppState>, DiscoverMoviesSideEffects>(appState)
+        container<MutableStateFlow<AppState>, TrendingMoviesSideEffects>(appState)
 
-    lateinit var getDiscoverMovies: Flow<PagingData<MovieDiscoverItem>>
+    lateinit var getTrendingMovies: Flow<PagingData<TrendingMovie>>
 
     init {
         var job: Job? = null
@@ -44,8 +43,8 @@ class UpcomingMoviesViewModel @Inject constructor(
                     it.baseMoviesState.genres
                 }
                 .collect {
-                    getDiscoverMovies =
-                        getDiscoverMoviesUseCase.getMovies(genres = appState.value.baseMoviesState.genres)
+                    getTrendingMovies =
+                        getTrendingMoviesUseCase.getTrendingMovies(genres = appState.value.baseMoviesState.genres)
                             .cachedIn(scope = viewModelScope)
                             .shareIn(
                                 scope = viewModelScope,
@@ -61,7 +60,9 @@ class UpcomingMoviesViewModel @Inject constructor(
         reduce {
             state.value = state.value.copy(
                 discoverMoviesState = state.value.discoverMoviesState.copy(
-                    scrollOffset = scrollOffset
+                    trendingMoviesState = state.value.discoverMoviesState.trendingMoviesState.copy(
+                        scrollOffsetTrending = scrollOffset
+                    )
                 )
             )
             state
@@ -70,39 +71,27 @@ class UpcomingMoviesViewModel @Inject constructor(
 
     fun getCurrentPageAndScrollOffset() = intent {
         val page = when {
-            state.value.discoverMoviesState.lastSavedPage > 0 -> state.value.discoverMoviesState.lastSavedPage
-            state.value.discoverMoviesState.scrollOffset > 0f -> state.value.discoverMoviesState.scrollOffset.toInt()
+            state.value.discoverMoviesState.trendingMoviesState.lastSavedPageTrending > 0 -> state.value.discoverMoviesState.trendingMoviesState.lastSavedPageTrending
+            state.value.discoverMoviesState.trendingMoviesState.scrollOffsetTrending > 0f -> state.value.discoverMoviesState.trendingMoviesState.scrollOffsetTrending.toInt()
             else -> 0
         }
         postSideEffect(
-            DiscoverMoviesSideEffects.GetCurrentPageAndScrollOffset(page)
+            TrendingMoviesSideEffects.GetCurrentTrendingPageAndScrollOffset(page)
         )
     }
 
     fun setLastScrolledPage(index: Int) = intent {
-        if (index != state.value.discoverMoviesState.lastSavedPage) {
+        if (index != state.value.discoverMoviesState.trendingMoviesState.lastSavedPageTrending) {
             reduce {
                 state.value = state.value.copy(
                     discoverMoviesState = state.value.discoverMoviesState.copy(
-                        lastSavedPage = index
+                        trendingMoviesState = state.value.discoverMoviesState.trendingMoviesState.copy(
+                            lastSavedPageTrending = index
+                        )
                     )
                 )
                 state
             }
-        }
-    }
-
-    fun triggerOnPageChanged(index: Int) = intent {
-        if (index != state.value.discoverMoviesState.currentPageIndex) {
-            reduce {
-                state.value = state.value.copy(
-                    discoverMoviesState = state.value.discoverMoviesState.copy(
-                        currentPageIndex = index
-                    )
-                )
-                state
-            }
-            postSideEffect(DiscoverMoviesSideEffects.TriggerOnPageChanged(index))
         }
     }
 
@@ -125,7 +114,8 @@ class UpcomingMoviesViewModel @Inject constructor(
         ).filterIsInstance(LoadState.Error::class.java).firstOrNull()
         val throwable = errorLoadState?.error
         if (throwable != null) {
-            postSideEffect(DiscoverMoviesSideEffects.TryReloadUpcomingPage)
+            postSideEffect(TrendingMoviesSideEffects.TryReloadTrendingPage)
         }
     }
+
 }

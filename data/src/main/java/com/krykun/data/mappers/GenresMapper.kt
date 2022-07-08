@@ -10,13 +10,6 @@ object GenresMapper {
         )
     }
 
-    fun Genre.toMovieDetailsGenre(): com.krykun.domain.model.moviedetails.Genre {
-        return com.krykun.domain.model.moviedetails.Genre(
-            id = id ?: 0,
-            name = name ?: ""
-        )
-    }
-
     fun Int.toGenre(genreList: List<com.krykun.domain.model.Genre>): String {
         return genreList.find {
             it.id == this

@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.discover.presentation.viewmodel
+package com.krykun.movieapp.feature.discover.presentation
 
 import androidx.lifecycle.ViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
