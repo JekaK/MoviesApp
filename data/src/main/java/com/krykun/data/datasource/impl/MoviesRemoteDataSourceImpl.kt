@@ -25,7 +25,7 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
-                UpcommingMoviesPagingSource(
+                DiscoverMoviesPagingSource(
                     apiService = apiService,
                 )
             }

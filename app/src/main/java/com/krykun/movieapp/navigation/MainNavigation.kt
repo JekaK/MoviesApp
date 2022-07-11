@@ -11,13 +11,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
-import com.krykun.movieapp.feature.discover.view.DiscoverView
+import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
+import com.krykun.movieapp.feature.home.view.DiscoverView
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewModel
 import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
 import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
-import com.krykun.movieapp.feature.upcoming.presentation.UpcomingMoviesViewModel
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
 
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMotionApi::class)
@@ -25,8 +25,8 @@ import com.krykun.movieapp.feature.upcoming.presentation.UpcomingMoviesViewModel
 fun MainNavigation(
     navController: NavHostController
 ) {
-    val viewModel: DiscoverMoviesViewModel = hiltViewModel()
-    val upcomingMoviesViewModel: UpcomingMoviesViewModel = hiltViewModel()
+    val viewModel: HomeMoviesViewModel = hiltViewModel()
+    val discoverMoviesViewModel: DiscoverMoviesViewModel = hiltViewModel()
     val splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
     val trendingViewModel: TrendingViewModel = hiltViewModel()
 
@@ -45,7 +45,7 @@ fun MainNavigation(
         composable(route = Screen.Discover().route) {
             DiscoverView(
                 viewModel = viewModel,
-                upcomingMoviesViewModel = upcomingMoviesViewModel,
+                discoverMoviesViewModel = discoverMoviesViewModel,
                 trendingViewModel = trendingViewModel,
                 navHostController = navController
             )

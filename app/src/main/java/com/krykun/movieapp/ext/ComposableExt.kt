@@ -24,23 +24,3 @@ fun <T : Any> Flow<PagingData<T>>.collectAndHandleState(
 
     return lazyPagingItem
 }
-
-@Composable
-fun <T> T.AnimationBox(
-    enter: EnterTransition = expandVertically() + fadeIn(),
-    exit: ExitTransition = fadeOut() + shrinkVertically(),
-    content: @Composable T.() -> Unit
-) {
-    val state = remember {
-        MutableTransitionState(false).apply {
-            // Start the animation immediately.
-            targetState = true
-        }
-    }
-
-    AnimatedVisibility(
-        visibleState = state,
-        enter = enter,
-        exit = exit
-    ) { content() }
-}

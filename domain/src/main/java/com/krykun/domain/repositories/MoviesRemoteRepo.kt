@@ -9,7 +9,7 @@ import com.krykun.domain.model.trending.TrendingMovie
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteRepo {
-    fun getUpcomingMovies(
+    fun getDiscoverMovies(
         country: String?,
         language: String?,
         category: String?,

@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.discover.view.upcoming
+package com.krykun.movieapp.feature.home.view.upcoming
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,7 @@ import com.skydoves.landscapist.coil.CoilImage
 
 
 @Composable
-fun UpcomingItemView(
+fun DiscoverItemView(
     modifier: Modifier,
     moviesItem: MovieDiscoverItem,
 ) {

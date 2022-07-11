@@ -59,8 +59,8 @@ class TrendingViewModel @Inject constructor(
     fun setScrollOffset(scrollOffset: Float) = intent {
         reduce {
             state.value = state.value.copy(
-                discoverMoviesState = state.value.discoverMoviesState.copy(
-                    trendingMoviesState = state.value.discoverMoviesState.trendingMoviesState.copy(
+                homeState = state.value.homeState.copy(
+                    trendingMoviesState = state.value.homeState.trendingMoviesState.copy(
                         scrollOffsetTrending = scrollOffset
                     )
                 )
@@ -71,8 +71,8 @@ class TrendingViewModel @Inject constructor(
 
     fun getCurrentPageAndScrollOffset() = intent {
         val page = when {
-            state.value.discoverMoviesState.trendingMoviesState.lastSavedPageTrending > 0 -> state.value.discoverMoviesState.trendingMoviesState.lastSavedPageTrending
-            state.value.discoverMoviesState.trendingMoviesState.scrollOffsetTrending > 0f -> state.value.discoverMoviesState.trendingMoviesState.scrollOffsetTrending.toInt()
+            state.value.homeState.trendingMoviesState.lastSavedPageTrending > 0 -> state.value.homeState.trendingMoviesState.lastSavedPageTrending
+            state.value.homeState.trendingMoviesState.scrollOffsetTrending > 0f -> state.value.homeState.trendingMoviesState.scrollOffsetTrending.toInt()
             else -> 0
         }
         postSideEffect(
@@ -81,11 +81,11 @@ class TrendingViewModel @Inject constructor(
     }
 
     fun setLastScrolledPage(index: Int) = intent {
-        if (index != state.value.discoverMoviesState.trendingMoviesState.lastSavedPageTrending) {
+        if (index != state.value.homeState.trendingMoviesState.lastSavedPageTrending) {
             reduce {
                 state.value = state.value.copy(
-                    discoverMoviesState = state.value.discoverMoviesState.copy(
-                        trendingMoviesState = state.value.discoverMoviesState.trendingMoviesState.copy(
+                    homeState = state.value.homeState.copy(
+                        trendingMoviesState = state.value.homeState.trendingMoviesState.copy(
                             lastSavedPageTrending = index
                         )
                     )

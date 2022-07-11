@@ -4,7 +4,7 @@ import com.krykun.domain.model.Genre
 import com.krykun.domain.repositories.MoviesRemoteRepo
 import javax.inject.Inject
 
-class GetUpcomingMoviesUseCase @Inject constructor(
+class GetDiscoverMoviesUseCase @Inject constructor(
     private val moviesRemoteRepo: MoviesRemoteRepo
 ) {
 
@@ -13,7 +13,7 @@ class GetUpcomingMoviesUseCase @Inject constructor(
         language: String? = null,
         category: String? = null,
         genres: List<Genre>
-    ) = moviesRemoteRepo.getUpcomingMovies(
+    ) = moviesRemoteRepo.getDiscoverMovies(
         country = country,
         language = language,
         category = category,

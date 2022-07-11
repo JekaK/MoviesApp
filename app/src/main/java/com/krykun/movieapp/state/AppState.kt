@@ -1,11 +1,11 @@
 package com.krykun.movieapp.state
 
-import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesState
+import com.krykun.movieapp.feature.home.presentation.HomeState
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenState
 
 data class AppState(
-    val discoverMoviesState: DiscoverMoviesState = DiscoverMoviesState(),
+    val homeState: HomeState = HomeState(),
     val splashScreenState: SplashScreenState = SplashScreenState(),
     val baseMoviesState: BaseMoviesState = BaseMoviesState(),
     val movieDetailsState: MovieDetailsState = MovieDetailsState()

@@ -22,7 +22,7 @@ class MoviesRemoteRepoImpl @Inject constructor(
     private val remoteDataSource: MoviesRemoteDataSource
 ) : MoviesRemoteRepo {
 
-    override fun getUpcomingMovies(
+    override fun getDiscoverMovies(
         country: String?,
         language: String?,
         category: String?,
