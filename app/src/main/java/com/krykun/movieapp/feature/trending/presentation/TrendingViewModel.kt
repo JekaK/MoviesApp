@@ -6,16 +6,14 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.krykun.domain.model.trending.TrendingMovie
+import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.usecase.GetPopularMoviesUseCase
 import com.krykun.domain.usecase.GetTrendingMoviesUseCase
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -26,14 +24,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TrendingViewModel @Inject constructor(
-    appState: MutableStateFlow<AppState>,
-    getTrendingMoviesUseCase: GetTrendingMoviesUseCase
+    private val appState: MutableStateFlow<AppState>,
+    getTrendingMoviesUseCase: GetTrendingMoviesUseCase,
+    private val getPopularMoviesUseCase: GetPopularMoviesUseCase
 ) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, TrendingMoviesSideEffects> {
 
     override val container =
         container<MutableStateFlow<AppState>, TrendingMoviesSideEffects>(appState)
 
-    lateinit var getTrendingMovies: Flow<PagingData<TrendingMovie>>
+    lateinit var getTrendingMovies: Flow<PagingData<Movie>>
+    var getPopularMovies: Flow<PagingData<Movie>>? = null
 
     init {
         var job: Job? = null
@@ -53,6 +53,113 @@ class TrendingViewModel @Inject constructor(
                             )
                     job?.cancel()
                 }
+        }
+    }
+
+    fun subscribeToStateUpdate() =
+        container.stateFlow.value
+            .takeWhenChanged {
+                it.homeState.trendingMoviesState
+            }
+            .map {
+                when (it.selectedMovieType) {
+                    SelectedMovieType.POPULAR() -> {
+                        if (getPopularMovies == null) {
+                            getPopularMovies =
+                                getPopularMoviesUseCase.getPopularMovies(genres = appState.value.baseMoviesState.genres)
+                                    .cachedIn(scope = viewModelScope)
+                                    .shareIn(
+                                        scope = viewModelScope,
+                                        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                                        replay = 1
+                                    )
+                        }
+                    }
+                }
+                it.toTrendingProps()
+            }
+
+    private fun TrendingMoviesState.toTrendingProps(): TrendingProps {
+        return TrendingProps(
+            currentTrendingPageIndex = this.currentTrendingPageIndex,
+            scrollOffsetTrending = this.scrollOffsetTrending,
+            lastSavedPageTrending = this.lastSavedPageTrending,
+            isShowLoading = when (this.selectedMovieType) {
+                is SelectedMovieType.TRENDING -> {
+                    this.trendingMovieType.loadingState == LoadingState.LOADING
+                }
+                is SelectedMovieType.POPULAR -> {
+                    this.popularMovieType.loadingState == LoadingState.LOADING
+                }
+            }
+        )
+    }
+
+    fun setSelectedMovieType(
+        selectedMovieType: SelectedMovieType,
+        isSelecting: Boolean = true
+    ) = intent {
+        val selectedMovie: SelectedMovieType = when (selectedMovieType) {
+            is SelectedMovieType.TRENDING -> {
+                val currentMovieType =
+                    state.value.homeState.trendingMoviesState.trendingMovieType
+                if (currentMovieType.loadingState == LoadingState.STATIONARY) {
+                    selectedMovieType.copy(loadingState = currentMovieType.loadingState)
+                } else {
+                    selectedMovieType
+                }
+            }
+            is SelectedMovieType.POPULAR -> {
+                val currentMovieType =
+                    state.value.homeState.trendingMoviesState.popularMovieType
+                if (currentMovieType.loadingState == LoadingState.STATIONARY) {
+                    selectedMovieType.copy(loadingState = currentMovieType.loadingState)
+                } else {
+                    selectedMovieType
+                }
+            }
+        }
+
+        if (selectedMovie is SelectedMovieType.TRENDING) {
+            reduce {
+                state.value = state.value.copy(
+                    homeState = state.value.homeState.copy(
+                        trendingMoviesState = state.value.homeState.trendingMoviesState.copy(
+                            trendingMovieType = selectedMovie,
+                            selectedMovieType = if (isSelecting) {
+                                selectedMovie
+                            } else {
+                                state.value.homeState.trendingMoviesState.selectedMovieType
+                            }
+                        )
+                    )
+                )
+                state
+            }
+        }
+        if (selectedMovie is SelectedMovieType.POPULAR) {
+            reduce {
+                state.value = state.value.copy(
+                    homeState = state.value.homeState.copy(
+                        trendingMoviesState = state.value.homeState.trendingMoviesState.copy(
+                            popularMovieType = selectedMovie,
+                            selectedMovieType = if (isSelecting) {
+                                selectedMovie
+                            } else {
+                                state.value.homeState.trendingMoviesState.selectedMovieType
+                            }
+                        )
+                    )
+                )
+                state
+            }
+        }
+        if (isSelecting) {
+            postSideEffect(
+                TrendingMoviesSideEffects.ChangeMoviesSelectedItem(
+                    selectedMovieType = selectedMovie
+                )
+            )
         }
     }
 
@@ -81,17 +188,15 @@ class TrendingViewModel @Inject constructor(
     }
 
     fun setLastScrolledPage(index: Int) = intent {
-        if (index != state.value.homeState.trendingMoviesState.lastSavedPageTrending) {
-            reduce {
-                state.value = state.value.copy(
-                    homeState = state.value.homeState.copy(
-                        trendingMoviesState = state.value.homeState.trendingMoviesState.copy(
-                            lastSavedPageTrending = index
-                        )
+        reduce {
+            state.value = state.value.copy(
+                homeState = state.value.homeState.copy(
+                    trendingMoviesState = state.value.homeState.trendingMoviesState.copy(
+                        lastSavedPageTrending = index
                     )
                 )
-                state
-            }
+            )
+            state
         }
     }
 

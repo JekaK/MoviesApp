@@ -5,4 +5,5 @@
     <string name="plot_summary">Plot summary</string>
     <string name="cast_and_crew"><![CDATA[Cast & Crew]]></string>
     <string name="trending">Trending</string>
+    <string name="popular">Popular</string>
 </resources>

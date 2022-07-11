@@ -1,16 +1,16 @@
 package com.krykun.data.mappers
 
 import com.krykun.data.mappers.GenresMapper.toGenre
-import com.krykun.data.model.trending.TrendingMovieItemResponse
+import com.krykun.data.model.movies.MovieItemResponse
 import com.krykun.domain.model.Genre
-import com.krykun.domain.model.trending.TrendingMovie
+import com.krykun.domain.model.movies.Movie
 
-object TrendingMoviesMapper {
+object MoviesMapper {
 
-    fun TrendingMovieItemResponse.toTrendingMovie(
+    fun MovieItemResponse.toMovie(
         genres: List<Genre>
-    ): TrendingMovie {
-        return TrendingMovie(
+    ): Movie {
+        return Movie(
             adult = adult,
             backdropPath = backdropPath,
             genreIds = genreIds,

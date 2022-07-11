@@ -5,7 +5,7 @@ import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
-import com.krykun.data.model.trending.TrendingMovieItemResponse
+import com.krykun.data.model.movies.MovieItemResponse
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteDataSource {
@@ -22,6 +22,7 @@ interface MoviesRemoteDataSource {
 
     suspend fun getCastDetails(movieId: Int): Result<CastDetailsResponse>
 
-    fun getTrendingMovies(): Flow<PagingData<TrendingMovieItemResponse>>
+    fun getTrendingMovies(): Flow<PagingData<MovieItemResponse>>
 
+    fun getPopularMovies(): Flow<PagingData<MovieItemResponse>>
 }

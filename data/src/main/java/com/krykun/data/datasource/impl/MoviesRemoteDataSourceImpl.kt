@@ -9,7 +9,7 @@ import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
-import com.krykun.data.model.trending.TrendingMovieItemResponse
+import com.krykun.data.model.movies.MovieItemResponse
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -59,11 +59,22 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getTrendingMovies(): Flow<PagingData<TrendingMovieItemResponse>> {
+    override fun getTrendingMovies(): Flow<PagingData<MovieItemResponse>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
                 TrendingMoviesPagingSource(
+                    apiService = apiService,
+                )
+            }
+        ).flow
+    }
+
+    override fun getPopularMovies(): Flow<PagingData<MovieItemResponse>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                PopularMoviesMoviesPagingSource(
                     apiService = apiService,
                 )
             }

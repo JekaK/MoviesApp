@@ -1,9 +1,9 @@
-package com.krykun.data.model.trending
+package com.krykun.data.model.movies
 
 
 import com.google.gson.annotations.SerializedName
 
-data class TrendingMovieItemResponse(
+data class MovieItemResponse(
     @SerializedName("adult")
     val adult: Boolean? = null,
     @SerializedName("backdrop_path")

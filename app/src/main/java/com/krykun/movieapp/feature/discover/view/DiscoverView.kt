@@ -17,10 +17,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -62,6 +66,8 @@ fun DiscoverView(
     val parentOffsetState = remember {
         mutableStateOf(Offset(0f, 0f))
     }
+
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     DynamicThemePrimaryColorsFromImage(dominantColorState) {
         Column(
@@ -164,10 +170,20 @@ fun DiscoverView(
     }
 
     //TODO remove this when HorizontalPager will remember scroll position when recomposing
-    DisposableEffect(key1 = Unit) {
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                viewModel.setLastScrolledPage(lazyListState.currentPage)
+                viewModel.setScrollOffset(lazyListState.currentPageOffset)
+            }
+        }
+
+        // Add the observer to the lifecycle
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // When the effect leaves the Composition, remove the observer
         onDispose {
-            viewModel.setLastScrolledPage(lazyListState.currentPage)
-            viewModel.setScrollOffset(lazyListState.currentPageOffset)
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

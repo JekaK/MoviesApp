@@ -1,6 +1,6 @@
-package com.krykun.domain.model.trending
+package com.krykun.domain.model.movies
 
-data class TrendingMovie(
+data class Movie(
     val adult: Boolean? = null,
     val backdropPath: String? = null,
     val genreIds: List<Int?>? = null,
