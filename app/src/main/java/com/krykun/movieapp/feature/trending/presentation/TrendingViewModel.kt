@@ -49,11 +49,6 @@ class TrendingViewModel @Inject constructor(
                     getTrendingMovies =
                         getTrendingMoviesUseCase.getTrendingMovies(genres = appState.value.baseMoviesState.genres)
                             .cachedIn(scope = viewModelScope)
-                            .shareIn(
-                                scope = viewModelScope,
-                                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                                replay = 1
-                            )
                     job?.cancel()
                 }
         }
@@ -71,11 +66,6 @@ class TrendingViewModel @Inject constructor(
                             getPopularMovies =
                                 getPopularMoviesUseCase.getPopularMovies(genres = appState.value.baseMoviesState.genres)
                                     .cachedIn(scope = viewModelScope)
-                                    .shareIn(
-                                        scope = viewModelScope,
-                                        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                                        replay = 1
-                                    )
                         }
                     }
                     SelectedMovieType.TOPRATED() -> {
@@ -83,11 +73,6 @@ class TrendingViewModel @Inject constructor(
                             getTopRatedMovies =
                                 getTopRatedMoviesUseCase.getTopRatedMovies(genres = appState.value.baseMoviesState.genres)
                                     .cachedIn(scope = viewModelScope)
-                                    .shareIn(
-                                        scope = viewModelScope,
-                                        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                                        replay = 1
-                                    )
                         }
                     }
                 }

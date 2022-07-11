@@ -14,8 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -46,11 +44,6 @@ class DiscoverMoviesViewModel @Inject constructor(
                     getDiscoverMovies =
                         getDiscoverMoviesUseCase.getMovies(genres = appState.value.baseMoviesState.genres)
                             .cachedIn(scope = viewModelScope)
-                            .shareIn(
-                                scope = viewModelScope,
-                                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                                replay = 1
-                            )
                     job?.cancel()
                 }
         }
