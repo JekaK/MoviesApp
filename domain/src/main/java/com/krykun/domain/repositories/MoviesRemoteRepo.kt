@@ -29,4 +29,8 @@ interface MoviesRemoteRepo {
     fun getPopularMovies(
         genres: List<Genre>,
     ): Flow<PagingData<Movie>>
+
+    fun getTopRatedMovies(
+        genres: List<Genre>,
+    ): Flow<PagingData<Movie>>
 }

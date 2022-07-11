@@ -7,7 +7,9 @@ sealed class TrendingMoviesSideEffects {
 
     object TryReloadTrendingPage : TrendingMoviesSideEffects()
 
-    data class ChangeMoviesSelectedItem(
-        val selectedMovieType: SelectedMovieType
-    ) : TrendingMoviesSideEffects()
+    object TryReloadPopularPage : TrendingMoviesSideEffects()
+
+    object TryReloadTopRatedPage : TrendingMoviesSideEffects()
+
+    object ChangeMoviesSelectedItem : TrendingMoviesSideEffects()
 }

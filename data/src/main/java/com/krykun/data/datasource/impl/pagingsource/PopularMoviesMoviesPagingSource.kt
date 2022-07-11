@@ -1,4 +1,4 @@
-package com.krykun.data.datasource.impl
+package com.krykun.data.datasource.impl.pagingsource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

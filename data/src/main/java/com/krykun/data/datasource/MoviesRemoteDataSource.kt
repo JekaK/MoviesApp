@@ -25,4 +25,6 @@ interface MoviesRemoteDataSource {
     fun getTrendingMovies(): Flow<PagingData<MovieItemResponse>>
 
     fun getPopularMovies(): Flow<PagingData<MovieItemResponse>>
+
+    fun getTopRatedMovies(): Flow<PagingData<MovieItemResponse>>
 }

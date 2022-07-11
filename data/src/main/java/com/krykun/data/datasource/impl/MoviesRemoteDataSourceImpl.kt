@@ -5,6 +5,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.krykun.data.api.ApiService
 import com.krykun.data.datasource.MoviesRemoteDataSource
+import com.krykun.data.datasource.impl.pagingsource.PopularMoviesMoviesPagingSource
+import com.krykun.data.datasource.impl.pagingsource.TopRatedMoviesMoviesPagingSource
+import com.krykun.data.datasource.impl.pagingsource.TrendingMoviesPagingSource
 import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
@@ -75,6 +78,17 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
                 PopularMoviesMoviesPagingSource(
+                    apiService = apiService,
+                )
+            }
+        ).flow
+    }
+
+    override fun getTopRatedMovies(): Flow<PagingData<MovieItemResponse>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                TopRatedMoviesMoviesPagingSource(
                     apiService = apiService,
                 )
             }

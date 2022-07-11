@@ -76,4 +76,12 @@ class MoviesRemoteRepoImpl @Inject constructor(
             }
         }
     }
+
+    override fun getTopRatedMovies(genres: List<Genre>): Flow<PagingData<Movie>> {
+        return remoteDataSource.getTopRatedMovies().map {
+            it.map { movieItem ->
+                movieItem.toMovie(genres)
+            }
+        }
+    }
 }

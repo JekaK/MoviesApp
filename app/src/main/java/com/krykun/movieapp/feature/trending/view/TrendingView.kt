@@ -47,12 +47,16 @@ fun TrendingView(
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     val trendingMovies: LazyPagingItems<Movie> =
-        viewModel.getTrendingMovies.collectAndHandleState(viewModel::handleLoadState)
+        viewModel.getTrendingMovies.collectAndHandleState(viewModel::handleLoadTrendingState)
     val popularMovies: LazyPagingItems<Movie>? =
-        viewModel.getPopularMovies?.collectAndHandleState(viewModel::handleLoadState)
+        viewModel.getPopularMovies?.collectAndHandleState(viewModel::handleLoadPopularState)
+
+    val topRatedMovies: LazyPagingItems<Movie>? =
+        viewModel.getTopRatedMovies?.collectAndHandleState(viewModel::handleLoadTopRatedState)
 
     val trendingLazyListState = rememberLazyListState()
     val popularLazyListState = rememberLazyListState()
+    val topRatedLazyListState = rememberLazyListState()
 
     val scope = rememberCoroutineScope()
 
@@ -65,7 +69,8 @@ fun TrendingView(
 
     val movieTypeList = listOf(
         SelectedMovieType.TRENDING(),
-        SelectedMovieType.POPULAR()
+        SelectedMovieType.POPULAR(),
+        SelectedMovieType.TOPRATED()
     )
 
     Column(
@@ -103,6 +108,16 @@ fun TrendingView(
                         )
                     }
                 }
+                is SelectedMovieType.TOPRATED -> {
+                    topRatedMovies?.let {
+                        BasicMoviesItem(
+                            lazyPaging = it,
+                            lazyListState = topRatedLazyListState,
+                            viewModel = viewModel,
+                            navHostController = navHostController,
+                        )
+                    }
+                }
             }
         } else {
             LoadingView()
@@ -114,13 +129,17 @@ fun TrendingView(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
                 when (selectedMovieType.value) {
-                    SelectedMovieType.TRENDING() -> {
+                    is SelectedMovieType.TRENDING -> {
                         viewModel.setLastScrolledPage(trendingLazyListState.firstVisibleItemIndex)
                         viewModel.setScrollOffset(trendingLazyListState.firstVisibleItemScrollOffset.toFloat())
                     }
-                    SelectedMovieType.POPULAR() -> {
+                    is SelectedMovieType.POPULAR -> {
                         viewModel.setLastScrolledPage(popularLazyListState.firstVisibleItemIndex)
                         viewModel.setScrollOffset(popularLazyListState.firstVisibleItemScrollOffset.toFloat())
+                    }
+                    is SelectedMovieType.TOPRATED -> {
+                        viewModel.setLastScrolledPage(topRatedLazyListState.firstVisibleItemIndex)
+                        viewModel.setScrollOffset(topRatedLazyListState.firstVisibleItemScrollOffset.toFloat())
                     }
                 }
             }
@@ -157,7 +176,7 @@ fun TrendingView(
                 SelectedMovieType.POPULAR(loadingState = LoadingState.STATIONARY),
                 isSelecting = false
             )
-        } else if (trendingMovies.loadState.refresh is LoadState.Loading) {
+        } else if (popularMovies?.loadState?.refresh is LoadState.Loading) {
             viewModel.setSelectedMovieType(
                 SelectedMovieType.POPULAR(loadingState = LoadingState.LOADING),
                 isSelecting = false
@@ -165,11 +184,29 @@ fun TrendingView(
         }
     }
 
+    //TODO remove this when HorizontalPager will remember scroll position when recomposing
+    LaunchedEffect(key1 = topRatedMovies?.loadState?.refresh) {
+        if (topRatedMovies?.loadState?.refresh is LoadState.NotLoading) {
+            viewModel.getCurrentPageAndScrollOffset()
+            viewModel.setSelectedMovieType(
+                SelectedMovieType.TOPRATED(loadingState = LoadingState.STATIONARY),
+                isSelecting = false
+            )
+        } else if (topRatedMovies?.loadState?.refresh is LoadState.Loading) {
+            viewModel.setSelectedMovieType(
+                SelectedMovieType.TOPRATED(loadingState = LoadingState.LOADING),
+                isSelecting = false
+            )
+        }
+    }
+
+
     LaunchedEffect(key1 = Unit) {
         scope.launch {
             viewModel.subscribeToStateUpdate()
                 .collect {
                     showLoading.value = it.isShowLoading
+                    selectedMovieType.value = it.selectedMovieType
                 }
         }
     }
@@ -178,8 +215,11 @@ fun TrendingView(
         handleSideEffects(
             it,
             trendingMovies,
+            popularMovies,
+            topRatedMovies,
             trendingLazyListState,
             popularLazyListState,
+            topRatedLazyListState,
             selectedMovieType,
             viewModel,
             scope,
@@ -241,8 +281,11 @@ private fun BasicMoviesItem(
 private fun handleSideEffects(
     sideEffects: TrendingMoviesSideEffects,
     movies: LazyPagingItems<Movie>,
+    popularMovies: LazyPagingItems<Movie>?,
+    topRatedMovies: LazyPagingItems<Movie>?,
     trendingLazyListState: LazyListState,
     popularLazyListState: LazyListState,
+    topRatedLazyListState: LazyListState,
     selectedMovieType: MutableState<SelectedMovieType>,
     viewModel: TrendingViewModel,
     scope: CoroutineScope
@@ -252,11 +295,14 @@ private fun handleSideEffects(
             val currentPage = sideEffects.currentPageAndOffset
             scope.launch {
                 when (selectedMovieType.value) {
-                    SelectedMovieType.TRENDING() -> {
+                    is SelectedMovieType.TRENDING -> {
                         trendingLazyListState.scrollToItem(currentPage)
                     }
-                    SelectedMovieType.POPULAR() -> {
+                    is SelectedMovieType.POPULAR -> {
                         popularLazyListState.scrollToItem(currentPage)
+                    }
+                    is SelectedMovieType.TOPRATED -> {
+                        topRatedLazyListState.scrollToItem(currentPage)
                     }
                 }
             }
@@ -264,12 +310,16 @@ private fun handleSideEffects(
         is TrendingMoviesSideEffects.TryReloadTrendingPage -> {
             movies.retry()
         }
+        is TrendingMoviesSideEffects.TryReloadPopularPage -> {
+            popularMovies?.retry()
+        }
+        is TrendingMoviesSideEffects.TryReloadTopRatedPage -> {
+            topRatedMovies?.retry()
+        }
         is TrendingMoviesSideEffects.ChangeMoviesSelectedItem -> {
-            if (selectedMovieType.value.loadingState != LoadingState.LOADING) {
-                viewModel.setLastScrolledPage(0)
-                viewModel.setScrollOffset(0f)
-            }
-            selectedMovieType.value = sideEffects.selectedMovieType
+            viewModel.setLastScrolledPage(0)
+            viewModel.setScrollOffset(0f)
+            viewModel.getCurrentPageAndScrollOffset()
         }
     }
 }

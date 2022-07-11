@@ -39,4 +39,9 @@ interface ApiService {
     suspend fun getPopularMovies(
         @Query("page") page: Int = 0,
     ): BasicMoviesResponse<MovieItemResponse>
+
+    @GET("movie/top_rated")
+    suspend fun getTopRatedMovies(
+        @Query("page") page: Int = 0,
+    ): BasicMoviesResponse<MovieItemResponse>
 }
