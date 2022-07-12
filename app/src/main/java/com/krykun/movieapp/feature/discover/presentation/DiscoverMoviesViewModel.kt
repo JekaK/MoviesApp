@@ -9,11 +9,13 @@ import androidx.paging.cachedIn
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.usecase.GetDiscoverMoviesUseCase
 import com.krykun.movieapp.ext.takeWhenChanged
+import com.krykun.movieapp.feature.trending.presentation.SelectedMovieType
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -49,11 +51,17 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
+    fun subscribeToStateUpdate() =
+        container.stateFlow.value
+            .takeWhenChanged {
+                it.homeState.discoverMoviesState
+            }
+
     fun setScrollOffset(scrollOffset: Float) = intent {
         reduce {
             state.value = state.value.copy(
                 homeState = state.value.homeState.copy(
-                    upcomingMoviesState = state.value.homeState.upcomingMoviesState.copy(
+                    discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
                         scrollOffsetUpcoming = scrollOffset
                     )
                 )
@@ -64,8 +72,8 @@ class DiscoverMoviesViewModel @Inject constructor(
 
     fun getCurrentPageAndScrollOffset() = intent {
         val page = when {
-            state.value.homeState.upcomingMoviesState.lastSavedPageUpcoming > 0 -> state.value.homeState.upcomingMoviesState.lastSavedPageUpcoming
-            state.value.homeState.upcomingMoviesState.scrollOffsetUpcoming > 0f -> state.value.homeState.upcomingMoviesState.scrollOffsetUpcoming.toInt()
+            state.value.homeState.discoverMoviesState.lastSavedPageUpcoming > 0 -> state.value.homeState.discoverMoviesState.lastSavedPageUpcoming
+            state.value.homeState.discoverMoviesState.scrollOffsetUpcoming > 0f -> state.value.homeState.discoverMoviesState.scrollOffsetUpcoming.toInt()
             else -> 0
         }
         postSideEffect(
@@ -74,11 +82,11 @@ class DiscoverMoviesViewModel @Inject constructor(
     }
 
     fun setLastScrolledPage(index: Int) = intent {
-        if (index != state.value.homeState.upcomingMoviesState.lastSavedPageUpcoming) {
+        if (index != state.value.homeState.discoverMoviesState.lastSavedPageUpcoming) {
             reduce {
                 state.value = state.value.copy(
                     homeState = state.value.homeState.copy(
-                        upcomingMoviesState = state.value.homeState.upcomingMoviesState.copy(
+                        discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
                             lastSavedPageUpcoming = index
                         )
                     )
@@ -89,11 +97,11 @@ class DiscoverMoviesViewModel @Inject constructor(
     }
 
     fun triggerOnPageChanged(index: Int) = intent {
-        if (index != state.value.homeState.upcomingMoviesState.currentUpcomingPageIndex) {
+        if (index != state.value.homeState.discoverMoviesState.currentUpcomingPageIndex) {
             reduce {
                 state.value = state.value.copy(
                     homeState = state.value.homeState.copy(
-                        upcomingMoviesState = state.value.homeState.upcomingMoviesState.copy(
+                        discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
                             currentUpcomingPageIndex = index
                         )
                     )
@@ -109,6 +117,19 @@ class DiscoverMoviesViewModel @Inject constructor(
             state.value = state.value.copy(
                 movieDetailsState = state.value.movieDetailsState.copy(
                     movieId = movieId
+                )
+            )
+            state
+        }
+    }
+
+    fun setLoadingState(loadingState: LoadingState) = intent {
+        reduce {
+            state.value = state.value.copy(
+                homeState = state.value.homeState.copy(
+                    discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
+                        loadingState = loadingState
+                    )
                 )
             )
             state

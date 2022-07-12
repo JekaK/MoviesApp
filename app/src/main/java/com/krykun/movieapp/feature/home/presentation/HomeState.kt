@@ -5,6 +5,6 @@ import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesState
 
 data class HomeState(
     val isOpen: Boolean = false,
-    val upcomingMoviesState: DiscoverMoviesState = DiscoverMoviesState(),
+    val discoverMoviesState: DiscoverMoviesState = DiscoverMoviesState(),
     val trendingMoviesState: TrendingMoviesState = TrendingMoviesState()
 )
