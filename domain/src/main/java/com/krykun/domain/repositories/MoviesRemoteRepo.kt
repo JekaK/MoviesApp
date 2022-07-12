@@ -6,6 +6,7 @@ import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.model.castdetails.CastDetails
 import com.krykun.domain.model.moviedetails.MovieDetails
 import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.model.search.SearchItem
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteRepo {
@@ -33,4 +34,9 @@ interface MoviesRemoteRepo {
     fun getTopRatedMovies(
         genres: List<Genre>,
     ): Flow<PagingData<Movie>>
+
+    fun makeSearch(
+        query: String,
+        genres: List<Genre>,
+    ): Flow<PagingData<SearchItem>>
 }

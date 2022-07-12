@@ -18,6 +18,8 @@ import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewMod
 import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
 import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
+import com.krykun.movieapp.feature.search.presentation.SearchViewModel
+import com.krykun.movieapp.feature.search.view.SearchView
 
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMotionApi::class)
@@ -25,10 +27,11 @@ import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
 fun MainNavigation(
     navController: NavHostController
 ) {
-    val viewModel: HomeMoviesViewModel = hiltViewModel()
+    val homeViewModel: HomeMoviesViewModel = hiltViewModel()
     val discoverMoviesViewModel: DiscoverMoviesViewModel = hiltViewModel()
     val splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
     val trendingViewModel: TrendingViewModel = hiltViewModel()
+    val searchViewModel: SearchViewModel = hiltViewModel()
 
     AnimatedNavHost(
         navController = navController,
@@ -44,14 +47,14 @@ fun MainNavigation(
         }
         composable(route = Screen.Discover().route) {
             DiscoverView(
-                viewModel = viewModel,
+                viewModel = homeViewModel,
                 discoverMoviesViewModel = discoverMoviesViewModel,
                 trendingViewModel = trendingViewModel,
                 navHostController = navController
             )
         }
         composable(route = Screen.Search().route) {
-            EmptyView()
+            SearchView(viewModel = searchViewModel)
         }
         composable(route = Screen.Favourite().route) {
             EmptyView()

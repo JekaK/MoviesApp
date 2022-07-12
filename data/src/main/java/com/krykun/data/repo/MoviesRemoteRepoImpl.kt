@@ -8,11 +8,13 @@ import com.krykun.data.mappers.DiscoverMoviesMapper.toMovieDiscoverItem
 import com.krykun.data.mappers.GenresMapper.toGenre
 import com.krykun.data.mappers.MovieDetailMapper.toMovieDetails
 import com.krykun.data.mappers.MoviesMapper.toMovie
+import com.krykun.data.mappers.SearchMapper.toSearchItem
 import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.model.castdetails.CastDetails
 import com.krykun.domain.model.moviedetails.MovieDetails
 import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.model.search.SearchItem
 import com.krykun.domain.repositories.MoviesRemoteRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -81,6 +83,14 @@ class MoviesRemoteRepoImpl @Inject constructor(
         return remoteDataSource.getTopRatedMovies().map {
             it.map { movieItem ->
                 movieItem.toMovie(genres)
+            }
+        }
+    }
+
+    override fun makeSearch(query: String, genres: List<Genre>): Flow<PagingData<SearchItem>> {
+        return remoteDataSource.makeSearch(query).map {
+            it.map { searchItem ->
+                searchItem.toSearchItem(genres)
             }
         }
     }

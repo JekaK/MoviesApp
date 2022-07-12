@@ -5,14 +5,16 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.krykun.data.api.ApiService
 import com.krykun.data.datasource.MoviesRemoteDataSource
-import com.krykun.data.datasource.impl.pagingsource.PopularMoviesMoviesPagingSource
-import com.krykun.data.datasource.impl.pagingsource.TopRatedMoviesMoviesPagingSource
+import com.krykun.data.datasource.impl.pagingsource.PopularMoviesPagingSource
+import com.krykun.data.datasource.impl.pagingsource.SearchPagingSource
+import com.krykun.data.datasource.impl.pagingsource.TopRatedMoviesPagingSource
 import com.krykun.data.datasource.impl.pagingsource.TrendingMoviesPagingSource
 import com.krykun.data.model.castdetails.CastDetailsResponse
 import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
+import com.krykun.data.model.search.SearchItem
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -77,7 +79,7 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
-                PopularMoviesMoviesPagingSource(
+                PopularMoviesPagingSource(
                     apiService = apiService,
                 )
             }
@@ -88,7 +90,19 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
-                TopRatedMoviesMoviesPagingSource(
+                TopRatedMoviesPagingSource(
+                    apiService = apiService,
+                )
+            }
+        ).flow
+    }
+
+    override fun makeSearch(query: String): Flow<PagingData<SearchItem>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                SearchPagingSource(
+                    query = query,
                     apiService = apiService,
                 )
             }

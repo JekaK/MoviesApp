@@ -6,6 +6,7 @@ import com.krykun.data.model.genre.GenresResponse
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
+import com.krykun.data.model.search.SearchItem
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -44,4 +45,11 @@ interface ApiService {
     suspend fun getTopRatedMovies(
         @Query("page") page: Int = 0,
     ): BasicMoviesResponse<MovieItemResponse>
+
+    @GET("search/multi")
+    suspend fun search(
+        @Query("query") query: String,
+        @Query("page") page: Int = 0,
+        @Query("include_adult") includeAdult: Boolean = true,
+    ): BasicMoviesResponse<SearchItem>
 }

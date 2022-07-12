@@ -6,6 +6,7 @@ import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
+import com.krykun.data.model.search.SearchItem
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRemoteDataSource {
@@ -27,4 +28,6 @@ interface MoviesRemoteDataSource {
     fun getPopularMovies(): Flow<PagingData<MovieItemResponse>>
 
     fun getTopRatedMovies(): Flow<PagingData<MovieItemResponse>>
+
+    fun makeSearch(query: String): Flow<PagingData<SearchItem>>
 }

@@ -51,11 +51,10 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
-    fun subscribeToStateUpdate() =
-        container.stateFlow.value
-            .takeWhenChanged {
-                it.homeState.discoverMoviesState
-            }
+    fun subscribeToStateUpdate() = container.stateFlow.value
+        .takeWhenChanged {
+            it.homeState.discoverMoviesState
+        }
 
     fun setScrollOffset(scrollOffset: Float) = intent {
         reduce {

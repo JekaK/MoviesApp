@@ -5,14 +5,14 @@ import androidx.paging.PagingState
 import com.krykun.data.api.ApiService
 import com.krykun.data.model.movies.MovieItemResponse
 
-class TopRatedMoviesMoviesPagingSource(
+class PopularMoviesPagingSource(
     private val apiService: ApiService,
 ) : PagingSource<Int, MovieItemResponse>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieItemResponse> {
         try {
             val nextPageNumber = params.key ?: 1
-            val response = apiService.getTopRatedMovies(
+            val response = apiService.getPopularMovies(
                 page = nextPageNumber,
             )
             return LoadResult.Page(
