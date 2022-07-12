@@ -16,7 +16,7 @@ import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun MovieItemView(searchItem: SearchItem) {
+fun SearchItemView(searchItem: SearchItem) {
     Column(
         modifier = Modifier.size(
             width = 128.dp,
@@ -27,7 +27,7 @@ fun MovieItemView(searchItem: SearchItem) {
             imageModel = Constants.IMAGE_BASE_URL + searchItem.posterPath,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Crop,
             circularReveal = CircularReveal(duration = 350),
             placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
             error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),

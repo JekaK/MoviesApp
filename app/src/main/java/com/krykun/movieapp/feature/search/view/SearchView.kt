@@ -70,7 +70,7 @@ fun SearchView(viewModel: SearchViewModel) {
             ) {
                 items(popularMovies?.itemCount ?: 0) { index ->
                     Box(Modifier.padding(8.dp)) {
-                        popularMovies?.get(index)?.let { MovieItemView(it) }
+                        popularMovies?.get(index)?.let { SearchItemView(it) }
                     }
                 }
             }
