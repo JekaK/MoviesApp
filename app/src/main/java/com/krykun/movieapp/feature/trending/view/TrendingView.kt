@@ -85,8 +85,9 @@ fun TrendingView(
             selectedIndex = movieTypeList.indexOf(movieTypeList.find {
                 selectedMovieType.value.title == it.title
             }),
-            viewModel = viewModel
-        )
+        ) {
+            viewModel.setSelectedMovieType(it)
+        }
         Spacer(modifier = Modifier.height(16.dp))
         if (!showLoading.value) {
             when (selectedMovieType.value) {

@@ -99,14 +99,13 @@ class TrendingViewModel @Inject constructor(
         )
     }
 
-    fun setSelectedMovieType(
+    private fun updateSelectedMovie(
+        state: AppState,
         selectedMovieType: SelectedMovieType,
-        isSelecting: Boolean = true
-    ) = intent {
+    ): SelectedMovieType {
         val selectedMovie: SelectedMovieType = when (selectedMovieType) {
             is SelectedMovieType.TRENDING -> {
-                val currentMovieType =
-                    state.value.homeState.trendingMoviesState.trendingMovieType
+                val currentMovieType = state.homeState.trendingMoviesState.trendingMovieType
                 if (currentMovieType.loadingState == LoadingState.STATIONARY) {
                     selectedMovieType.copy(loadingState = currentMovieType.loadingState)
                 } else {
@@ -114,8 +113,7 @@ class TrendingViewModel @Inject constructor(
                 }
             }
             is SelectedMovieType.POPULAR -> {
-                val currentMovieType =
-                    state.value.homeState.trendingMoviesState.popularMovieType
+                val currentMovieType = state.homeState.trendingMoviesState.popularMovieType
                 if (currentMovieType.loadingState == LoadingState.STATIONARY) {
                     selectedMovieType.copy(loadingState = currentMovieType.loadingState)
                 } else {
@@ -123,8 +121,7 @@ class TrendingViewModel @Inject constructor(
                 }
             }
             is SelectedMovieType.TOPRATED -> {
-                val currentMovieType =
-                    state.value.homeState.trendingMoviesState.topRatedMovieType
+                val currentMovieType = state.homeState.trendingMoviesState.topRatedMovieType
                 if (currentMovieType.loadingState == LoadingState.STATIONARY) {
                     selectedMovieType.copy(loadingState = currentMovieType.loadingState)
                 } else {
@@ -132,6 +129,14 @@ class TrendingViewModel @Inject constructor(
                 }
             }
         }
+        return selectedMovie
+    }
+
+    fun setSelectedMovieType(
+        selectedMovieType: SelectedMovieType,
+        isSelecting: Boolean = true
+    ) = intent {
+        val selectedMovie: SelectedMovieType = updateSelectedMovie(state.value, selectedMovieType)
 
         if (selectedMovie is SelectedMovieType.TRENDING) {
             if (isSelecting &&
