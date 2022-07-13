@@ -1,4 +1,4 @@
-package com.krykun.data.model.castdetails
+package com.krykun.data.model.moviecastdetails
 
 import com.google.gson.annotations.SerializedName
 

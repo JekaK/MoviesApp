@@ -9,12 +9,14 @@ import com.krykun.data.datasource.impl.pagingsource.PopularMoviesPagingSource
 import com.krykun.data.datasource.impl.pagingsource.SearchPagingSource
 import com.krykun.data.datasource.impl.pagingsource.TopRatedMoviesPagingSource
 import com.krykun.data.datasource.impl.pagingsource.TrendingMoviesPagingSource
-import com.krykun.data.model.castdetails.CastDetailsResponse
+import com.krykun.data.model.moviecastdetails.CastDetailsResponse
 import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
 import com.krykun.data.model.search.SearchItem
+import com.krykun.data.model.tvcastdetails.TvCastDetailsResponse
+import com.krykun.data.model.tvdetails.TvDetailsResponse
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -55,8 +57,26 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCastDetails(movieId: Int): Result<CastDetailsResponse> {
-        val result = apiService.getCastDetails(movieId)
+    override suspend fun getTvDetails(movieId: Int): Result<TvDetailsResponse> {
+        val result = apiService.getTvDetails(movieId)
+        return if (result.isSuccessful) {
+            Result.success(result.body()!!)
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
+    }
+
+    override suspend fun getMovieCastDetails(movieId: Int): Result<CastDetailsResponse> {
+        val result = apiService.getMovieCastDetails(movieId)
+        return if (result.isSuccessful) {
+            Result.success(result.body()!!)
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
+    }
+
+    override suspend fun getTvCastDetails(movieId: Int): Result<TvCastDetailsResponse> {
+        val result = apiService.getTvCastDetails(movieId)
         return if (result.isSuccessful) {
             Result.success(result.body()!!)
         } else {

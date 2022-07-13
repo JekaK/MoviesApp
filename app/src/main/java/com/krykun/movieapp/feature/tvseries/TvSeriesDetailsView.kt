@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.moviedetails
+package com.krykun.movieapp.feature.tvseries
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -42,12 +42,12 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.moviecastdetails.Cast
-import com.krykun.domain.model.moviecastdetails.Crew
-import com.krykun.domain.model.moviedetails.MovieDetails
+import com.krykun.domain.model.tvcastdetails.Cast
+import com.krykun.domain.model.tvcastdetails.Crew
+import com.krykun.domain.model.tvdetails.TvDetails
 import com.krykun.movieapp.R
-import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
-import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
+import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsSideEffects
+import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsViewModel
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
@@ -59,13 +59,13 @@ import java.util.*
 
 @ExperimentalMotionApi
 @Composable
-fun MovieDetailsView(
-    viewModel: MovieDetailsViewModel = hiltViewModel(),
+fun TvSeriesDetailsView(
+    viewModel: TvSeriesDetailsViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
 
     val movieData = remember {
-        mutableStateOf<MovieDetails?>(null)
+        mutableStateOf<TvDetails?>(null)
     }
     val movieDetailsState = remember {
         mutableStateOf(MovieDetailsState.LOADING)
@@ -81,7 +81,7 @@ fun MovieDetailsView(
                 LoadingView()
             }
             MovieDetailsState.DEFAULT -> {
-                MovieDetailsView(
+                TvSeriesDetailsView(
                     movieData = movieData,
                     navHostController = navHostController,
                     isRatingVisible = isRatingVisible
@@ -112,8 +112,8 @@ enum class MovieDetailsState {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MovieDetailsView(
-    movieData: MutableState<MovieDetails?>,
+private fun TvSeriesDetailsView(
+    movieData: MutableState<TvDetails?>,
     navHostController: NavHostController,
     isRatingVisible: MutableState<Boolean>
 ) {
@@ -216,9 +216,9 @@ private fun MovieDetailsView(
 }
 
 @Composable
-fun TitleView(movieData: MutableState<MovieDetails?>) {
+fun TitleView(movieData: MutableState<TvDetails?>) {
     Text(
-        text = movieData.value?.originalTitle ?: "",
+        text = movieData.value?.originalName ?: "",
         fontWeight = FontWeight.Bold,
         color = Color.White,
         fontSize = 24.sp
@@ -226,10 +226,10 @@ fun TitleView(movieData: MutableState<MovieDetails?>) {
     Spacer(modifier = Modifier.height(16.dp))
     Row {
         Text(
-            text = if (movieData.value?.releaseDate?.isNotEmpty() == true) {
+            text = if (movieData.value?.firstAirDate?.isNotEmpty() == true) {
                 val calendar = Calendar.getInstance(TimeZone.getDefault())
                 calendar.time = SimpleDateFormat("yyyy-MM-dd").parse(
-                    movieData.value?.releaseDate ?: ""
+                    movieData.value?.firstAirDate ?: ""
                 )
                 calendar.get(Calendar.YEAR).toString()
             } else {
@@ -238,10 +238,10 @@ fun TitleView(movieData: MutableState<MovieDetails?>) {
             color = colorResource(id = R.color.light_gray_color),
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = "${movieData.value?.runtime?.toString() ?: ""} min",
-            color = Color.LightGray,
-        )
+//        Text(
+//            text = "${movieData.value?.runtime?.toString() ?: ""} min",
+//            color = Color.LightGray,
+//        )
     }
     Spacer(modifier = Modifier.height(24.dp))
 }
@@ -349,7 +349,7 @@ fun HeaderView(backdropPath: String) {
 fun RatingView(
     isRatingVisible: MutableState<Boolean>,
     screenWidth: Dp,
-    movieData: MutableState<MovieDetails?>
+    movieData: MutableState<TvDetails?>
 ) {
     AnimatedVisibility(
         visible = isRatingVisible.value,
@@ -496,23 +496,23 @@ private fun BackBtn(navHostController: NavHostController) {
 }
 
 fun handleSideEffects(
-    sideEffects: MovieDetailsSideEffects,
-    movieData: MutableState<MovieDetails?>,
+    sideEffects: TvSeriesDetailsSideEffects,
+    movieData: MutableState<TvDetails?>,
     isRatingVisible: MutableState<Boolean>,
     movieDetailsState: MutableState<MovieDetailsState>,
     scope: CoroutineScope,
 ) {
     when (sideEffects) {
-        is MovieDetailsSideEffects.ShowLoadingState -> {
+        is TvSeriesDetailsSideEffects.ShowLoadingState -> {
             movieDetailsState.value =
                 MovieDetailsState.LOADING
         }
-        is MovieDetailsSideEffects.ShowErrorState -> {
+        is TvSeriesDetailsSideEffects.ShowErrorState -> {
             movieDetailsState.value =
                 MovieDetailsState.ERROR
         }
-        is MovieDetailsSideEffects.ShowMovieData -> {
-            movieData.value = sideEffects.movieDetails
+        is TvSeriesDetailsSideEffects.ShowMovieData -> {
+            movieData.value = sideEffects.tvDetails
             movieDetailsState.value = MovieDetailsState.DEFAULT
             scope.launch {
                 delay(300)

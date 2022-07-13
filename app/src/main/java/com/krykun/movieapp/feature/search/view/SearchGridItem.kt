@@ -1,6 +1,7 @@
 package com.krykun.movieapp.feature.search.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,22 +24,35 @@ import com.krykun.data.util.Constants
 import com.krykun.domain.model.search.MediaType
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.movieapp.R
+import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun SearchItemView(searchItem: SearchItem) {
+fun SearchItemView(
+    searchItem: SearchItem,
+    viewModel: SearchViewModel
+) {
     when (searchItem.mediaType) {
-        MediaType.MOVIE -> MovieView(searchItem = searchItem)
-        MediaType.PERSON -> PersonView(searchItem = searchItem)
-        MediaType.TV -> TvSeriesView(searchItem = searchItem)
+        MediaType.MOVIE -> MovieView(modifier = Modifier.clickable {
+            searchItem.id?.let { viewModel.navigateToMovie(it) }
+        }, searchItem = searchItem)
+        MediaType.PERSON -> PersonView(modifier = Modifier.clickable {
+
+        }, searchItem = searchItem)
+        MediaType.TV -> TvSeriesView(modifier = Modifier.clickable {
+            searchItem.id?.let { viewModel.navigateToTvState(it) }
+        }, searchItem = searchItem)
     }
 }
 
 @Composable
-fun MovieView(searchItem: SearchItem) {
+fun MovieView(
+    modifier: Modifier = Modifier,
+    searchItem: SearchItem
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .background(colorResource(id = R.color.container_background))
@@ -97,9 +111,12 @@ fun MovieView(searchItem: SearchItem) {
 }
 
 @Composable
-fun TvSeriesView(searchItem: SearchItem) {
+fun TvSeriesView(
+    modifier: Modifier = Modifier,
+    searchItem: SearchItem
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .background(colorResource(id = R.color.container_background))
@@ -157,9 +174,12 @@ fun TvSeriesView(searchItem: SearchItem) {
 }
 
 @Composable
-fun PersonView(searchItem: SearchItem) {
+fun PersonView(
+    modifier: Modifier = Modifier,
+    searchItem: SearchItem
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .height(200.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,

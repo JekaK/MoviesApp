@@ -7,6 +7,8 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.domain.usecase.MakeSearchUseCase
+import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
+import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -73,6 +75,26 @@ class SearchViewModel @Inject constructor(
             state
         }
         postSideEffect(SearchSideEffects.SetIsLoading(isLoading = isLoading))
+    }
+
+    fun navigateToMovie(id: Int) = intent {
+        reduce {
+            state.value = state.value.copy(
+                movieDetailsState = MovieDetailsState(movieId = id)
+            )
+            state
+        }
+        postSideEffect(SearchSideEffects.NavigateToMovie)
+    }
+
+    fun navigateToTvState(id: Int) = intent {
+        reduce {
+            state.value = state.value.copy(
+                tvSeriesState = TvSeriesDetailsState(tvId = id)
+            )
+            state
+        }
+        postSideEffect(SearchSideEffects.NavigateToTvSeries)
     }
 
     fun handleLoadSearchItemsState(loadStates: LoadStates) = intent {

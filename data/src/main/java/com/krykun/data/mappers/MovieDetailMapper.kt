@@ -1,6 +1,10 @@
 package com.krykun.data.mappers
 
+import com.krykun.data.model.moviecastdetails.CastDetailsResponse
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
+import com.krykun.domain.model.moviecastdetails.Cast
+import com.krykun.domain.model.moviecastdetails.CastDetails
+import com.krykun.domain.model.moviecastdetails.Crew
 import com.krykun.domain.model.moviedetails.*
 
 object MovieDetailMapper {
@@ -59,6 +63,41 @@ object MovieDetailMapper {
             video = video,
             voteAverage = voteAverage,
             voteCount = voteCount,
+        )
+    }
+
+    fun CastDetailsResponse.toCastDetails(): CastDetails {
+        return CastDetails(
+            castAndCrew = cast?.map {
+                Cast(
+                    adult = it?.adult,
+                    castId = it?.castId,
+                    character = it?.character,
+                    creditId = it?.creditId,
+                    gender = it?.gender,
+                    id = it?.id,
+                    knownForDepartment = it?.knownForDepartment,
+                    name = it?.name,
+                    order = it?.order,
+                    originalName = it?.originalName,
+                    popularity = it?.popularity,
+                    profilePath = it?.profilePath,
+                )
+            } ?: (listOf<Cast>() + crew?.map {
+                Crew(
+                    adult = it?.adult,
+                    creditId = it?.creditId,
+                    department = it?.department,
+                    gender = it?.gender,
+                    id = it?.id,
+                    job = it?.job,
+                    knownForDepartment = it?.knownForDepartment,
+                    name = it?.name,
+                    originalName = it?.originalName,
+                    popularity = it?.popularity,
+                    profilePath = it?.profilePath,
+                )
+            })
         )
     }
 }

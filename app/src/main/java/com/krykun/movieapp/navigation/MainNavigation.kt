@@ -13,11 +13,12 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
 import com.krykun.movieapp.feature.home.view.DiscoverView
-import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
+import com.krykun.movieapp.feature.tvseries.TvSeriesDetailsView
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewModel
 import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
 import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
+import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.feature.search.view.SearchView
 
@@ -54,7 +55,10 @@ fun MainNavigation(
             )
         }
         composable(route = Screen.Search().route) {
-            SearchView(viewModel = searchViewModel)
+            SearchView(
+                viewModel = searchViewModel,
+                navHostController = navController
+            )
         }
         composable(route = Screen.Favourite().route) {
             EmptyView()
@@ -63,6 +67,11 @@ fun MainNavigation(
             route = Screen.MovieDetails().route,
         ) {
             MovieDetailsView(navHostController = navController)
+        }
+        composable(
+            route = Screen.TvSeriesDetails().route,
+        ) {
+            TvSeriesDetailsView(navHostController = navController)
         }
     }
 }

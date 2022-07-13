@@ -1,12 +1,16 @@
 package com.krykun.data.api
 
 import com.krykun.data.model.BasicMoviesResponse
-import com.krykun.data.model.castdetails.CastDetailsResponse
+import com.krykun.data.model.moviecastdetails.CastDetailsResponse
 import com.krykun.data.model.genre.GenresResponse
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
 import com.krykun.data.model.search.SearchItem
+import com.krykun.data.model.tvcastdetails.TvCastDetailsResponse
+import com.krykun.data.model.tvdetails.TvDetailsResponse
+import com.krykun.domain.model.tvcastdetails.TvCastDetails
+import com.krykun.domain.model.tvdetails.TvDetails
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -29,7 +33,13 @@ interface ApiService {
     suspend fun getMovieDetails(@Path("id") movieId: Int): Response<MovieDetailsResponse>
 
     @GET("movie/{id}/credits")
-    suspend fun getCastDetails(@Path("id") movieId: Int): Response<CastDetailsResponse>
+    suspend fun getMovieCastDetails(@Path("id") movieId: Int): Response<CastDetailsResponse>
+
+    @GET("tv/{id}")
+    suspend fun getTvDetails(@Path("id") movieId: Int): Response<TvDetailsResponse>
+
+    @GET("tv/{id}/credits")
+    suspend fun getTvCastDetails(@Path("id") movieId: Int): Response<TvCastDetailsResponse>
 
     @GET("trending/movie/week")
     suspend fun getTrendingMovies(

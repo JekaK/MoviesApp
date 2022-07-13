@@ -1,7 +1,6 @@
 package com.krykun.domain.model.moviedetails
 
-import com.krykun.domain.model.castdetails.Cast
-import com.krykun.domain.model.castdetails.CastDetails
+import com.krykun.domain.model.moviecastdetails.CastDetails
 
 
 data class MovieDetails(

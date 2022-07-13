@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.airbnb.lottie.compose.LottieAnimation
@@ -43,11 +44,15 @@ import com.krykun.movieapp.ext.clearFocusOnKeyboardDismiss
 import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
+import com.krykun.movieapp.navigation.Screen
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 
 @Composable
-fun SearchView(viewModel: SearchViewModel) {
+fun SearchView(
+    viewModel: SearchViewModel,
+    navHostController: NavHostController
+) {
 
     var searchResults: LazyPagingItems<SearchItem>? =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
@@ -74,7 +79,8 @@ fun SearchView(viewModel: SearchViewModel) {
             it,
             markIsModified,
             searchResults,
-            isLoading
+            isLoading,
+            navHostController
         )
     }
 
@@ -97,7 +103,7 @@ fun SearchView(viewModel: SearchViewModel) {
                 ) {
                     items(searchResults?.itemCount ?: 0) { index ->
                         Box(Modifier.padding(8.dp)) {
-                            searchResults?.get(index)?.let { SearchItemView(it) }
+                            searchResults?.get(index)?.let { SearchItemView(it, viewModel) }
                         }
                     }
                 }
@@ -142,25 +148,6 @@ fun Loader(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(start = 24.dp, end = 24.dp)
         )
-    }
-}
-
-private fun handleSideEffects(
-    sideEffects: SearchSideEffects,
-    markIsModified: MutableState<Boolean>,
-    searchResults: LazyPagingItems<SearchItem>?,
-    isLoading: MutableState<Boolean>
-) {
-    when (sideEffects) {
-        is SearchSideEffects.TryReloadTrendingPage -> {
-            searchResults?.retry()
-        }
-        is SearchSideEffects.UpdateSearchResult -> {
-            markIsModified.value = true
-        }
-        is SearchSideEffects.SetIsLoading -> {
-            isLoading.value = sideEffects.isLoading
-        }
     }
 }
 
@@ -255,6 +242,32 @@ fun SearchBar(
                         .clearFocusOnKeyboardDismiss()
                 )
             }
+        }
+    }
+}
+
+private fun handleSideEffects(
+    sideEffects: SearchSideEffects,
+    markIsModified: MutableState<Boolean>,
+    searchResults: LazyPagingItems<SearchItem>?,
+    isLoading: MutableState<Boolean>,
+    navHostController: NavHostController
+) {
+    when (sideEffects) {
+        is SearchSideEffects.TryReloadTrendingPage -> {
+            searchResults?.retry()
+        }
+        is SearchSideEffects.UpdateSearchResult -> {
+            markIsModified.value = true
+        }
+        is SearchSideEffects.SetIsLoading -> {
+            isLoading.value = sideEffects.isLoading
+        }
+        is SearchSideEffects.NavigateToMovie -> {
+            navHostController.navigate(Screen.MovieDetails().route)
+        }
+        is SearchSideEffects.NavigateToTvSeries -> {
+            navHostController.navigate(Screen.TvSeriesDetails().route)
         }
     }
 }
