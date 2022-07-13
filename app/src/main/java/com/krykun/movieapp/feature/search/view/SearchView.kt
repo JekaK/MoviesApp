@@ -18,15 +18,24 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.custom.EmptyTextToolbar
@@ -36,17 +45,27 @@ import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+
 @Composable
 fun SearchView(viewModel: SearchViewModel) {
 
-    var popularMovies: LazyPagingItems<SearchItem>? =
+    var searchResults: LazyPagingItems<SearchItem>? =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
+
+    val queryIsEmpty = remember {
+        mutableStateOf(false)
+    }
+
     val markIsModified = remember {
         mutableStateOf(false)
     }
+    val isLoading = remember {
+        mutableStateOf(false)
+    }
+
     if (markIsModified.value) {
         markIsModified.value = false
-        popularMovies =
+        searchResults =
             viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
     }
 
@@ -54,41 +73,93 @@ fun SearchView(viewModel: SearchViewModel) {
         handleSideEffects(
             it,
             markIsModified,
-            popularMovies
+            searchResults,
+            isLoading
         )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            SearchBar(viewModel = viewModel)
-            LazyVerticalGrid(
-                modifier = Modifier.fillMaxSize(),
-                columns = GridCells.Adaptive(minSize = 128.dp)
-            ) {
-                items(popularMovies?.itemCount ?: 0) { index ->
-                    Box(Modifier.padding(8.dp)) {
-                        popularMovies?.get(index)?.let { SearchItemView(it) }
+            SearchBar(
+                queryIsEmpty = queryIsEmpty,
+                viewModel = viewModel
+            )
+            if (isLoading.value) {
+                LoadingView()
+            } else {
+                LazyVerticalGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = GridCells.Adaptive(minSize = 128.dp)
+                ) {
+                    items(searchResults?.itemCount ?: 0) { index ->
+                        Box(Modifier.padding(8.dp)) {
+                            searchResults?.get(index)?.let { SearchItemView(it) }
+                        }
                     }
                 }
             }
         }
+        if (searchResults?.itemCount == 0 && !isLoading.value) {
+            Loader(modifier = Modifier.align(Alignment.Center))
+        }
+    }
+
+    LaunchedEffect(key1 = searchResults?.loadState?.refresh) {
+        if (searchResults?.loadState?.refresh is LoadState.NotLoading) {
+            viewModel.setIsLoading(false)
+        } else if (searchResults?.loadState?.refresh is LoadState.Loading) {
+            if (queryIsEmpty.value) {
+                viewModel.setIsLoading(true)
+            }
+        }
+    }
+}
+
+@Composable
+fun Loader(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.search))
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier.size(200.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.make_search),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp)
+        )
     }
 }
 
 private fun handleSideEffects(
     sideEffects: SearchSideEffects,
     markIsModified: MutableState<Boolean>,
-    popularMovies: LazyPagingItems<SearchItem>?
+    searchResults: LazyPagingItems<SearchItem>?,
+    isLoading: MutableState<Boolean>
 ) {
     when (sideEffects) {
-        SearchSideEffects.TryReloadTrendingPage -> {
-            popularMovies?.retry()
+        is SearchSideEffects.TryReloadTrendingPage -> {
+            searchResults?.retry()
         }
-        SearchSideEffects.UpdateSearchResult -> {
+        is SearchSideEffects.UpdateSearchResult -> {
             markIsModified.value = true
+        }
+        is SearchSideEffects.SetIsLoading -> {
+            isLoading.value = sideEffects.isLoading
         }
     }
 }
@@ -96,11 +167,11 @@ private fun handleSideEffects(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier,
+    queryIsEmpty: MutableState<Boolean>,
     viewModel: SearchViewModel,
 ) {
     Card(
-        modifier = modifier.padding(
+        modifier = Modifier.padding(
             start = 16.dp,
             end = 16.dp,
             top = 16.dp
@@ -129,9 +200,8 @@ fun SearchBar(
                     value = query,
                     onValueChange = { onQueryChanged ->
                         query = onQueryChanged
-                        if (onQueryChanged.isNotEmpty()) {
-                            viewModel.updateText(query)
-                        }
+                        queryIsEmpty.value = query.isEmpty()
+                        viewModel.updateText(query)
                     },
                     leadingIcon = {
                         Icon(
@@ -148,6 +218,8 @@ fun SearchBar(
                         ) {
                             IconButton(onClick = {
                                 query = ""
+                                queryIsEmpty.value = query.isEmpty()
+                                viewModel.updateText(query)
                             }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,

@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.home.view.upcoming
+package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

@@ -42,7 +42,6 @@ import com.krykun.movieapp.ext.lerp
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
 import com.krykun.movieapp.feature.discover.presentation.LoadingState
-import com.krykun.movieapp.feature.home.view.upcoming.DiscoverItemView
 import com.krykun.movieapp.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

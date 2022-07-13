@@ -7,7 +7,6 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.domain.usecase.MakeSearchUseCase
-import com.krykun.movieapp.feature.trending.presentation.TrendingMoviesSideEffects
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -21,6 +20,7 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,7 +39,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             @OptIn(FlowPreview::class)
             _text.debounce(1000)
-                .collect{
+                .collect {
                     makeSearch(it)
                 }
         }
@@ -63,6 +63,18 @@ class SearchViewModel @Inject constructor(
         postSideEffect(SearchSideEffects.UpdateSearchResult)
     }
 
+    fun setIsLoading(isLoading: Boolean) = intent {
+        reduce {
+            state.value = state.value.copy(
+                searchState = state.value.searchState.copy(
+                    isLoading = isLoading
+                )
+            )
+            state
+        }
+        postSideEffect(SearchSideEffects.SetIsLoading(isLoading = isLoading))
+    }
+
     fun handleLoadSearchItemsState(loadStates: LoadStates) = intent {
         val errorLoadState = arrayOf(
             loadStates.append,
@@ -70,8 +82,15 @@ class SearchViewModel @Inject constructor(
             loadStates.refresh
         ).filterIsInstance(LoadState.Error::class.java).firstOrNull()
         val throwable = errorLoadState?.error
-        if (throwable != null) {
+        if (throwable != null &&
+            (throwable as HttpException).code() != 422
+        ) {
             postSideEffect(SearchSideEffects.TryReloadTrendingPage)
+        }
+        if (throwable != null &&
+            (throwable as HttpException).code() == 422
+        ) {
+            setIsLoading(false)
         }
     }
 

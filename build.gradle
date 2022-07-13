@@ -23,6 +23,7 @@ buildscript {
         constraint_compose_version = "1.0.1"
         paging_version = "3.1.1"
         paging_compose_version = "1.0.0-alpha15"
+        lottieVersion = "5.2.0"
     }
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.38.1'

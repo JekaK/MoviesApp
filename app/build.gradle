@@ -87,7 +87,6 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:$accompanist_pager_version"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_pager_version"
 
-    implementation("io.coil-kt:coil-compose:2.1.0")
 
     implementation "com.google.accompanist:accompanist-insets:$accompanist_incets_version"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_animation_navigation_version"
@@ -95,7 +94,11 @@ dependencies {
 
     implementation "androidx.paging:paging-runtime:$paging_version"
     implementation "androidx.paging:paging-compose:$paging_compose_version"
+
+    implementation("io.coil-kt:coil-compose:2.1.0")
     implementation "com.github.skydoves:landscapist-coil:1.5.2"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+    implementation "com.airbnb.android:lottie-compose:$lottieVersion"
 
     implementation project(':domain')
     implementation project(':data')
