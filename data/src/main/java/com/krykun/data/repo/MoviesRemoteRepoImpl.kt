@@ -53,6 +53,14 @@ class MoviesRemoteRepoImpl @Inject constructor(
         }
     }
 
+    override suspend fun getTvGenres(): Result<List<Genre>> {
+        return remoteDataSource.getTvGenres().map {
+            it.map {
+                it.toGenre()
+            }
+        }
+    }
+
     override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails> {
         return remoteDataSource.getMovieDetails(movieId).map {
             it.toMovieDetails()

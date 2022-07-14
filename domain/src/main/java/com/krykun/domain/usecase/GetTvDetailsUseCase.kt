@@ -5,9 +5,5 @@ import javax.inject.Inject
 
 class GetTvDetailsUseCase @Inject constructor(private val moviesRemoteRepo: MoviesRemoteRepo) {
 
-    suspend fun getTvDetails(
-        tvId: Int
-    ) = moviesRemoteRepo.getTvDetails(
-        tvId = tvId,
-    )
+    suspend fun getTvDetails(tvId: Int) = moviesRemoteRepo.getTvDetails(tvId = tvId)
 }

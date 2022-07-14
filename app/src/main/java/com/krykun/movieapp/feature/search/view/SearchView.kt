@@ -48,10 +48,12 @@ import com.krykun.movieapp.navigation.Screen
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchView(
     viewModel: SearchViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    innerPadding: PaddingValues
 ) {
 
     var searchResults: LazyPagingItems<SearchItem>? =
@@ -83,34 +85,40 @@ fun SearchView(
             navHostController
         )
     }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-
-        Column(
+    CompositionLocalProvider(
+        LocalOverScrollConfiguration provides null
+    ) {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
-            SearchBar(
-                queryIsEmpty = queryIsEmpty,
-                viewModel = viewModel
-            )
-            if (isLoading.value) {
-                LoadingView()
-            } else {
-                LazyVerticalGrid(
-                    modifier = Modifier.fillMaxSize(),
-                    columns = GridCells.Adaptive(minSize = 128.dp)
-                ) {
-                    items(searchResults?.itemCount ?: 0) { index ->
-                        Box(Modifier.padding(8.dp)) {
-                            searchResults?.get(index)?.let { SearchItemView(it, viewModel) }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                SearchBar(
+                    queryIsEmpty = queryIsEmpty,
+                    viewModel = viewModel
+                )
+                if (isLoading.value) {
+                    LoadingView()
+                } else {
+                    LazyVerticalGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = GridCells.Adaptive(minSize = 128.dp)
+                    ) {
+                        items(searchResults?.itemCount ?: 0) { index ->
+                            Box(Modifier.padding(8.dp)) {
+                                searchResults?.get(index)?.let { SearchItemView(it, viewModel) }
+                            }
                         }
                     }
                 }
             }
-        }
-        if (searchResults?.itemCount == 0 && !isLoading.value) {
-            Loader(modifier = Modifier.align(Alignment.Center))
+            if (searchResults?.itemCount == 0 && !isLoading.value) {
+                Loader(modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 

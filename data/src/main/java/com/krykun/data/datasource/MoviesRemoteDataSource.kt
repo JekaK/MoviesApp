@@ -22,6 +22,8 @@ interface MoviesRemoteDataSource {
 
     suspend fun getGenres(): Result<List<Genre>>
 
+    suspend fun getTvGenres(): Result<List<Genre>>
+
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetailsResponse>
 
     suspend fun getTvDetails(movieId: Int): Result<TvDetailsResponse>

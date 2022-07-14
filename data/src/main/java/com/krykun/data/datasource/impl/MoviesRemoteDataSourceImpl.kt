@@ -48,6 +48,15 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getTvGenres(): Result<List<Genre>> {
+        val result = apiService.getTvGenres()
+        return if (result.isSuccessful) {
+            Result.success(result.body()?.genres ?: listOf())
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
+    }
+
     override suspend fun getMovieDetails(movieId: Int): Result<MovieDetailsResponse> {
         val result = apiService.getMovieDetails(movieId)
         return if (result.isSuccessful) {

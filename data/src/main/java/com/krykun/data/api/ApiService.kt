@@ -29,6 +29,9 @@ interface ApiService {
     @GET("genre/movie/list")
     suspend fun getGenres(): Response<GenresResponse>
 
+    @GET("genre/tv/list")
+    suspend fun getTvGenres(): Response<GenresResponse>
+
     @GET("movie/{id}")
     suspend fun getMovieDetails(@Path("id") movieId: Int): Response<MovieDetailsResponse>
 

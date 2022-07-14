@@ -79,6 +79,7 @@ fun MainView(
         ) {
             MainNavigation(
                 navController = navController,
+                innerPadding = innerPadding
             )
         }
     }

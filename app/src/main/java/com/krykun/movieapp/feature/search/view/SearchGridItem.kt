@@ -88,23 +88,36 @@ fun MovieView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            searchItem.genre?.joinToString(separator = " | ")?.let {
-                if (it.isNotEmpty()) {
-                    Text(
-                        text = it,
-                        color = Color.White,
-                        modifier = Modifier.padding(
-                            start = 12.dp,
-                            end = 12.dp,
-                            top = 6.dp,
-                            bottom = 15.dp
-                        ),
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 11.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            val result = StringBuffer()
+            searchItem.genre?.forEachIndexed { index, s ->
+                if (s != null &&
+                    s.isNotEmpty()
+                ) {
+                    result.append(s)
                 }
+                if (index != (searchItem.genre?.size ?: (0 - 1)) &&
+                    s != null &&
+                    s.isNotEmpty()
+                ) {
+                    result.append(" | ")
+                }
+            }
+
+            if (result.isNotEmpty()) {
+                Text(
+                    text = result.toString(),
+                    color = Color.White,
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = 6.dp,
+                        bottom = 15.dp
+                    ),
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
@@ -152,9 +165,24 @@ fun TvSeriesView(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            searchItem.genre?.joinToString(separator = " | ")?.let {
+            val result = StringBuffer()
+            searchItem.genre?.forEachIndexed { index, s ->
+                if (s != null &&
+                    s.isNotEmpty()
+                ) {
+                    result.append(s)
+                }
+                if (index != (searchItem.genre?.size ?: (0 - 1)) &&
+                    s != null &&
+                    s.isNotEmpty()
+                ) {
+                    result.append(" | ")
+                }
+            }
+
+            if (result.isNotEmpty()) {
                 Text(
-                    text = it,
+                    text = result.toString(),
                     color = Color.White,
                     modifier = Modifier.padding(
                         start = 12.dp,

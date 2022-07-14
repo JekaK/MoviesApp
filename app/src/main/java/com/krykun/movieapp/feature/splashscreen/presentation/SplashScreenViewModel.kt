@@ -3,6 +3,7 @@ package com.krykun.movieapp.feature.splashscreen.presentation
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.krykun.domain.usecase.GetMovieGenresUseCase
+import com.krykun.domain.usecase.GetTvGenresUseCase
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashScreenViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
-    private val getMovieGenresUseCase: GetMovieGenresUseCase
+    private val getMovieGenresUseCase: GetMovieGenresUseCase,
+    private val getTvGenresUseCase: GetTvGenresUseCase
 ) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, SplashScreenSideEffect> {
 
     private val splashDelay = 1000L
@@ -40,11 +42,15 @@ class SplashScreenViewModel @Inject constructor(
 
     fun makeInitialDelay() = intent {
         val response = getMovieGenresUseCase.getMovieGenres()
-        if (response.isSuccess) {
+        val tvResponse = getTvGenresUseCase.getTvGenres()
+        if (response.isSuccess &&
+            tvResponse.isSuccess
+        ) {
             reduce {
                 state.value = state.value.copy(
                     baseMoviesState = state.value.baseMoviesState.copy(
-                        genres = response.getOrNull() ?: listOf()
+                        genres = (response.getOrNull() ?: listOf()) +
+                                (tvResponse.getOrNull() ?: listOf()),
                     )
                 )
                 state

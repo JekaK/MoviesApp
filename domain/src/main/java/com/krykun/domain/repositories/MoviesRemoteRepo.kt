@@ -21,6 +21,8 @@ interface MoviesRemoteRepo {
 
     suspend fun getGenres(): Result<List<Genre>>
 
+    suspend fun getTvGenres(): Result<List<Genre>>
+
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetails>
 
     suspend fun getTvDetails(tvId: Int): Result<TvDetails>

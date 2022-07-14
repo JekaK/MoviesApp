@@ -3,6 +3,7 @@ package com.krykun.movieapp.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,7 +27,8 @@ import com.krykun.movieapp.feature.search.view.SearchView
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMotionApi::class)
 @Composable
 fun MainNavigation(
-    navController: NavHostController
+    navController: NavHostController,
+    innerPadding: PaddingValues
 ) {
     val homeViewModel: HomeMoviesViewModel = hiltViewModel()
     val discoverMoviesViewModel: DiscoverMoviesViewModel = hiltViewModel()
@@ -57,20 +59,17 @@ fun MainNavigation(
         composable(route = Screen.Search().route) {
             SearchView(
                 viewModel = searchViewModel,
-                navHostController = navController
+                navHostController = navController,
+                innerPadding = innerPadding
             )
         }
         composable(route = Screen.Favourite().route) {
             EmptyView()
         }
-        composable(
-            route = Screen.MovieDetails().route,
-        ) {
+        composable(route = Screen.MovieDetails().route) {
             MovieDetailsView(navHostController = navController)
         }
-        composable(
-            route = Screen.TvSeriesDetails().route,
-        ) {
+        composable(route = Screen.TvSeriesDetails().route) {
             TvSeriesDetailsView(navHostController = navController)
         }
     }
