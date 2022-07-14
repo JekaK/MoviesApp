@@ -61,20 +61,10 @@ fun SearchView(
     var searchResults: LazyPagingItems<SearchItem>? =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
     val scope = rememberCoroutineScope()
-    val queryIsEmpty = remember {
-        mutableStateOf(false)
-    }
-
-    val markIsModified = remember {
-        mutableStateOf(false)
-    }
-    val isLoading = remember {
-        mutableStateOf(false)
-    }
-
-    val query = remember {
-        mutableStateOf("")
-    }
+    val queryIsEmpty = remember { mutableStateOf(false) }
+    val markIsModified = remember { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(false) }
+    val query = remember { mutableStateOf("") }
 
     if (markIsModified.value) {
         markIsModified.value = false

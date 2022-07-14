@@ -10,6 +10,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +45,7 @@ import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.tvcastdetails.Cast
 import com.krykun.domain.model.tvcastdetails.Crew
+import com.krykun.domain.model.tvdetails.Season
 import com.krykun.domain.model.tvdetails.TvDetails
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsSideEffects
@@ -173,7 +175,6 @@ private fun TvSeriesDetailsView(
                         }
                     }
                     Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
-
                         Spacer(modifier = Modifier.height(30.dp))
                         Text(
                             text = stringResource(R.string.plot_summary),
@@ -189,14 +190,20 @@ private fun TvSeriesDetailsView(
                             fontSize = 14.sp
                         )
                         Spacer(modifier = Modifier.height(30.dp))
-                        Text(
-                            text = stringResource(R.string.cast_and_crew),
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 20.sp
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
+                }
+                movieData.value?.seasons?.let {
+                    SeasonsView(it)
+                }
+                Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = stringResource(R.string.cast_and_crew),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
                 LazyRow {
                     itemsIndexed(
@@ -238,10 +245,6 @@ fun TitleView(movieData: MutableState<TvDetails?>) {
             color = colorResource(id = R.color.light_gray_color),
         )
         Spacer(modifier = Modifier.width(16.dp))
-//        Text(
-//            text = "${movieData.value?.runtime?.toString() ?: ""} min",
-//            color = Color.LightGray,
-//        )
     }
     Spacer(modifier = Modifier.height(24.dp))
 }
@@ -490,6 +493,29 @@ private fun BackBtn(navHostController: NavHostController) {
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = ""
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SeasonsView(seasonsList: List<Season?>) {
+    LazyRow {
+        itemsIndexed(items = seasonsList) { index, item ->
+            Box(
+                modifier = Modifier.padding(
+                    start = if (index == 0) {
+                        24.dp
+                    } else {
+                        8.dp
+                    }, end = if (index == seasonsList.size - 1) {
+                        24.dp
+                    } else {
+                        8.dp
+                    }
+                )
+            ) {
+                item?.let { SeasonsItemView(seasonsItem = it) }
             }
         }
     }
