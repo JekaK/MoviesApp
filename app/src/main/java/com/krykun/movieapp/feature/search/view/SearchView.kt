@@ -45,6 +45,8 @@ import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.navigation.Screen
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 
@@ -58,7 +60,7 @@ fun SearchView(
 
     var searchResults: LazyPagingItems<SearchItem>? =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
-
+    val scope = rememberCoroutineScope()
     val queryIsEmpty = remember {
         mutableStateOf(false)
     }
@@ -68,6 +70,10 @@ fun SearchView(
     }
     val isLoading = remember {
         mutableStateOf(false)
+    }
+
+    val query = remember {
+        mutableStateOf("")
     }
 
     if (markIsModified.value) {
@@ -85,6 +91,14 @@ fun SearchView(
             navHostController
         )
     }
+    LaunchedEffect(key1 = Unit) {
+        scope.launch {
+            viewModel.subscribeToStateUpdate()
+                .collect {
+                    query.value = it
+                }
+        }
+    }
     CompositionLocalProvider(
         LocalOverScrollConfiguration provides null
     ) {
@@ -99,7 +113,8 @@ fun SearchView(
             ) {
                 SearchBar(
                     queryIsEmpty = queryIsEmpty,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    query = query
                 )
                 if (isLoading.value) {
                     LoadingView()
@@ -110,7 +125,12 @@ fun SearchView(
                     ) {
                         items(searchResults?.itemCount ?: 0) { index ->
                             Box(Modifier.padding(8.dp)) {
-                                searchResults?.get(index)?.let { SearchItemView(it, viewModel) }
+                                searchResults?.get(index)?.let {
+                                    SearchItemView(
+                                        it,
+                                        viewModel,
+                                    )
+                                }
                             }
                         }
                     }
@@ -164,6 +184,7 @@ fun Loader(modifier: Modifier = Modifier) {
 fun SearchBar(
     queryIsEmpty: MutableState<Boolean>,
     viewModel: SearchViewModel,
+    query: MutableState<String>,
 ) {
     Card(
         modifier = Modifier.padding(
@@ -176,14 +197,10 @@ fun SearchBar(
         contentColor = colorResource(id = R.color.light_gray_color)
     ) {
         Column {
-            var query: String by rememberSaveable {
-                mutableStateOf("")
-            }
-
             var showClearIcon by rememberSaveable { mutableStateOf(false) }
-            if (query.isEmpty()) {
+            if (query.value.isEmpty()) {
                 showClearIcon = false
-            } else if (query.isNotEmpty()) {
+            } else if (query.value.isNotEmpty()) {
                 showClearIcon = true
             }
 
@@ -192,11 +209,11 @@ fun SearchBar(
                 LocalOverScrollConfiguration provides null
             ) {
                 TextField(
-                    value = query,
+                    value = query.value,
                     onValueChange = { onQueryChanged ->
-                        query = onQueryChanged
-                        queryIsEmpty.value = query.isEmpty()
-                        viewModel.updateText(query)
+                        query.value = onQueryChanged
+                        queryIsEmpty.value = query.value.isEmpty()
+                        viewModel.updateText(query.value)
                     },
                     leadingIcon = {
                         Icon(
@@ -212,9 +229,9 @@ fun SearchBar(
                             exit = scaleOut()
                         ) {
                             IconButton(onClick = {
-                                query = ""
-                                queryIsEmpty.value = query.isEmpty()
-                                viewModel.updateText(query)
+                                query.value = ""
+                                queryIsEmpty.value = query.value.isEmpty()
+                                viewModel.updateText(query.value)
                             }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Clear,

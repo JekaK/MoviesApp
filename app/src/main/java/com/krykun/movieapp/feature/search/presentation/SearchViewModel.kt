@@ -7,6 +7,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.domain.usecase.MakeSearchUseCase
+import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsState
 import com.krykun.movieapp.state.AppState
@@ -47,8 +48,14 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun updateText(text: String) {
+    fun subscribeToStateUpdate() =
+        container.stateFlow.value.takeWhenChanged {
+            it.searchState.query
+        }
+
+    fun updateText(text: String) = intent {
         _text.value = text
+
     }
 
     private fun makeSearch(query: String) = intent {

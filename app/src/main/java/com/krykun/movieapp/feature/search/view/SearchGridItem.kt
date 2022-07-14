@@ -31,7 +31,7 @@ import com.skydoves.landscapist.coil.CoilImage
 @Composable
 fun SearchItemView(
     searchItem: SearchItem,
-    viewModel: SearchViewModel
+    viewModel: SearchViewModel,
 ) {
     when (searchItem.mediaType) {
         MediaType.MOVIE -> MovieView(modifier = Modifier.clickable {
@@ -80,7 +80,7 @@ fun MovieView(
                 modifier = Modifier.padding(
                     start = 12.dp,
                     end = 12.dp,
-                    top = 12.dp,
+                    top = 6.dp,
                     bottom = 15.dp
                 ),
                 fontWeight = FontWeight.SemiBold,
@@ -90,16 +90,17 @@ fun MovieView(
             )
             val result = StringBuffer()
             searchItem.genre?.forEachIndexed { index, s ->
+                if (index != (searchItem.genre?.size ?: (0 - 1)) &&
+                    s != null &&
+                    s.isNotEmpty() &&
+                    index != 0
+                ) {
+                    result.append(" | ")
+                }
                 if (s != null &&
                     s.isNotEmpty()
                 ) {
                     result.append(s)
-                }
-                if (index != (searchItem.genre?.size ?: (0 - 1)) &&
-                    s != null &&
-                    s.isNotEmpty()
-                ) {
-                    result.append(" | ")
                 }
             }
 
@@ -110,7 +111,6 @@ fun MovieView(
                     modifier = Modifier.padding(
                         start = 12.dp,
                         end = 12.dp,
-                        top = 6.dp,
                         bottom = 15.dp
                     ),
                     fontWeight = FontWeight.Normal,
@@ -152,12 +152,12 @@ fun TvSeriesView(
                 .background(colorResource(id = R.color.bottom_bar_start))
         ) {
             Text(
-                text = searchItem.title ?: "",
+                text = searchItem.title ?: searchItem.originalTitle ?: searchItem.name ?: "",
                 color = Color.White,
                 modifier = Modifier.padding(
                     start = 12.dp,
                     end = 12.dp,
-                    top = 12.dp,
+                    top = 6.dp,
                     bottom = 15.dp
                 ),
                 fontWeight = FontWeight.SemiBold,
@@ -167,16 +167,17 @@ fun TvSeriesView(
             )
             val result = StringBuffer()
             searchItem.genre?.forEachIndexed { index, s ->
+                if (index != (searchItem.genre?.size ?: (0 - 1)) &&
+                    s != null &&
+                    s.isNotEmpty() &&
+                    index != 0
+                ) {
+                    result.append(" | ")
+                }
                 if (s != null &&
                     s.isNotEmpty()
                 ) {
                     result.append(s)
-                }
-                if (index != (searchItem.genre?.size ?: (0 - 1)) &&
-                    s != null &&
-                    s.isNotEmpty()
-                ) {
-                    result.append(" | ")
                 }
             }
 
@@ -187,7 +188,6 @@ fun TvSeriesView(
                     modifier = Modifier.padding(
                         start = 12.dp,
                         end = 12.dp,
-                        top = 6.dp,
                         bottom = 15.dp
                     ),
                     fontWeight = FontWeight.Normal,
