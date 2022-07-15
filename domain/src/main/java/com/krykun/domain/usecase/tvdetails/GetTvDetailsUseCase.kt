@@ -1,4 +1,4 @@
-package com.krykun.domain.usecase
+package com.krykun.domain.usecase.tvdetails
 
 import com.krykun.domain.repositories.MoviesRemoteRepo
 import javax.inject.Inject

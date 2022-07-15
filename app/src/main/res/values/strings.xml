@@ -8,4 +8,6 @@
     <string name="popular">Popular</string>
     <string name="hint_search_query">Search for movie, tv show or person</string>
     <string name="make_search">Make a search of movies, tv series and persons!</string>
+    <string name="filmography">Filmography</string>
+    <string name="production">Production</string>
 </resources>

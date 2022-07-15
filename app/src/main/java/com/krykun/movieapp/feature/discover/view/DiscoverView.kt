@@ -1,7 +1,7 @@
 package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -96,7 +96,7 @@ fun DiscoverView(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CompositionLocalProvider(
-                    LocalOverScrollConfiguration provides null
+                    LocalOverscrollConfiguration provides null
                 ) {
                     HorizontalPager(
                         count = movies.itemCount,
@@ -245,7 +245,9 @@ private fun handleSideEffects(
         is DiscoverMoviesSideEffects.GetCurrentDiscoverPageAndScrollOffset -> {
             val currentPage = sideEffects.currentPageAndOffset
             scope.launch {
-                lazyListState.scrollToPage(currentPage, 0f)
+                if (currentPage <= lazyListState.pageCount) {
+                    lazyListState.scrollToPage(currentPage, 0f)
+                }
             }
         }
         is DiscoverMoviesSideEffects.TryReloadDiscoverPage -> {

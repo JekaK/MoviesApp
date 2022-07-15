@@ -7,7 +7,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -121,7 +120,7 @@ private fun MovieDetailsView(
     val screenWidth = configuration.screenWidthDp.dp
     val scrollSate = rememberScrollState()
     CompositionLocalProvider(
-        LocalOverScrollConfiguration provides null
+        LocalOverscrollConfiguration provides null
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             BackBtn(navHostController = navHostController)
@@ -289,7 +288,6 @@ fun CastView(castItem: Cast) {
         )
     }
 }
-
 
 @Composable
 fun CrewView(crewItem: Crew) {
@@ -495,7 +493,7 @@ private fun BackBtn(navHostController: NavHostController) {
     }
 }
 
-fun handleSideEffects(
+private fun handleSideEffects(
     sideEffects: MovieDetailsSideEffects,
     movieData: MutableState<MovieDetails?>,
     isRatingVisible: MutableState<Boolean>,

@@ -1,7 +1,7 @@
 package com.krykun.movieapp.feature.trending.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
@@ -241,7 +241,7 @@ private fun BasicMoviesItem(
 ) {
 
     CompositionLocalProvider(
-        LocalOverScrollConfiguration provides null
+        LocalOverscrollConfiguration provides null
     ) {
         LazyRow(
             state = lazyListState,

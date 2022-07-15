@@ -1,18 +1,16 @@
 package com.krykun.movieapp.feature.splashscreen.presentation
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import com.krykun.domain.usecase.GetMovieGenresUseCase
-import com.krykun.domain.usecase.GetTvGenresUseCase
+import com.krykun.domain.usecase.moviedetails.GetMovieGenresUseCase
+import com.krykun.domain.usecase.tvdetails.GetTvGenresUseCase
+import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
-import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,11 +18,9 @@ class SplashScreenViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val getMovieGenresUseCase: GetMovieGenresUseCase,
     private val getTvGenresUseCase: GetTvGenresUseCase
-) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, SplashScreenSideEffect> {
+) : BaseViewModel<SplashScreenSideEffect>(appState) {
 
     private val splashDelay = 1000L
-
-    override val container = container<MutableStateFlow<AppState>, SplashScreenSideEffect>(appState)
 
     val startAnimFlag = mutableStateOf(false)
 

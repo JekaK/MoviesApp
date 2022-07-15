@@ -7,10 +7,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -123,7 +121,7 @@ private fun TvSeriesDetailsView(
     val screenWidth = configuration.screenWidthDp.dp
     val scrollSate = rememberScrollState()
     CompositionLocalProvider(
-        LocalOverScrollConfiguration provides null
+        LocalOverscrollConfiguration provides null
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             BackBtn(navHostController = navHostController)
@@ -521,7 +519,7 @@ private fun SeasonsView(seasonsList: List<Season?>) {
     }
 }
 
-fun handleSideEffects(
+private fun handleSideEffects(
     sideEffects: TvSeriesDetailsSideEffects,
     movieData: MutableState<TvDetails?>,
     isRatingVisible: MutableState<Boolean>,

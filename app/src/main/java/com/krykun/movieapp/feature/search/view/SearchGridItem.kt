@@ -38,7 +38,9 @@ fun SearchItemView(
             searchItem.id?.let { viewModel.navigateToMovie(it) }
         }, searchItem = searchItem)
         MediaType.PERSON -> PersonView(modifier = Modifier.clickable {
-
+            searchItem.id?.let {
+                viewModel.navigateToPerson(it)
+            }
         }, searchItem = searchItem)
         MediaType.TV -> TvSeriesView(modifier = Modifier.clickable {
             searchItem.id?.let { viewModel.navigateToTvState(it) }

@@ -1,11 +1,13 @@
 package com.krykun.domain.repositories
 
 import androidx.paging.PagingData
+import com.krykun.domain.model.personcombinedcredits.PersonCombinedCredits
 import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.model.moviecastdetails.CastDetails
 import com.krykun.domain.model.moviedetails.MovieDetails
 import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.model.persondetails.PersonDetails
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.domain.model.tvcastdetails.TvCastDetails
 import com.krykun.domain.model.tvdetails.TvDetails
@@ -47,4 +49,12 @@ interface MoviesRemoteRepo {
         query: String,
         genres: List<Genre>,
     ): Flow<PagingData<SearchItem>>
+
+    suspend fun getPersonDetails(personId: Int): Result<PersonDetails>
+
+    suspend fun getPersonCombinedCredits(
+        personId: Int,
+        genres: List<Genre>
+    ): Result<PersonCombinedCredits>
+
 }

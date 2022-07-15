@@ -7,4 +7,5 @@ sealed class SearchSideEffects {
 
     object NavigateToMovie : SearchSideEffects()
     object NavigateToTvSeries : SearchSideEffects()
+    object NavigateToPersonDetails : SearchSideEffects()
 }

@@ -14,6 +14,8 @@ import com.krykun.data.model.genre.Genre
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
+import com.krykun.data.model.personcombinedcredits.PersonCombinedCreditsResponse
+import com.krykun.data.model.persondetails.PersonDetailsResponse
 import com.krykun.data.model.search.SearchItem
 import com.krykun.data.model.tvcastdetails.TvCastDetailsResponse
 import com.krykun.data.model.tvdetails.TvDetailsResponse
@@ -136,5 +138,23 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
                 )
             }
         ).flow
+    }
+
+    override suspend fun getPersonDetails(movieId: Int): Result<PersonDetailsResponse> {
+        val result = apiService.getPersonDetails(movieId)
+        return if (result.isSuccessful) {
+            Result.success(result.body() ?: PersonDetailsResponse())
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
+    }
+
+    override suspend fun getPersonCombinedCredits(personId: Int): Result<PersonCombinedCreditsResponse> {
+        val result = apiService.getPersonCombinedCredits(personId)
+        return if (result.isSuccessful) {
+            Result.success(result.body() ?: PersonCombinedCreditsResponse())
+        } else {
+            Result.failure(Exception(result.errorBody().toString()))
+        }
     }
 }

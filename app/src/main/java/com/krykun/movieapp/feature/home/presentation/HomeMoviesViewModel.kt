@@ -1,7 +1,9 @@
 package com.krykun.movieapp.feature.home.presentation
 
 import androidx.lifecycle.ViewModel
+import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
+import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,10 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeMoviesViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
-) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, HomeMoviesSideEffects> {
-
-    override val container =
-        container<MutableStateFlow<AppState>, HomeMoviesSideEffects>(appState)
+) : BaseViewModel<HomeMoviesSideEffects>(appState) {
 
     fun subscribeToStateUpdate() {
         container.stateFlow.value

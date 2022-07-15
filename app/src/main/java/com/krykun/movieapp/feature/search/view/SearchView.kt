@@ -5,8 +5,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -45,7 +45,6 @@ import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.navigation.Screen
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -90,7 +89,7 @@ fun SearchView(
         }
     }
     CompositionLocalProvider(
-        LocalOverScrollConfiguration provides null
+        LocalOverscrollConfiguration provides null
     ) {
         Box(
             modifier = Modifier
@@ -178,8 +177,8 @@ fun SearchBar(
 ) {
     Card(
         modifier = Modifier.padding(
-            start = 16.dp,
-            end = 16.dp,
+            start = 8.dp,
+            end = 8.dp,
             top = 16.dp
         ),
         shape = RoundedCornerShape(20.dp),
@@ -196,7 +195,7 @@ fun SearchBar(
 
             CompositionLocalProvider(
                 LocalTextToolbar provides EmptyTextToolbar,
-                LocalOverScrollConfiguration provides null
+                LocalOverscrollConfiguration provides null
             ) {
                 TextField(
                     value = query.value,
@@ -283,6 +282,9 @@ private fun handleSideEffects(
         }
         is SearchSideEffects.NavigateToTvSeries -> {
             navHostController.navigate(Screen.TvSeriesDetails().route)
+        }
+        is SearchSideEffects.NavigateToPersonDetails -> {
+            navHostController.navigate(Screen.PersonDetails().route)
         }
     }
 }

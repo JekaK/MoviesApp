@@ -38,6 +38,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    kotlinOptions{
+        freeCompilerArgs += [
+                "-Xjvm-default=all",
+        ]
+    }
 }
 
 dependencies {
@@ -99,6 +104,8 @@ dependencies {
     implementation "com.github.skydoves:landscapist-coil:1.5.2"
     implementation "com.airbnb.android:lottie:$lottieVersion"
     implementation "com.airbnb.android:lottie-compose:$lottieVersion"
+    implementation "com.google.accompanist:accompanist-flowlayout:0.24.13-rc"
+
 
     implementation project(':domain')
     implementation project(':data')

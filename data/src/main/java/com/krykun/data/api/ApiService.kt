@@ -6,11 +6,11 @@ import com.krykun.data.model.genre.GenresResponse
 import com.krykun.data.model.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.movielistitem.MovieItem
 import com.krykun.data.model.movies.MovieItemResponse
+import com.krykun.data.model.personcombinedcredits.PersonCombinedCreditsResponse
+import com.krykun.data.model.persondetails.PersonDetailsResponse
 import com.krykun.data.model.search.SearchItem
 import com.krykun.data.model.tvcastdetails.TvCastDetailsResponse
 import com.krykun.data.model.tvdetails.TvDetailsResponse
-import com.krykun.domain.model.tvcastdetails.TvCastDetails
-import com.krykun.domain.model.tvdetails.TvDetails
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -65,4 +65,10 @@ interface ApiService {
         @Query("page") page: Int = 0,
         @Query("include_adult") includeAdult: Boolean = true,
     ): BasicMoviesResponse<SearchItem>
+
+    @GET("person/{id}")
+    suspend fun getPersonDetails(@Path("id") movieId: Int): Response<PersonDetailsResponse>
+
+    @GET("person/{id}/combined_credits")
+    suspend fun getPersonCombinedCredits(@Path("id") personId: Int): Response<PersonCombinedCreditsResponse>
 }

@@ -1,4 +1,4 @@
-package com.krykun.domain.usecase
+package com.krykun.domain.usecase.search
 
 import com.krykun.domain.model.Genre
 import com.krykun.domain.repositories.MoviesRemoteRepo

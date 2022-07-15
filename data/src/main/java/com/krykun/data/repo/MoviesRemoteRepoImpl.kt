@@ -8,14 +8,18 @@ import com.krykun.data.mappers.GenresMapper.toGenre
 import com.krykun.data.mappers.MovieDetailMapper.toCastDetails
 import com.krykun.data.mappers.MovieDetailMapper.toMovieDetails
 import com.krykun.data.mappers.MoviesMapper.toMovie
+import com.krykun.data.mappers.PersonCombinedCreditsMapper.toPersonCombinedCredits
+import com.krykun.data.mappers.PersonDetailsMapper.toPersonDetails
 import com.krykun.data.mappers.SearchMapper.toSearchItem
 import com.krykun.data.mappers.TvDetailsMapper.toTvCastDetails
 import com.krykun.data.mappers.TvDetailsMapper.toTvDetails
+import com.krykun.domain.model.personcombinedcredits.PersonCombinedCredits
 import com.krykun.domain.model.Genre
 import com.krykun.domain.model.MovieDiscoverItem
 import com.krykun.domain.model.moviecastdetails.CastDetails
 import com.krykun.domain.model.moviedetails.MovieDetails
 import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.model.persondetails.PersonDetails
 import com.krykun.domain.model.search.SearchItem
 import com.krykun.domain.model.tvcastdetails.TvCastDetails
 import com.krykun.domain.model.tvdetails.TvDetails
@@ -116,6 +120,21 @@ class MoviesRemoteRepoImpl @Inject constructor(
             it.map { searchItem ->
                 searchItem.toSearchItem(genres)
             }
+        }
+    }
+
+    override suspend fun getPersonDetails(personId: Int): Result<PersonDetails> {
+        return remoteDataSource.getPersonDetails(personId).map {
+            it.toPersonDetails()
+        }
+    }
+
+    override suspend fun getPersonCombinedCredits(
+        personId: Int,
+        genres: List<Genre>
+    ): Result<PersonCombinedCredits> {
+        return remoteDataSource.getPersonCombinedCredits(personId).map {
+            it.toPersonCombinedCredits(genres)
         }
     }
 }

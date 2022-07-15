@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.krykun.domain.model.persondetails.PersonDetails
 import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
 import com.krykun.movieapp.feature.home.view.DiscoverView
 import com.krykun.movieapp.feature.tvseries.TvSeriesDetailsView
@@ -20,6 +21,7 @@ import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
 import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
+import com.krykun.movieapp.feature.person.view.PersonView
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.feature.search.view.SearchView
 
@@ -71,6 +73,9 @@ fun MainNavigation(
         }
         composable(route = Screen.TvSeriesDetails().route) {
             TvSeriesDetailsView(navHostController = navController)
+        }
+        composable(route = Screen.PersonDetails().route) {
+            PersonView(navHostController = navController)
         }
     }
 }

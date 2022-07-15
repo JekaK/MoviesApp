@@ -1,37 +1,30 @@
 package com.krykun.movieapp.feature.discover.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.krykun.domain.model.MovieDiscoverItem
-import com.krykun.domain.usecase.GetDiscoverMoviesUseCase
+import com.krykun.domain.usecase.discover.GetDiscoverMoviesUseCase
+import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
-import com.krykun.movieapp.feature.trending.presentation.SelectedMovieType
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
-import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class DiscoverMoviesViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     getDiscoverMoviesUseCase: GetDiscoverMoviesUseCase
-) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, DiscoverMoviesSideEffects> {
-
-    override val container =
-        container<MutableStateFlow<AppState>, DiscoverMoviesSideEffects>(appState)
+) : BaseViewModel<DiscoverMoviesSideEffects>(appState) {
 
     lateinit var getDiscoverMovies: Flow<PagingData<MovieDiscoverItem>>
 

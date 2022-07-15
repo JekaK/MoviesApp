@@ -1,14 +1,15 @@
 package com.krykun.movieapp.feature.search.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import com.krykun.domain.model.search.SearchItem
-import com.krykun.domain.usecase.MakeSearchUseCase
+import com.krykun.domain.usecase.search.MakeSearchUseCase
+import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
+import com.krykun.movieapp.feature.person.presentation.PersonDetailsState
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,11 +19,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
-import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
-import org.orbitmvi.orbit.viewmodel.container
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -30,9 +29,8 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val makeSearchUseCase: MakeSearchUseCase
-) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, SearchSideEffects> {
+) : BaseViewModel<SearchSideEffects>(appState) {
 
-    override val container = container<MutableStateFlow<AppState>, SearchSideEffects>(appState)
     var searchResults: Flow<PagingData<SearchItem>>? = null
 
     private val _text = MutableStateFlow("")
@@ -102,6 +100,16 @@ class SearchViewModel @Inject constructor(
             state
         }
         postSideEffect(SearchSideEffects.NavigateToTvSeries)
+    }
+
+    fun navigateToPerson(id: Int) = intent {
+        reduce {
+            state.value = state.value.copy(
+                personState = PersonDetailsState(id = id)
+            )
+            state
+        }
+        postSideEffect(SearchSideEffects.NavigateToPersonDetails)
     }
 
     fun handleLoadSearchItemsState(loadStates: LoadStates) = intent {

@@ -1,26 +1,26 @@
 package com.krykun.movieapp.feature.trending.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.krykun.domain.model.movies.Movie
-import com.krykun.domain.usecase.GetPopularMoviesUseCase
-import com.krykun.domain.usecase.GetTopRatedMoviesUseCase
-import com.krykun.domain.usecase.GetTrendingMoviesUseCase
+import com.krykun.domain.usecase.filteredmovies.GetPopularMoviesUseCase
+import com.krykun.domain.usecase.filteredmovies.GetTopRatedMoviesUseCase
+import com.krykun.domain.usecase.filteredmovies.GetTrendingMoviesUseCase
+import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
-import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,10 +29,7 @@ class TrendingViewModel @Inject constructor(
     getTrendingMoviesUseCase: GetTrendingMoviesUseCase,
     private val getPopularMoviesUseCase: GetPopularMoviesUseCase,
     private val getTopRatedMoviesUseCase: GetTopRatedMoviesUseCase
-) : ViewModel(), ContainerHost<MutableStateFlow<AppState>, TrendingMoviesSideEffects> {
-
-    override val container =
-        container<MutableStateFlow<AppState>, TrendingMoviesSideEffects>(appState)
+) : BaseViewModel<TrendingMoviesSideEffects>(appState) {
 
     lateinit var getTrendingMovies: Flow<PagingData<Movie>>
     var getPopularMovies: Flow<PagingData<Movie>>? = null
