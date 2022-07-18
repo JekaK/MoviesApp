@@ -7,9 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -48,7 +45,6 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.google.accompanist.flowlayout.FlowColumn
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.SizeMode
@@ -69,6 +65,7 @@ import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PersonView(
     viewModel: PersonViewModel = hiltViewModel(),
@@ -105,19 +102,23 @@ fun PersonView(
             .fillMaxSize()
     ) {
         BackBtn(navHostController)
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
+        CompositionLocalProvider(
+            LocalOverscrollConfiguration provides null
         ) {
-            item {
-                MainPersonInfo(personDetails = personDetails)
-            }
-            item {
-                PersonMovies(
-                    selectedPersonTab = selectedPersonTab,
-                    personDetails = personDetails,
-                    viewModel = viewModel
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item {
+                    MainPersonInfo(personDetails = personDetails)
+                }
+                item {
+                    PersonMovies(
+                        selectedPersonTab = selectedPersonTab,
+                        personDetails = personDetails,
+                        viewModel = viewModel
+                    )
+                }
             }
         }
     }
@@ -128,7 +129,6 @@ enum class PersonTabs {
     PRODUCTION
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PersonMovies(
     selectedPersonTab: MutableState<PersonTabs>,
@@ -170,17 +170,13 @@ private fun PersonMovies(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        CompositionLocalProvider(
-            LocalOverscrollConfiguration provides null
-        ) {
-            AnimatedVisibility(visible = selectedPersonTab.value == PersonTabs.FILMOGRAPHY) {
-                CastViewList(
-                    castItems = personDetails.value?.personCombinedCredits?.cast ?: listOf()
-                )
-            }
-            AnimatedVisibility(visible = selectedPersonTab.value == PersonTabs.PRODUCTION) {
-                CrewViewList(personDetails.value?.personCombinedCredits?.crew ?: listOf())
-            }
+        AnimatedVisibility(visible = selectedPersonTab.value == PersonTabs.FILMOGRAPHY) {
+            CastViewList(
+                castItems = personDetails.value?.personCombinedCredits?.cast ?: listOf()
+            )
+        }
+        AnimatedVisibility(visible = selectedPersonTab.value == PersonTabs.PRODUCTION) {
+            CrewViewList(personDetails.value?.personCombinedCredits?.crew ?: listOf())
         }
     }
 }
@@ -245,7 +241,7 @@ private fun MainPersonInfo(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .height(330.dp)
                 .verticalGradientScrim(
                     color = MaterialTheme.colors.primary,
                     startYPercentage = 1f,
@@ -324,8 +320,12 @@ private fun CastViewList(castItems: List<Cast>) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        castItems.forEach {
-            CastView(castItem = it)
+        if (castItems.isNotEmpty()) {
+            castItems.forEach {
+                CastView(castItem = it)
+            }
+        } else {
+            EmptyView()
         }
     }
 }
@@ -338,8 +338,12 @@ private fun CrewViewList(crewItems: List<Crew>) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        crewItems.forEach {
-            CrewView(crewItem = it)
+        if (crewItems.isNotEmpty()) {
+            crewItems.forEach {
+                CrewView(crewItem = it)
+            }
+        } else {
+            EmptyView()
         }
     }
 }
