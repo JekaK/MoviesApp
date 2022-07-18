@@ -21,8 +21,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.search.MediaType
-import com.krykun.domain.model.search.SearchItem
+import com.krykun.domain.model.remote.search.MediaType
+import com.krykun.domain.model.remote.search.SearchItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.skydoves.landscapist.CircularReveal

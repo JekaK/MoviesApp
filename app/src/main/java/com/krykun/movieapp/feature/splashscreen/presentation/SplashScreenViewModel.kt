@@ -1,8 +1,8 @@
 package com.krykun.movieapp.feature.splashscreen.presentation
 
 import androidx.compose.runtime.mutableStateOf
-import com.krykun.domain.usecase.moviedetails.GetMovieGenresUseCase
-import com.krykun.domain.usecase.tvdetails.GetTvGenresUseCase
+import com.krykun.domain.usecase.remote.moviedetails.GetMovieGenresUseCase
+import com.krykun.domain.usecase.remote.tvdetails.GetTvGenresUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel

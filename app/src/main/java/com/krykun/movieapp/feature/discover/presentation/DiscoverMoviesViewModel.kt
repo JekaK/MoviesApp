@@ -5,8 +5,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.krykun.domain.model.MovieDiscoverItem
-import com.krykun.domain.usecase.discover.GetDiscoverMoviesUseCase
+import com.krykun.domain.model.remote.MovieDiscoverItem
+import com.krykun.domain.usecase.remote.discover.GetDiscoverMoviesUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.state.AppState

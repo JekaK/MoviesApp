@@ -1,7 +1,7 @@
 package com.krykun.movieapp.feature.person.presentation
 
-import com.krykun.domain.usecase.persondetails.GetPersonCombinedCreditsUseCase
-import com.krykun.domain.usecase.persondetails.GetPersonDetailsUseCase
+import com.krykun.domain.usecase.remote.persondetails.GetPersonCombinedCreditsUseCase
+import com.krykun.domain.usecase.remote.persondetails.GetPersonDetailsUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.person.view.PersonTabs

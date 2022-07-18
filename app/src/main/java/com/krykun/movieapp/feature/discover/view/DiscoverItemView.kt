@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.MovieDiscoverItem
+import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.movieapp.R
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage

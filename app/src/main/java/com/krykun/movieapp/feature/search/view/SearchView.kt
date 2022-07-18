@@ -37,7 +37,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.krykun.domain.model.search.SearchItem
+import com.krykun.domain.model.remote.search.SearchItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.custom.EmptyTextToolbar
 import com.krykun.movieapp.ext.clearFocusOnKeyboardDismiss

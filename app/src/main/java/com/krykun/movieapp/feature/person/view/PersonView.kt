@@ -49,9 +49,9 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.SizeMode
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.personcombinedcredits.Cast
-import com.krykun.domain.model.personcombinedcredits.Crew
-import com.krykun.domain.model.persondetails.PersonDetails
+import com.krykun.domain.model.remote.personcombinedcredits.Cast
+import com.krykun.domain.model.remote.personcombinedcredits.Crew
+import com.krykun.domain.model.remote.persondetails.PersonDetails
 import com.krykun.movieapp.R
 import com.krykun.movieapp.custom.DynamicThemePrimaryColorsFromImage
 import com.krykun.movieapp.custom.rememberDominantColorState

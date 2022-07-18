@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.model.remote.movies.Movie
 import com.krykun.movieapp.R
 import com.krykun.movieapp.ext.round
 import com.skydoves.landscapist.CircularReveal

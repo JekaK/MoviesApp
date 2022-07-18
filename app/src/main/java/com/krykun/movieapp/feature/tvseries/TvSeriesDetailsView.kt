@@ -41,10 +41,10 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.tvcastdetails.Cast
-import com.krykun.domain.model.tvcastdetails.Crew
-import com.krykun.domain.model.tvdetails.Season
-import com.krykun.domain.model.tvdetails.TvDetails
+import com.krykun.domain.model.remote.tvcastdetails.Cast
+import com.krykun.domain.model.remote.tvcastdetails.Crew
+import com.krykun.domain.model.remote.tvdetails.Season
+import com.krykun.domain.model.remote.tvdetails.TvDetails
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsSideEffects
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsViewModel

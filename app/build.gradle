@@ -38,7 +38,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    kotlinOptions{
+    kotlinOptions {
         freeCompilerArgs += [
                 "-Xjvm-default=all",
         ]
@@ -105,7 +105,9 @@ dependencies {
     implementation "com.airbnb.android:lottie:$lottieVersion"
     implementation "com.airbnb.android:lottie-compose:$lottieVersion"
     implementation "com.google.accompanist:accompanist-flowlayout:0.24.13-rc"
-
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-common:$room_version"
 
     implementation project(':domain')
     implementation project(':data')

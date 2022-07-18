@@ -5,10 +5,10 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.krykun.domain.model.movies.Movie
-import com.krykun.domain.usecase.filteredmovies.GetPopularMoviesUseCase
-import com.krykun.domain.usecase.filteredmovies.GetTopRatedMoviesUseCase
-import com.krykun.domain.usecase.filteredmovies.GetTrendingMoviesUseCase
+import com.krykun.domain.model.remote.movies.Movie
+import com.krykun.domain.usecase.remote.filteredmovies.GetPopularMoviesUseCase
+import com.krykun.domain.usecase.remote.filteredmovies.GetTopRatedMoviesUseCase
+import com.krykun.domain.usecase.remote.filteredmovies.GetTrendingMoviesUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.state.AppState

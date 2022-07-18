@@ -30,7 +30,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.google.accompanist.pager.*
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.MovieDiscoverItem
+import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.custom.DominantColorState
 import com.krykun.movieapp.custom.DynamicThemePrimaryColorsFromImage

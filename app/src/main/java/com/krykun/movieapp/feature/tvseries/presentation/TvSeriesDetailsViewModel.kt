@@ -1,7 +1,7 @@
 package com.krykun.movieapp.feature.tvseries.presentation
 
-import com.krykun.domain.usecase.tvdetails.GetTvCastDetailsUseCase
-import com.krykun.domain.usecase.tvdetails.GetTvDetailsUseCase
+import com.krykun.domain.usecase.remote.tvdetails.GetTvCastDetailsUseCase
+import com.krykun.domain.usecase.remote.tvdetails.GetTvDetailsUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel

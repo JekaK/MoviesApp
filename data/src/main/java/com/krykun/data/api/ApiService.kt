@@ -1,16 +1,16 @@
 package com.krykun.data.api
 
-import com.krykun.data.model.BasicMoviesResponse
-import com.krykun.data.model.moviecastdetails.CastDetailsResponse
-import com.krykun.data.model.genre.GenresResponse
-import com.krykun.data.model.moviedetails.MovieDetailsResponse
-import com.krykun.data.model.movielistitem.MovieItem
-import com.krykun.data.model.movies.MovieItemResponse
-import com.krykun.data.model.personcombinedcredits.PersonCombinedCreditsResponse
-import com.krykun.data.model.persondetails.PersonDetailsResponse
-import com.krykun.data.model.search.SearchItem
-import com.krykun.data.model.tvcastdetails.TvCastDetailsResponse
-import com.krykun.data.model.tvdetails.TvDetailsResponse
+import com.krykun.data.model.remote.BasicMoviesResponse
+import com.krykun.data.model.remote.moviecastdetails.CastDetailsResponse
+import com.krykun.data.model.remote.genre.GenresResponse
+import com.krykun.data.model.remote.moviedetails.MovieDetailsResponse
+import com.krykun.data.model.remote.movielistitem.MovieItem
+import com.krykun.data.model.remote.movies.MovieItemResponse
+import com.krykun.data.model.remote.personcombinedcredits.PersonCombinedCreditsResponse
+import com.krykun.data.model.remote.persondetails.PersonDetailsResponse
+import com.krykun.data.model.remote.search.SearchItem
+import com.krykun.data.model.remote.tvcastdetails.TvCastDetailsResponse
+import com.krykun.data.model.remote.tvdetails.TvDetailsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

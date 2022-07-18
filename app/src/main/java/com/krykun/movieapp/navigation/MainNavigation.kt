@@ -12,7 +12,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.krykun.domain.model.persondetails.PersonDetails
 import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
 import com.krykun.movieapp.feature.home.view.DiscoverView
 import com.krykun.movieapp.feature.tvseries.TvSeriesDetailsView

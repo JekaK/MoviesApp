@@ -1,7 +1,6 @@
 package com.krykun.movieapp.feature.tvseries
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.tvdetails.Season
+import com.krykun.domain.model.remote.tvdetails.Season
 import com.krykun.movieapp.R
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage

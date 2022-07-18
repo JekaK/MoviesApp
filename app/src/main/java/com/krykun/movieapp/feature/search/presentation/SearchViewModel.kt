@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
-import com.krykun.domain.model.search.SearchItem
-import com.krykun.domain.usecase.search.MakeSearchUseCase
+import com.krykun.domain.model.remote.search.SearchItem
+import com.krykun.domain.usecase.remote.search.MakeSearchUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState

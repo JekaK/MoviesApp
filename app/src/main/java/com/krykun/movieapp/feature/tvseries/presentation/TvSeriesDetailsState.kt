@@ -1,6 +1,6 @@
 package com.krykun.movieapp.feature.tvseries.presentation
 
-import com.krykun.domain.model.tvdetails.TvDetails
+import com.krykun.domain.model.remote.tvdetails.TvDetails
 
 data class TvSeriesDetailsState(
     val tvId: Int = -1,

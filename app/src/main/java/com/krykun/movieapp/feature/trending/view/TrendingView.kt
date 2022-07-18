@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
-import com.krykun.domain.model.movies.Movie
+import com.krykun.domain.model.remote.movies.Movie
 import com.krykun.movieapp.custom.snaper.SnapOffsets
 import com.krykun.movieapp.custom.snaper.rememberSnapperFlingBehavior
 import com.krykun.movieapp.ext.collectAndHandleState

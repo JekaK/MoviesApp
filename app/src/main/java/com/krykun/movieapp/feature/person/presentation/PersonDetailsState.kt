@@ -1,6 +1,6 @@
 package com.krykun.movieapp.feature.person.presentation
 
-import com.krykun.domain.model.persondetails.PersonDetails
+import com.krykun.domain.model.remote.persondetails.PersonDetails
 
 data class PersonDetailsState(
     val id: Int = -1,

@@ -1,6 +1,6 @@
 package com.krykun.movieapp.feature.moviedetails.presentation
 
-import com.krykun.domain.model.moviedetails.MovieDetails
+import com.krykun.domain.model.remote.moviedetails.MovieDetails
 
 data class MovieDetailsState(
     val movieId: Int = -1,

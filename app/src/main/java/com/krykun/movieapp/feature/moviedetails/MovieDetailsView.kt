@@ -41,9 +41,9 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.moviecastdetails.Cast
-import com.krykun.domain.model.moviecastdetails.Crew
-import com.krykun.domain.model.moviedetails.MovieDetails
+import com.krykun.domain.model.remote.moviecastdetails.Cast
+import com.krykun.domain.model.remote.moviecastdetails.Crew
+import com.krykun.domain.model.remote.moviedetails.MovieDetails
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
