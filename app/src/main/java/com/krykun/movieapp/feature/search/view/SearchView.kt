@@ -135,7 +135,7 @@ fun SearchView(
         if (searchResults?.loadState?.refresh is LoadState.NotLoading) {
             viewModel.setIsLoading(false)
         } else if (searchResults?.loadState?.refresh is LoadState.Loading) {
-            if (queryIsEmpty.value) {
+            if (!queryIsEmpty.value) {
                 viewModel.setIsLoading(true)
             }
         }
