@@ -49,23 +49,14 @@ fun MainView(
                         color = colorResource(id = R.color.container_background)
                     )
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(
-                                start = 10.dp,
-                                end = 10.dp,
-                                bottom = 10.dp
-                            )
-                    ) {
-                        BottomNavigationView(
-                            navController = navController,
-                            listOf(
-                                Screen.Home(),
-                                Screen.Search(),
-                                Screen.Favourite()
-                            )
+                    BottomNavigationView(
+                        navController = navController,
+                        listOf(
+                            Screen.Home(),
+                            Screen.Search(),
+                            Screen.Favourite()
                         )
-                    }
+                    )
                 }
             }
         }

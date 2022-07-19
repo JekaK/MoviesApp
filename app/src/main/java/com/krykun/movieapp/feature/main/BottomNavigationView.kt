@@ -36,7 +36,7 @@ fun BottomNavigationView(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .clip(RoundedCornerShape(30.dp))
+            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
@@ -44,8 +44,7 @@ fun BottomNavigationView(
                         colorResource(id = R.color.bottom_bar_end)
                     )
                 )
-            )
-        ,
+            ),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
