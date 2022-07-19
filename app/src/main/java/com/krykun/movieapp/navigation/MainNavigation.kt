@@ -17,6 +17,8 @@ import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
 import com.krykun.movieapp.feature.home.view.HomeView
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.person.view.PersonView
+import com.krykun.movieapp.feature.playlist.presentation.PlaylistViewModel
+import com.krykun.movieapp.feature.playlist.view.PlaylistView
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.feature.search.view.SearchView
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewModel
@@ -36,6 +38,7 @@ fun MainNavigation(
     val splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
     val trendingViewModel: TrendingViewModel = hiltViewModel()
     val searchViewModel: SearchViewModel = hiltViewModel()
+    val playlistViewModel: PlaylistViewModel = hiltViewModel()
 
     AnimatedNavHost(
         navController = navController,
@@ -65,7 +68,7 @@ fun MainNavigation(
             )
         }
         composable(route = Screen.Favourite().route) {
-            EmptyView()
+            PlaylistView(viewModel = playlistViewModel)
         }
         composable(route = Screen.MovieDetails().route) {
             MovieDetailsView(navHostController = navController)
