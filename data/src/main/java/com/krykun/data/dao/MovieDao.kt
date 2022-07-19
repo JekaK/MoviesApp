@@ -8,10 +8,10 @@ import com.krykun.data.model.local.PlaylistMovieCrossRef
 interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMovie(movie: Movie)
+    fun insertMovie(movie: Movie): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)
+    fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef): Long
 
     @Delete
     fun removePlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)

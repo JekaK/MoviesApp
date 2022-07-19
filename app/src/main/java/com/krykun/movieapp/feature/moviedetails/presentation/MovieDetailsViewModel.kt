@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.moviedetails.presentation
 
+import com.krykun.domain.usecase.local.AddMovieToPlaylistUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetMovieCastDetailsUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetMovieDetailsUseCase
 import com.krykun.movieapp.base.BaseViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class MovieDetailsViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
-    private val getMovieCastDetailsUseCase: GetMovieCastDetailsUseCase
+    private val getMovieCastDetailsUseCase: GetMovieCastDetailsUseCase,
+    private val addMovieToPlaylistUseCase: AddMovieToPlaylistUseCase
 ) : BaseViewModel<MovieDetailsSideEffects>(appState) {
     init {
         loadMovieDetails()
@@ -45,7 +47,14 @@ class MovieDetailsViewModel @Inject constructor(
         } else {
             postSideEffect(MovieDetailsSideEffects.ShowErrorState)
         }
-
     }
 
+    fun addMovie() = intent {
+        state.value.movieDetailsState.movieData?.let {
+            addMovieToPlaylistUseCase.insertMovieToPlaylist(
+                movie = it,
+                playlistId = state.value.playlistState.playlists[0].playlistId
+            )
+        }
+    }
 }

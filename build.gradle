@@ -4,7 +4,7 @@ buildscript {
     ext {
         compose_version = '1.1.1'
         orbit_version = '4.3.2'
-        navigation_compose = '2.4.2'
+        navigation_compose = '2.5.0'
         gson = '2.9.0'
         lifecycle_ext = '2.2.0'
         lifecycle_viewmodel_ext = '2.5.0-rc01'
@@ -17,7 +17,6 @@ buildscript {
         hilt_work_version = "1.0.0"
         work_runtime_version = "2.7.1"
         desugar_version = "1.1.5"
-        accompanist_pager_version = "0.23.1"
         accompanist_incets_version = "0.23.1"
         accompanist_animation_navigation_version = "0.24.10-beta"
         constraint_compose_version = "1.0.1"

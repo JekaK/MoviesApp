@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface PlaylistLocalDataSource {
 
-    fun insertPlaylist(playlist: Playlist)
+    suspend fun insertPlaylist(playlist: Playlist): Long
 
-    fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)
+    suspend fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef): Long
 
     fun getPlaylistsWithMovies(): Flow<List<PlaylistWithMovies>>
 

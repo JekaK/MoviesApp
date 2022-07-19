@@ -1,17 +1,12 @@
 package com.krykun.movieapp.ext
 
-import android.annotation.SuppressLint
 import android.graphics.Rect
-import android.os.Parcel
-import android.os.Parcelable
 import android.view.View
 import android.view.ViewTreeObserver
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
-import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.LazyListItemInfo
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -22,7 +17,6 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.google.accompanist.insets.LocalWindowInsets
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -63,7 +57,7 @@ fun rememberIsKeyboardOpen(): State<Boolean> {
         val listener = ViewTreeObserver.OnGlobalLayoutListener { value = view.isKeyboardOpen() }
         viewTreeObserver.addOnGlobalLayoutListener(listener)
 
-        awaitDispose { viewTreeObserver.removeOnGlobalLayoutListener(listener)  }
+        awaitDispose { viewTreeObserver.removeOnGlobalLayoutListener(listener) }
     }
 }
 
@@ -92,4 +86,28 @@ fun Modifier.clearFocusOnKeyboardDismiss(): Modifier = composed {
             }
         }
     }
+}
+
+fun LazyListState.calculateCurrentOffsetForPage(page: Int): Float {
+    val currentLayoutPageOffset = layoutInfo.visibleItemsInfo.lastOrNull { it.offset <= 0 }
+        ?.let { current ->
+            // We coerce since itemSpacing can make the offset > 1f.
+            // We don't want to count spacing in the offset so cap it to 1f
+            (-current.offset / current.size.toFloat()).coerceIn(
+                0f,
+                1f
+            )
+        } ?: 0f
+    val currentLayoutPageInfo: LazyListItemInfo? =
+        layoutInfo.visibleItemsInfo.lastOrNull { it.offset <= 0 }
+    val currentPageOffset: Float by derivedStateOf {
+        currentLayoutPageInfo?.let {
+            // The current page offset is the current layout page delta from `currentPage`
+            // (which is only updated after a scroll/animation).
+            // We calculate this by looking at the current layout page + it's offset,
+            // then subtracting the 'current page'.
+            it.index + currentLayoutPageOffset - firstVisibleItemIndex
+        } ?: 0f
+    }
+    return (firstVisibleItemIndex + currentPageOffset) - page
 }

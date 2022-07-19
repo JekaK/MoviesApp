@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlaylist(playlist: Playlist)
+    suspend fun insertPlaylist(playlist: Playlist): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)
+    suspend fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef): Long
 
     @Transaction
     @Query("SELECT * FROM Playlist")

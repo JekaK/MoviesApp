@@ -2,14 +2,13 @@ package com.krykun.data.model.local
 
 import androidx.room.*
 
-@Fts4
 @Entity
 data class Playlist(
-    @PrimaryKey val playlistId: Long,
+    @PrimaryKey(autoGenerate = true)
+    val playlistId: Long = 0,
     val playlistName: String
 )
 
-@Fts4
 @Entity
 data class Movie(
     @PrimaryKey val movieId: Long,
@@ -18,7 +17,6 @@ data class Movie(
     val type: String
 )
 
-@Fts4
 @Entity(primaryKeys = ["playlistId", "movieId"])
 data class PlaylistMovieCrossRef(
     val playlistId: Long,

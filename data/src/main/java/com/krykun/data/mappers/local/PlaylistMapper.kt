@@ -9,7 +9,6 @@ object PlaylistMapper {
 
     fun Playlist.toPlaylist(): com.krykun.data.model.local.Playlist {
         return com.krykun.data.model.local.Playlist(
-            playlistId = playlistId,
             playlistName = name
         )
     }

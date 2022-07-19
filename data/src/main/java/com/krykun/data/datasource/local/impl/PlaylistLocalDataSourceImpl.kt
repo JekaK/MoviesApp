@@ -9,13 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 class PlaylistLocalDataSourceImpl(private val playlistDao: PlaylistDao) :
     PlaylistLocalDataSource {
-    override fun insertPlaylist(playlist: Playlist) {
+    override suspend fun insertPlaylist(playlist: Playlist) =
         playlistDao.insertPlaylist(playlist)
-    }
 
-    override fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef) {
+    override suspend fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef) =
         playlistDao.insertPlaylistMovieCrossRef(crossRef)
-    }
 
     override fun getPlaylistsWithMovies(): Flow<List<PlaylistWithMovies>> {
         return playlistDao.getPlaylistsWithMovies()

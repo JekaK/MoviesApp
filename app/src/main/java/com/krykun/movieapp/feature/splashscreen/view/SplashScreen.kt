@@ -56,7 +56,7 @@ private fun handleSideEffect(
     when (sideEffect) {
         is SplashScreenSideEffect.MoveToNextScreen -> {
             navHostController.popBackStack()
-            navHostController.navigate(Screen.Discover().route)
+            navHostController.navigate(Screen.Home().route)
         }
     }
 }

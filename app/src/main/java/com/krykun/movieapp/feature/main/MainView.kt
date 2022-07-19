@@ -60,7 +60,7 @@ fun MainView(
                         BottomNavigationView(
                             navController = navController,
                             listOf(
-                                Screen.Discover(),
+                                Screen.Home(),
                                 Screen.Search(),
                                 Screen.Favourite()
                             )

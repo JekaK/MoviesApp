@@ -11,10 +11,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import kotlin.math.*
 
-@OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+@OptIn(ExperimentalSnapperApi::class)
 @ExperimentalSnapperApi
 @Composable
 public fun rememberSnapperFlingBehavior(
@@ -36,7 +35,7 @@ public fun rememberSnapperFlingBehavior(
 )
 
 
-@OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+@OptIn(ExperimentalSnapperApi::class)
 @ExperimentalSnapperApi
 @Composable
 public fun rememberSnapperFlingBehavior(
@@ -77,7 +76,7 @@ public fun rememberSnapperFlingBehavior(
  * @param maximumFlingDistance Block which returns the maximum fling distance in pixels.
  * The returned value should be > 0.
  */
-@OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+@OptIn(ExperimentalSnapperApi::class)
 @Composable
 @Deprecated("The maximumFlingDistance parameter has been replaced with snapIndex")
 @Suppress("DEPRECATION")
@@ -109,7 +108,7 @@ public fun rememberSnapperFlingBehavior(
  * @param endContentPadding The amount of content padding on the end edge of the lazy list
  * in dps (end/bottom depending on the scrolling direction).
  */
-@OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+@OptIn(ExperimentalSnapperApi::class)
 @ExperimentalSnapperApi
 @Composable
 public fun rememberLazyListSnapperLayoutInfo(
@@ -135,7 +134,7 @@ public fun rememberLazyListSnapperLayoutInfo(
  * @param endContentPadding The amount of content padding on the end edge of the lazy list
  * in pixels (end/bottom depending on the scrolling direction).
  */
-@OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+@OptIn(ExperimentalSnapperApi::class)
 @ExperimentalSnapperApi
 public class LazyListSnapperLayoutInfo(
     private val lazyListState: LazyListState,
@@ -162,7 +161,7 @@ public class LazyListSnapperLayoutInfo(
         get() = lazyListState.layoutInfo.visibleItemsInfo.asSequence()
             .map(::LazyListSnapperLayoutItemInfo)
 
-    @OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+    @OptIn(ExperimentalSnapperApi::class)
     override fun distanceToIndexSnap(index: Int): Int {
         val itemInfo = visibleItems.firstOrNull { it.index == index }
         if (itemInfo != null) {

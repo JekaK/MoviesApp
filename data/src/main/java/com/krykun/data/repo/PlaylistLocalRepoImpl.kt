@@ -11,9 +11,9 @@ import javax.inject.Inject
 class PlaylistLocalRepoImpl @Inject constructor(
     private val playlistsLocalDataSource: PlaylistLocalDataSource
 ) : PlaylistsLocalRepo {
-    override fun insertPlaylist(playlist: Playlist) {
+    override suspend fun insertPlaylist(playlist: Playlist): Long =
         playlistsLocalDataSource.insertPlaylist(playlist.toPlaylist())
-    }
+
 
     override fun getAllPlaylists(): Flow<List<Playlist>> {
         return playlistsLocalDataSource.getPlaylistsWithMovies()

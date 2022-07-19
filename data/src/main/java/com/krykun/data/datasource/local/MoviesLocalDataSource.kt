@@ -3,6 +3,6 @@ package com.krykun.data.datasource.local
 import com.krykun.data.model.local.Movie
 
 interface MoviesLocalDataSource {
-    fun insertMovie(movie: Movie, playlistId: Long)
+    suspend fun insertMovie(movie: Movie, playlistId: Long): Long
     fun removeMovieFromPlaylist(movie: Movie, playlistId: Long)
 }

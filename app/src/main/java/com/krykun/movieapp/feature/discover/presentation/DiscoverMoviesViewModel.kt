@@ -49,7 +49,7 @@ class DiscoverMoviesViewModel @Inject constructor(
             it.homeState.discoverMoviesState
         }
 
-    fun setScrollOffset(scrollOffset: Float) = intent {
+    fun setScrollOffset(scrollOffset: Int) = intent {
         reduce {
             state.value = state.value.copy(
                 homeState = state.value.homeState.copy(

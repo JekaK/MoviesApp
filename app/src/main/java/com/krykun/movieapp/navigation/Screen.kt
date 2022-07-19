@@ -11,10 +11,10 @@ sealed class Screen(
     open val icon: ImageVector = Icons.Default.Home,
     open val route: String
 ) {
-    data class Discover(
-        override val title: String = "Discover",
+    data class Home(
+        override val title: String = "Home",
         override val icon: ImageVector = Icons.Filled.Home,
-        override val route: String = "discover_bottom_screen"
+        override val route: String = "home_bottom_screen"
     ) : Screen(route = route)
 
     data class Search(

@@ -1,9 +1,14 @@
+@file:OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
+
 package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -28,14 +33,18 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.google.accompanist.pager.*
+import androidx.paging.compose.itemsIndexed
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.custom.DominantColorState
 import com.krykun.movieapp.custom.DynamicThemePrimaryColorsFromImage
 import com.krykun.movieapp.custom.rememberDominantColorState
+import com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi
+import com.krykun.movieapp.custom.snaper.SnapOffsets
+import com.krykun.movieapp.custom.snaper.rememberSnapperFlingBehavior
 import com.krykun.movieapp.custom.verticalGradientScrim
+import com.krykun.movieapp.ext.calculateCurrentOffsetForPage
 import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.ext.contrastAgainst
 import com.krykun.movieapp.ext.lerp
@@ -48,14 +57,14 @@ import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSnapperApi::class)
 @Composable
 fun DiscoverView(
     viewModel: DiscoverMoviesViewModel,
     navHostController: NavHostController,
 ) {
     val movies = viewModel.getDiscoverMovies.collectAndHandleState(viewModel::handleLoadState)
-    val lazyListState = rememberPagerState()
+    val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     val surfaceColor = MaterialTheme.colors.surface
@@ -71,6 +80,16 @@ fun DiscoverView(
     }
 
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
+    viewModel.collectSideEffect {
+        handleSideEffects(
+            it,
+            movies,
+            dominantColorState,
+            lazyListState,
+            scope
+        )
+    }
 
     if (isLoading.value == LoadingState.LOADING) {
         LoadingView()
@@ -98,76 +117,86 @@ fun DiscoverView(
                 CompositionLocalProvider(
                     LocalOverscrollConfiguration provides null
                 ) {
-                    HorizontalPager(
-                        count = movies.itemCount,
+                    LazyRow(
+                        flingBehavior = rememberSnapperFlingBehavior(
+                            lazyListState = lazyListState,
+                            snapOffsetForItem = SnapOffsets.Center,
+                            endContentPadding = 100.dp,
+                            snapIndex = { layoutInfo, startIndex, targetIndex ->
+                                targetIndex.coerceIn(startIndex - 1, startIndex + 1)
+                            }
+                        ),
                         state = lazyListState,
                         modifier = Modifier
                             .fillMaxSize(),
                         contentPadding = PaddingValues(horizontal = 110.dp),
-                    ) { page ->
-                        viewModel.triggerOnPageChanged(lazyListState.currentPage)
-                        Card(
-                            Modifier
-                                .graphicsLayer {
-                                    val absolutePageOffset =
-                                        calculateCurrentOffsetForPage(page).absoluteValue
+                    ) {
+                        itemsIndexed(movies) { index, item ->
+                            viewModel.triggerOnPageChanged(lazyListState.firstVisibleItemIndex)
+                            Card(
+                                Modifier
+                                    .graphicsLayer {
+                                        val absolutePageOffset =
+                                            lazyListState.calculateCurrentOffsetForPage(index).absoluteValue
 
-                                    val pageOffset = calculateCurrentOffsetForPage(page)
+                                        val pageOffset =
+                                            lazyListState.calculateCurrentOffsetForPage(index)
 
-                                    val degrees = if (pageOffset > 0) {
-                                        360
-                                    } else {
-                                        -360
-                                    }
+                                        val degrees = if (pageOffset > 0) {
+                                            360
+                                        } else {
+                                            -360
+                                        }
 
-                                    rotationZ = degrees * lerp(
-                                        start = 0.98f,
-                                        stop = 1f,
-                                        fraction = 1f - absolutePageOffset.coerceIn(0f, 1f)
+                                        rotationZ = degrees * lerp(
+                                            start = 0.98f,
+                                            stop = 1f,
+                                            fraction = 1f - absolutePageOffset.coerceIn(0f, 1f)
+                                        )
+
+                                        lerp(
+                                            start = 0.8f,
+                                            stop = 1f,
+                                            fraction = 1f - absolutePageOffset.coerceIn(0f, 1f)
+                                        ).also { scale ->
+                                            scaleX = scale
+                                            scaleY = scale
+                                        }
+
+                                        lerp(
+                                            start = 0f,
+                                            stop = 1f,
+                                            fraction = 1f - absolutePageOffset.coerceIn(0f, 1f)
+                                        ).also { scale ->
+                                            translationY = scale
+                                        }
+
+                                    },
+                                shape = RoundedCornerShape(20.dp)
+                            ) {
+                                movies[index]?.let {
+                                    DiscoverItemView(
+                                        moviesItem = it,
+                                        modifier = Modifier
+                                            .onGloballyPositioned {
+                                                val offset = it.positionInRoot()
+                                                parentOffsetState.value = offset
+                                            }
+                                            .pointerInput(Unit) {
+                                                detectTapGestures(onTap = {
+                                                    if (index == lazyListState.firstVisibleItemIndex ||
+                                                        index == lazyListState.firstVisibleItemScrollOffset.absoluteValue
+                                                    ) {
+                                                        viewModel.setMovieDetailsId(
+                                                            movies.itemSnapshotList.items[index].id
+                                                                ?: -1
+                                                        )
+                                                        navHostController.navigate(Screen.MovieDetails().route)
+                                                    }
+                                                })
+                                            }
                                     )
-
-                                    lerp(
-                                        start = 0.8f,
-                                        stop = 1f,
-                                        fraction = 1f - absolutePageOffset.coerceIn(0f, 1f)
-                                    ).also { scale ->
-                                        scaleX = scale
-                                        scaleY = scale
-                                    }
-
-                                    lerp(
-                                        start = 0f,
-                                        stop = 1f,
-                                        fraction = 1f - absolutePageOffset.coerceIn(0f, 1f)
-                                    ).also { scale ->
-                                        translationY = scale
-                                    }
-
-                                },
-                            shape = RoundedCornerShape(20.dp)
-                        ) {
-                            movies[page]?.let {
-                                DiscoverItemView(
-                                    moviesItem = it,
-                                    modifier = Modifier
-                                        .onGloballyPositioned {
-                                            val offset = it.positionInRoot()
-                                            parentOffsetState.value = offset
-                                        }
-                                        .pointerInput(Unit) {
-                                            detectTapGestures(onTap = {
-                                                if (page == lazyListState.currentPage ||
-                                                    page == lazyListState.currentPageOffset.absoluteValue.toInt()
-                                                ) {
-                                                    viewModel.setMovieDetailsId(
-                                                        movies.itemSnapshotList.items[lazyListState.currentPage].id
-                                                            ?: -1
-                                                    )
-                                                    navHostController.navigate(Screen.MovieDetails().route)
-                                                }
-                                            })
-                                        }
-                                )
+                                }
                             }
                         }
                     }
@@ -179,8 +208,8 @@ fun DiscoverView(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
-                viewModel.setLastScrolledPage(lazyListState.currentPage)
-                viewModel.setScrollOffset(lazyListState.currentPageOffset)
+                viewModel.setLastScrolledPage(lazyListState.firstVisibleItemIndex)
+                viewModel.setScrollOffset(lazyListState.firstVisibleItemScrollOffset)
             }
         }
 
@@ -196,6 +225,7 @@ fun DiscoverView(
     //TODO remove this when HorizontalPager will remember scroll position when recomposing
     LaunchedEffect(key1 = movies.loadState.refresh) {
         if (movies.loadState.refresh is LoadState.NotLoading) {
+
             viewModel.getCurrentPageAndScrollOffset()
             viewModel.setLoadingState(LoadingState.STATIONARY)
         } else if (movies.loadState.refresh is LoadState.Loading) {
@@ -211,24 +241,13 @@ fun DiscoverView(
                 }
         }
     }
-
-    viewModel.collectSideEffect {
-        handleSideEffects(
-            it,
-            movies,
-            dominantColorState,
-            lazyListState,
-            scope
-        )
-    }
 }
 
-@OptIn(ExperimentalPagerApi::class)
 private fun handleSideEffects(
     sideEffects: DiscoverMoviesSideEffects,
     movies: LazyPagingItems<MovieDiscoverItem>,
     dominantColorState: DominantColorState,
-    lazyListState: PagerState,
+    lazyListState: LazyListState,
     scope: CoroutineScope
 ) {
     when (sideEffects) {
@@ -245,9 +264,9 @@ private fun handleSideEffects(
         is DiscoverMoviesSideEffects.GetCurrentDiscoverPageAndScrollOffset -> {
             val currentPage = sideEffects.currentPageAndOffset
             scope.launch {
-                if (currentPage <= lazyListState.pageCount) {
-                    lazyListState.scrollToPage(currentPage, 0f)
-                }
+
+                lazyListState.scrollToItem(currentPage, 0)
+
             }
         }
         is DiscoverMoviesSideEffects.TryReloadDiscoverPage -> {

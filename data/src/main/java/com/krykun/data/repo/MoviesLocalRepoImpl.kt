@@ -11,13 +11,13 @@ class MoviesLocalRepoImpl @Inject constructor(
     private val moviesLocalDataSource: MoviesLocalDataSource,
 ) : MoviesLocalRepo {
 
-    override fun insertMovie(movie: MovieDetails, playlistId: Long) {
+    override suspend fun insertMovie(movie: MovieDetails, playlistId: Long): Long =
         moviesLocalDataSource.insertMovie(movie.toMovie(), playlistId)
-    }
 
-    override fun insertMovie(movie: TvDetails, playlistId: Long) {
+
+    override suspend fun insertMovie(movie: TvDetails, playlistId: Long): Long =
         moviesLocalDataSource.insertMovie(movie.toMovie(), playlistId)
-    }
+
 
     override fun removeMovieFromPlaylist(movie: MovieDetails, playlistId: Long) {
         moviesLocalDataSource.removeMovieFromPlaylist(movie.toMovie(), playlistId)

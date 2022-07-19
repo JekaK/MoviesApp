@@ -16,4 +16,5 @@
     <color name="reviews_color">#51ce66</color>
     <color name="light_gray_color">#d1d1dc</color>
     <color name="chip_color">#3456fe</color>
+    <color name="floating_button_color">#00dac6</color>
 </resources>

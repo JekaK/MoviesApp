@@ -23,6 +23,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.krykun.domain.model.remote.movies.Movie
+import com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi
 import com.krykun.movieapp.custom.snaper.SnapOffsets
 import com.krykun.movieapp.custom.snaper.rememberSnapperFlingBehavior
 import com.krykun.movieapp.ext.collectAndHandleState
@@ -31,13 +32,12 @@ import com.krykun.movieapp.feature.trending.presentation.SelectedMovieType
 import com.krykun.movieapp.feature.trending.presentation.TrendingMoviesSideEffects
 import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
 import com.krykun.movieapp.navigation.Screen
-import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(
-    com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class
+    ExperimentalSnapperApi::class
 )
 @Composable
 fun TrendingView(
@@ -228,10 +228,7 @@ fun TrendingView(
     }
 }
 
-@OptIn(
-    ExperimentalFoundationApi::class, ExperimentalSnapperApi::class,
-    com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class
-)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSnapperApi::class)
 @Composable
 private fun BasicMoviesItem(
     lazyPaging: LazyPagingItems<Movie>,
