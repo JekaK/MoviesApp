@@ -1,6 +1,5 @@
 package com.krykun.movieapp.navigation
 
-
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +16,6 @@ import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
 import com.krykun.movieapp.feature.home.view.HomeView
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.person.view.PersonView
-import com.krykun.movieapp.feature.playlist.presentation.PlaylistViewModel
 import com.krykun.movieapp.feature.playlist.view.PlaylistView
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.feature.search.view.SearchView
@@ -25,7 +23,6 @@ import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewMod
 import com.krykun.movieapp.feature.splashscreen.view.AnimatedSplashScreen
 import com.krykun.movieapp.feature.trending.presentation.TrendingViewModel
 import com.krykun.movieapp.feature.tvseries.TvSeriesDetailsView
-
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMotionApi::class)
 @Composable
@@ -38,7 +35,6 @@ fun MainNavigation(
     val splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
     val trendingViewModel: TrendingViewModel = hiltViewModel()
     val searchViewModel: SearchViewModel = hiltViewModel()
-    val playlistViewModel: PlaylistViewModel = hiltViewModel()
 
     AnimatedNavHost(
         navController = navController,
@@ -68,7 +64,7 @@ fun MainNavigation(
             )
         }
         composable(route = Screen.Favourite().route) {
-            PlaylistView(viewModel = playlistViewModel)
+            PlaylistView()
         }
         composable(route = Screen.MovieDetails().route) {
             MovieDetailsView(navHostController = navController)

@@ -35,7 +35,7 @@ class SplashScreenViewModel @Inject constructor(
 
     init {
         setScreenOpen()
-        insertDefaultPlaylist()
+        makeInitialDelay()
     }
 
     private fun setScreenOpen() = intent {
@@ -46,7 +46,7 @@ class SplashScreenViewModel @Inject constructor(
         }
     }
 
-    private fun insertDefaultPlaylist() = intent {
+    private fun insertDefaultPlaylist(callback: () -> Unit) = intent {
         var job: Job? = null
         job = viewModelScope.launch {
             getAllPlaylistsUseCase.getAllPlaylists()
@@ -61,11 +61,12 @@ class SplashScreenViewModel @Inject constructor(
                             reduce {
                                 state.value = state.value.copy(
                                     playlistState = state.value.playlistState.copy(
-                                        playlists = listOf(playlist)
+                                        playlists = listOf(playlist.copy(playlistId = playlistInsertResult))
                                     )
                                 )
                                 state
                             }
+                            callback()
                             job?.cancel()
                         }
                     } else {
@@ -77,29 +78,34 @@ class SplashScreenViewModel @Inject constructor(
                             )
                             state
                         }
+                        callback()
                         job?.cancel()
                     }
                 }
         }
     }
 
-    fun makeInitialDelay() = intent {
-        val response = getMovieGenresUseCase.getMovieGenres()
-        val tvResponse = getTvGenresUseCase.getTvGenres()
-        if (response.isSuccess &&
-            tvResponse.isSuccess
-        ) {
-            reduce {
-                state.value = state.value.copy(
-                    baseMoviesState = state.value.baseMoviesState.copy(
-                        genres = (response.getOrNull() ?: listOf()) +
-                                (tvResponse.getOrNull() ?: listOf()),
-                    )
-                )
-                state
+    private fun makeInitialDelay() {
+        insertDefaultPlaylist {
+            intent {
+                val response = getMovieGenresUseCase.getMovieGenres()
+                val tvResponse = getTvGenresUseCase.getTvGenres()
+                if (response.isSuccess &&
+                    tvResponse.isSuccess
+                ) {
+                    reduce {
+                        state.value = state.value.copy(
+                            baseMoviesState = state.value.baseMoviesState.copy(
+                                genres = (response.getOrNull() ?: listOf()) +
+                                        (tvResponse.getOrNull() ?: listOf()),
+                            )
+                        )
+                        state
+                    }
+                    delay(splashDelay)
+                    postSideEffect(SplashScreenSideEffect.MoveToNextScreen)
+                }
             }
-            delay(splashDelay)
-            postSideEffect(SplashScreenSideEffect.MoveToNextScreen)
         }
     }
 }

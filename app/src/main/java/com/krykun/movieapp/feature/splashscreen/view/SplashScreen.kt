@@ -37,8 +37,6 @@ fun AnimatedSplashScreen(
         targetValue = if (viewModel.startAnimFlag.value) 1f else 0f,
         animationSpec = tween(durationMillis = 1000)
     )
-
-    viewModel.makeInitialDelay()
     viewModel.collectSideEffect {
         handleSideEffect(it, navHostController)
     }
