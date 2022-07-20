@@ -1,5 +1,3 @@
-@file:OptIn(com.krykun.movieapp.custom.snaper.ExperimentalSnapperApi::class)
-
 package com.krykun.movieapp.feature.discover.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -225,7 +223,6 @@ fun DiscoverView(
     //TODO remove this when HorizontalPager will remember scroll position when recomposing
     LaunchedEffect(key1 = movies.loadState.refresh) {
         if (movies.loadState.refresh is LoadState.NotLoading) {
-
             viewModel.getCurrentPageAndScrollOffset()
             viewModel.setLoadingState(LoadingState.STATIONARY)
         } else if (movies.loadState.refresh is LoadState.Loading) {

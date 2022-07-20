@@ -1,6 +1,5 @@
 package com.krykun.movieapp.feature.playlist.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -44,7 +43,7 @@ fun PlaylistItemView(playlist: Playlist) {
             )
             .background(Color.Transparent)
             .fillMaxWidth()
-            .height(350.dp)
+            .height(200.dp)
     ) {
         Row(
             modifier = Modifier
@@ -124,11 +123,6 @@ private fun MovieItemView(modifier: Modifier = Modifier, movie: Movie) {
             .width(100.dp)
             .height(150.dp)
             .clip(RoundedCornerShape(20.dp))
-            .border(
-                width = 1.dp,
-                color = Color.DarkGray,
-                shape = (RoundedCornerShape(20.dp))
-            )
     ) {
         CoilImage(
             imageModel = Constants.IMAGE_BASE_URL + movie.poster,

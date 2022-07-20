@@ -5,7 +5,8 @@ import com.krykun.domain.model.remote.tvdetails.TvDetails
 data class TvSeriesDetailsState(
     val tvId: Int = -1,
     val tvDetails: TvDetails? = null,
-    val tvState: TvSeriesState = TvSeriesState.DEFAULT
+    val tvState: TvSeriesState = TvSeriesState.DEFAULT,
+    val isAdded: Boolean = true
 )
 
 enum class TvSeriesState {

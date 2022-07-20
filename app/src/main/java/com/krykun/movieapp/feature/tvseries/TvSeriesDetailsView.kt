@@ -1,21 +1,18 @@
 package com.krykun.movieapp.feature.tvseries
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
+import android.annotation.SuppressLint
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Reviews
 import androidx.compose.material.icons.filled.Star
@@ -75,16 +72,22 @@ fun TvSeriesDetailsView(
     val isRatingVisible = remember {
         mutableStateOf(false)
     }
+    val isAdded = remember {
+        mutableStateOf(true)
+    }
     Crossfade(targetState = movieDetailsState.value) {
         when (it) {
             MovieDetailsState.LOADING -> {
                 LoadingView()
             }
             MovieDetailsState.DEFAULT -> {
-                TvSeriesDetailsView(
+                TvSeriesDetailsBasicView(
                     movieData = movieData,
                     navHostController = navHostController,
-                    isRatingVisible = isRatingVisible
+                    isRatingVisible = isRatingVisible,
+                    isAdded = isAdded,
+                    scope = scope,
+                    viewModel = viewModel
                 )
             }
             MovieDetailsState.ERROR -> {
@@ -95,11 +98,12 @@ fun TvSeriesDetailsView(
 
     viewModel.collectSideEffect {
         handleSideEffects(
-            it,
-            movieData,
-            isRatingVisible,
-            movieDetailsState,
-            scope
+            sideEffects = it,
+            movieData = movieData,
+            isRatingVisible = isRatingVisible,
+            movieDetailsState = movieDetailsState,
+            scope = scope,
+            isAdded = isAdded
         )
     }
 }
@@ -110,107 +114,142 @@ enum class MovieDetailsState {
     ERROR
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
-private fun TvSeriesDetailsView(
+private fun TvSeriesDetailsBasicView(
     movieData: MutableState<TvDetails?>,
     navHostController: NavHostController,
-    isRatingVisible: MutableState<Boolean>
+    isRatingVisible: MutableState<Boolean>,
+    isAdded: MutableState<Boolean>,
+    scope: CoroutineScope,
+    viewModel: TvSeriesDetailsViewModel
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val scrollSate = rememberScrollState()
+    val scaffoldState = rememberScaffoldState()
+    val message = stringResource(R.string.tv_series_added_to_playlist)
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            BackBtn(navHostController = navHostController)
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollSate)
-            ) {
-                HeaderView(
-                    backdropPath = movieData.value?.backdropPath ?: ""
-                )
-                RatingView(
-                    isRatingVisible = isRatingVisible,
-                    screenWidth = screenWidth,
-                    movieData = movieData
-                )
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
-                        TitleView(movieData)
+        Scaffold(
+            scaffoldState = scaffoldState,
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = !isAdded.value,
+                    enter = scaleIn(),
+                    exit = scaleOut()
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            viewModel.addTvSeries()
+                            scope.launch {
+                                scaffoldState.snackbarHostState
+                                    .showSnackbar(message)
+                            }
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        contentColor = colorResource(id = R.color.floating_button_color)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add, contentDescription = "",
+                            tint = Color.White
+                        )
                     }
-                    LazyRow {
-                        items(count = movieData.value?.genres?.size ?: 0) { index ->
-                            Text(
-                                text = movieData.value?.genres?.get(index)?.name ?: "",
-                                modifier = Modifier
-                                    .padding(
-                                        start = if (index == 0) {
-                                            24.dp
-                                        } else {
-                                            2.dp
-                                        },
-                                        end = 2.dp,
-                                    )
-                                    .border(
-                                        width = 1.dp,
-                                        color = Color.LightGray,
-                                        shape = CircleShape
-                                    )
-                                    .padding(
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        top = 5.dp,
-                                        bottom = 5.dp
-                                    ),
-                                color = colorResource(id = R.color.white),
-
-                                )
-                            Spacer(modifier = Modifier.width(8.dp))
+                }
+            },
+            backgroundColor = Color.Transparent
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                BackBtn(navHostController = navHostController)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollSate)
+                ) {
+                    HeaderView(
+                        backdropPath = movieData.value?.backdropPath ?: ""
+                    )
+                    RatingView(
+                        isRatingVisible = isRatingVisible,
+                        screenWidth = screenWidth,
+                        movieData = movieData
+                    )
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+                            TitleView(movieData)
                         }
+                        LazyRow {
+                            items(count = movieData.value?.genres?.size ?: 0) { index ->
+                                Text(
+                                    text = movieData.value?.genres?.get(index)?.name ?: "",
+                                    modifier = Modifier
+                                        .padding(
+                                            start = if (index == 0) {
+                                                24.dp
+                                            } else {
+                                                2.dp
+                                            },
+                                            end = 2.dp,
+                                        )
+                                        .border(
+                                            width = 1.dp,
+                                            color = Color.LightGray,
+                                            shape = CircleShape
+                                        )
+                                        .padding(
+                                            start = 16.dp,
+                                            end = 16.dp,
+                                            top = 5.dp,
+                                            bottom = 5.dp
+                                        ),
+                                    color = colorResource(id = R.color.white),
+
+                                    )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                        }
+                        Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Text(
+                                text = stringResource(R.string.plot_summary),
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 20.sp
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = movieData.value?.overview ?: "",
+                                fontWeight = FontWeight.Normal,
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 14.sp
+                            )
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+                    }
+                    movieData.value?.seasons?.let {
+                        SeasonsView(it)
                     }
                     Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
                         Spacer(modifier = Modifier.height(30.dp))
                         Text(
-                            text = stringResource(R.string.plot_summary),
+                            text = stringResource(R.string.cast_and_crew),
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                             fontSize = 20.sp
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = movieData.value?.overview ?: "",
-                            fontWeight = FontWeight.Normal,
-                            color = Color.White.copy(alpha = 0.7f),
-                            fontSize = 14.sp
-                        )
-                        Spacer(modifier = Modifier.height(30.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                }
-                movieData.value?.seasons?.let {
-                    SeasonsView(it)
-                }
-                Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Text(
-                        text = stringResource(R.string.cast_and_crew),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                LazyRow {
-                    itemsIndexed(
-                        movieData.value?.cast?.castAndCrew ?: listOf()
-                    ) { index, item ->
-                        if (item is Cast) {
-                            CastView(castItem = item)
-                        } else {
-                            CrewView(crewItem = item as Crew)
+                    LazyRow {
+                        itemsIndexed(
+                            movieData.value?.cast?.castAndCrew ?: listOf()
+                        ) { index, item ->
+                            if (item is Cast) {
+                                CastView(castItem = item)
+                            } else {
+                                CrewView(crewItem = item as Crew)
+                            }
                         }
                     }
                 }
@@ -525,6 +564,7 @@ private fun handleSideEffects(
     isRatingVisible: MutableState<Boolean>,
     movieDetailsState: MutableState<MovieDetailsState>,
     scope: CoroutineScope,
+    isAdded: MutableState<Boolean>,
 ) {
     when (sideEffects) {
         is TvSeriesDetailsSideEffects.ShowLoadingState -> {
@@ -542,6 +582,9 @@ private fun handleSideEffects(
                 delay(300)
                 isRatingVisible.value = true
             }
+        }
+        is TvSeriesDetailsSideEffects.UpdateIsAddedState -> {
+            isAdded.value = sideEffects.isAdded
         }
     }
 }

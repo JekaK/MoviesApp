@@ -6,4 +6,6 @@ sealed class TvSeriesDetailsSideEffects {
     data class ShowMovieData(val tvDetails: TvDetails?) : TvSeriesDetailsSideEffects()
     object ShowLoadingState : TvSeriesDetailsSideEffects()
     object ShowErrorState : TvSeriesDetailsSideEffects()
+    data class UpdateIsAddedState(val isAdded: Boolean) : TvSeriesDetailsSideEffects()
+
 }

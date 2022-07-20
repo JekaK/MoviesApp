@@ -128,7 +128,7 @@ private fun BaseMovieDetailsView(
     val screenWidth = configuration.screenWidthDp.dp
     val scrollSate = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
-    val message = stringResource(R.string.movie_added_to_palylist)
+    val message = stringResource(R.string.movie_added_to_playlist)
 
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null
