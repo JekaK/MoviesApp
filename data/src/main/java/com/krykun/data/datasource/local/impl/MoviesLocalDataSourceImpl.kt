@@ -4,6 +4,7 @@ import com.krykun.data.dao.MovieDao
 import com.krykun.data.datasource.local.MoviesLocalDataSource
 import com.krykun.data.model.local.Movie
 import com.krykun.data.model.local.PlaylistMovieCrossRef
+import kotlinx.coroutines.flow.Flow
 
 class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) :
     MoviesLocalDataSource {
@@ -27,5 +28,9 @@ class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) :
                 movieId = movie.movieId
             )
         )
+    }
+
+    override fun isMovieAdded(movieId: Int): Flow<Boolean> {
+        return movieDao.isAddedToPlaylist(movieId)
     }
 }

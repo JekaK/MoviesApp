@@ -1,12 +1,9 @@
 package com.krykun.movieapp.feature.moviedetails
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -74,6 +71,9 @@ fun MovieDetailsView(
     val isRatingVisible = remember {
         mutableStateOf(false)
     }
+    val isAdded = remember {
+        mutableStateOf(true)
+    }
     Crossfade(targetState = movieDetailsState.value) {
         when (it) {
             MovieDetailsState.LOADING -> {
@@ -82,9 +82,11 @@ fun MovieDetailsView(
             MovieDetailsState.DEFAULT -> {
                 BaseMovieDetailsView(
                     movieData = movieData,
+                    scope = scope,
                     navHostController = navHostController,
                     isRatingVisible = isRatingVisible,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    isAdded = isAdded
                 )
             }
             MovieDetailsState.ERROR -> {
@@ -95,11 +97,12 @@ fun MovieDetailsView(
 
     viewModel.collectSideEffect {
         handleSideEffects(
-            it,
-            movieData,
-            isRatingVisible,
-            movieDetailsState,
-            scope
+            sideEffects = it,
+            movieData = movieData,
+            isRatingVisible = isRatingVisible,
+            movieDetailsState = movieDetailsState,
+            scope = scope,
+            isAdded = isAdded
         )
     }
 }
@@ -111,38 +114,53 @@ enum class MovieDetailsState {
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 private fun BaseMovieDetailsView(
     movieData: MutableState<MovieDetails?>,
+    scope: CoroutineScope,
     navHostController: NavHostController,
     isRatingVisible: MutableState<Boolean>,
-    viewModel: MovieDetailsViewModel
+    viewModel: MovieDetailsViewModel,
+    isAdded: MutableState<Boolean>
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val scrollSate = rememberScrollState()
+    val scaffoldState = rememberScaffoldState()
+    val message = stringResource(R.string.movie_added_to_palylist)
+
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null
     ) {
         Scaffold(
+            scaffoldState = scaffoldState,
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        viewModel.addMovie()
-                    },
-                    shape = RoundedCornerShape(20.dp),
-                    contentColor = colorResource(id = R.color.floating_button_color)
+                AnimatedVisibility(
+                    visible = !isAdded.value,
+                    enter = scaleIn(),
+                    exit = scaleOut()
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add, contentDescription = "",
-                        tint = Color.White
-                    )
+                    FloatingActionButton(
+                        onClick = {
+                            viewModel.addMovie()
+                            scope.launch {
+                                scaffoldState.snackbarHostState
+                                    .showSnackbar(message)
+                            }
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        contentColor = colorResource(id = R.color.floating_button_color)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add, contentDescription = "",
+                            tint = Color.White
+                        )
+                    }
                 }
             },
             backgroundColor = Color.Transparent
         ) {
-
             Box(modifier = Modifier.fillMaxSize()) {
                 BackBtn(navHostController = navHostController)
                 Column(
@@ -521,6 +539,7 @@ private fun handleSideEffects(
     isRatingVisible: MutableState<Boolean>,
     movieDetailsState: MutableState<MovieDetailsState>,
     scope: CoroutineScope,
+    isAdded: MutableState<Boolean>,
 ) {
     when (sideEffects) {
         is MovieDetailsSideEffects.ShowLoadingState -> {
@@ -538,6 +557,9 @@ private fun handleSideEffects(
                 delay(300)
                 isRatingVisible.value = true
             }
+        }
+        is MovieDetailsSideEffects.UpdateIsAddedState -> {
+            isAdded.value = sideEffects.isAdded
         }
     }
 }

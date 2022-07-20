@@ -14,4 +14,5 @@
     <string name="favourite_movies">Favourite Movies</string>
     <string name="favourite_tv_series">Favourite TV Series</string>
     <string name="empty_playlists">Your playlists is empty or not created. Please add something to it!</string>
+    <string name="movie_added_to_palylist">Movie added to playlist</string>
 </resources>

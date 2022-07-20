@@ -16,7 +16,7 @@ class PlaylistLocalDataSourceImpl(private val playlistDao: PlaylistDao) :
         playlistDao.insertPlaylistMovieCrossRef(crossRef)
 
     override fun getPlaylistsWithMovies(): Flow<List<PlaylistWithMovies>> {
-        return playlistDao.getPlaylistsWithMovies()
+        return playlistDao.getAllPlaylistsWithMovies()
     }
 
     override fun getPlaylistsWithMoviesById(playlistId: Long): Flow<PlaylistWithMovies> {

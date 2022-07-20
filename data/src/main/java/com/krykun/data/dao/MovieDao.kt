@@ -3,6 +3,7 @@ package com.krykun.data.dao
 import androidx.room.*
 import com.krykun.data.model.local.Movie
 import com.krykun.data.model.local.PlaylistMovieCrossRef
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
@@ -19,4 +20,7 @@ interface MovieDao {
     @Transaction
     @Delete
     fun removeMovieFromPlaylist(movie: Movie)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM Movie WHERE movieId = :movieId LIMIT 1)")
+    fun isAddedToPlaylist(movieId: Int): Flow<Boolean>
 }
