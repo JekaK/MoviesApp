@@ -58,36 +58,73 @@ class SplashScreenViewModel @Inject constructor(
             job = viewModelScope.launch(Dispatchers.IO) {
                 getAllPlaylistsUseCase.getAllPlaylists()
                     .collect {
-                        if (it.isEmpty()) {
-                            val playlist = Playlist(
+                        val playlistMoviesInsertResult: Long = 0
+                        var moviesPlaylist: Playlist? = null
+                        var tvSeriesPlaylist: Playlist? = null
+                        var playlistTvSeriesInsertResult: Long = 0
+                        if (it.find {
+                                it.name == context.getString(R.string.favourite_movies)
+                            } == null) {
+                            moviesPlaylist = Playlist(
                                 name = context.getString(R.string.favourite_movies),
                                 movieList = listOf()
                             )
-                            val playlistInsertResult = addPlaylistUseCase.addPlaylist(playlist)
-                            if (playlistInsertResult >= 1) {
+
+                            addPlaylistUseCase.addPlaylist(moviesPlaylist)
+                        }
+                        if (it.find {
+                                it.name == context.getString(R.string.favourite_tv_series)
+                            } == null) {
+                            tvSeriesPlaylist = Playlist(
+                                name = context.getString(R.string.favourite_tv_series),
+                                movieList = listOf()
+                            )
+                            playlistTvSeriesInsertResult =
+                                addPlaylistUseCase.addPlaylist(tvSeriesPlaylist)
+                        }
+                        if (playlistMoviesInsertResult >= 1) {
+                            moviesPlaylist?.copy(
+                                playlistId = playlistMoviesInsertResult
+                            )?.let {
                                 reduce {
                                     state.value = state.value.copy(
                                         playlistState = state.value.playlistState.copy(
-                                            playlists = listOf(playlist.copy(playlistId = playlistInsertResult))
+                                            playlists = state.value.playlistState.playlists + it
+
                                         )
                                     )
                                     state
                                 }
-                                callback(this@intent)
-                                job?.cancel()
                             }
-                        } else {
+                        }
+
+                        if (playlistTvSeriesInsertResult >= 1) {
+                            tvSeriesPlaylist?.copy(
+                                playlistId = playlistTvSeriesInsertResult
+                            )?.let {
+                                reduce {
+                                    state.value = state.value.copy(
+                                        playlistState = state.value.playlistState.copy(
+                                            playlists = state.value.playlistState.playlists + it
+
+                                        )
+                                    )
+                                    state
+                                }
+                            }
+                        }
+                        if (it.isNotEmpty()) {
                             reduce {
                                 state.value = state.value.copy(
                                     playlistState = state.value.playlistState.copy(
-                                        playlists = it
+                                        playlists = state.value.playlistState.playlists + it
                                     )
                                 )
                                 state
                             }
-                            callback(this@intent)
-                            job?.cancel()
                         }
+                        callback(this@intent)
+                        job?.cancel()
                     }
             }
         }

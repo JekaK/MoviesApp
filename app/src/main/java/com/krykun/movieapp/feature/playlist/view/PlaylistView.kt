@@ -31,15 +31,20 @@ fun PlaylistView(viewModel: PlaylistViewModel = hiltViewModel()) {
                 }
         }
     }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            state = lazyListState
-        ) {
-            itemsIndexed(items = allPlaylists.value) { index, item ->
-                PlaylistItemView(item)
+    if (allPlaylists.value.isNotEmpty()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState
+            ) {
+                itemsIndexed(items = allPlaylists.value) { index, item ->
+                    if (item.movieList.isNotEmpty()) {
+                        PlaylistItemView(item)
+                    }
+                }
             }
         }
+    } else {
+        EmptyView()
     }
 }

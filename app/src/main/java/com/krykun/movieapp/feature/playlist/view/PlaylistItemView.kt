@@ -1,11 +1,12 @@
 package com.krykun.movieapp.feature.playlist.view
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.local.Movie
 import com.krykun.domain.model.local.Playlist
@@ -85,36 +87,58 @@ fun PlaylistItemView(playlist: Playlist) {
                 .scrollEnabled(enabled = false)
         ) {
             itemsIndexed(items = playlist.movieList) { index, item ->
-                MovieItemView(item)
+                MovieItemView(
+                    movie = item,
+                    modifier = if (index > 0) {
+                        Modifier
+                            .offset(
+                                x = ((-50).dp) * index / 2,
+                                y = if (index % 2 == 0) {
+                                    5.dp
+                                } else {
+                                    (-5).dp
+                                }
+                            )
+                            .zIndex((playlist.movieList.size - index).toFloat())
+                    } else {
+                        Modifier
+                            .zIndex((playlist.movieList.size - index).toFloat())
+                            .offset(
+                                y = if (index % 2 == 0) {
+                                    5.dp
+                                } else {
+                                    (-5).dp
+                                }
+                            )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun MovieItemView(movie: Movie) {
-    Card(
-        modifier = Modifier
+private fun MovieItemView(modifier: Modifier = Modifier, movie: Movie) {
+    Box(
+        modifier = modifier
             .width(100.dp)
             .height(150.dp)
-            .padding(end = 16.dp),
-        shape = RoundedCornerShape(20.dp),
-        elevation = 16.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            CoilImage(
-                imageModel = Constants.IMAGE_BASE_URL + movie.poster,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                circularReveal = CircularReveal(duration = 350),
-                placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-                error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder)
+            .clip(RoundedCornerShape(20.dp))
+            .border(
+                width = 1.dp,
+                color = Color.DarkGray,
+                shape = (RoundedCornerShape(20.dp))
             )
-        }
+    ) {
+        CoilImage(
+            imageModel = Constants.IMAGE_BASE_URL + movie.poster,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            circularReveal = CircularReveal(duration = 350),
+            placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+            error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder)
+        )
     }
 }

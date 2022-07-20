@@ -1,12 +1,14 @@
 package com.krykun.movieapp.feature.playlist.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.krykun.domain.model.local.Playlist
 import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -38,8 +40,27 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
+    private fun isSomePlaylistsHaveItems(allPlaylists: List<Playlist>): Boolean {
+        var isPlaylistNotEmpty = false
+        run breaking@{
+            allPlaylists.forEach {
+                isPlaylistNotEmpty = it.movieList.isNotEmpty()
+                if (isPlaylistNotEmpty) {
+                    return@breaking
+                }
+            }
+        }
+        return isPlaylistNotEmpty
+    }
+
     fun subscribeToState() =
         container.stateFlow.value.takeWhenChanged {
             it.playlistState
+        }.map {
+            if (isSomePlaylistsHaveItems(it.playlists)) {
+                it
+            } else {
+                it.copy(playlists = listOf())
+            }
         }
 }

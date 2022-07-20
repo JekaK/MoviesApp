@@ -12,4 +12,6 @@
     <string name="production">Production</string>
     <string name="nothing_to_show">There is nothing to show here</string>
     <string name="favourite_movies">Favourite Movies</string>
+    <string name="favourite_tv_series">Favourite TV Series</string>
+    <string name="empty_playlists">Your playlists is empty or not created. Please add something to it!</string>
 </resources>
