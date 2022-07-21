@@ -58,7 +58,7 @@ class SplashScreenViewModel @Inject constructor(
             job = viewModelScope.launch(Dispatchers.IO) {
                 getAllPlaylistsUseCase.getAllPlaylists()
                     .collect {
-                        val playlistMoviesInsertResult: Long = 0
+                        var playlistMoviesInsertResult: Long = 0
                         var moviesPlaylist: Playlist? = null
                         var tvSeriesPlaylist: Playlist? = null
                         var playlistTvSeriesInsertResult: Long = 0
@@ -70,7 +70,8 @@ class SplashScreenViewModel @Inject constructor(
                                 movieList = listOf()
                             )
 
-                            addPlaylistUseCase.addPlaylist(moviesPlaylist)
+                            playlistMoviesInsertResult =
+                                addPlaylistUseCase.addPlaylist(moviesPlaylist)
                         }
                         if (it.find {
                                 it.name == context.getString(R.string.favourite_tv_series)
@@ -82,34 +83,38 @@ class SplashScreenViewModel @Inject constructor(
                             playlistTvSeriesInsertResult =
                                 addPlaylistUseCase.addPlaylist(tvSeriesPlaylist)
                         }
-
-                        if (playlistMoviesInsertResult >= 1 &&
-                            playlistTvSeriesInsertResult >= 1
-                        ) {
-                            val indexedPlaylistMovies = moviesPlaylist?.copy(
+                        if (playlistMoviesInsertResult >= 1) {
+                            moviesPlaylist?.copy(
                                 playlistId = playlistMoviesInsertResult
-                            )
+                            )?.let {
+                                reduce {
+                                    state.value = state.value.copy(
+                                        playlistState = state.value.playlistState.copy(
+                                            playlists = state.value.playlistState.playlists + it
 
-                            val indexedPlaylistTvSeries = tvSeriesPlaylist?.copy(
-                                playlistId = playlistTvSeriesInsertResult
-                            )
-                            if (it.isEmpty()) {
-                                indexedPlaylistMovies?.let { movie ->
-                                    indexedPlaylistTvSeries?.let { tvSeries ->
-                                        reduce {
-                                            state.value = state.value.copy(
-                                                playlistState = state.value.playlistState.copy(
-                                                    playlists = state.value.playlistState.playlists + movie + tvSeries
-
-                                                )
-                                            )
-                                            state
-                                        }
-                                    }
+                                        )
+                                    )
+                                    state
                                 }
-
                             }
-                        } else {
+                        }
+
+                        if (playlistTvSeriesInsertResult >= 1) {
+                            tvSeriesPlaylist?.copy(
+                                playlistId = playlistTvSeriesInsertResult
+                            )?.let {
+                                reduce {
+                                    state.value = state.value.copy(
+                                        playlistState = state.value.playlistState.copy(
+                                            playlists = state.value.playlistState.playlists + it
+
+                                        )
+                                    )
+                                    state
+                                }
+                            }
+                        }
+                        if (it.isNotEmpty()) {
                             reduce {
                                 state.value = state.value.copy(
                                     playlistState = state.value.playlistState.copy(
