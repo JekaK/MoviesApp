@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.playlist.view
+package com.krykun.movieapp.feature.playlist.main.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text

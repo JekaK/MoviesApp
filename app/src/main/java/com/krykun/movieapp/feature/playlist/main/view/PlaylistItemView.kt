@@ -1,7 +1,6 @@
-package com.krykun.movieapp.feature.playlist.view
+package com.krykun.movieapp.feature.playlist.main.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -33,9 +32,9 @@ import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun PlaylistItemView(playlist: Playlist) {
+fun PlaylistItemView(playlist: Playlist, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(
                 start = 16.dp,
                 bottom = 16.dp,

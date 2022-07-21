@@ -14,4 +14,6 @@ interface PlaylistLocalDataSource {
     fun getPlaylistsWithMovies(): Flow<List<PlaylistWithMovies>>
 
     fun getPlaylistsWithMoviesById(playlistId: Long): Flow<PlaylistWithMovies>
+
+    fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<PlaylistWithMovies>>
 }

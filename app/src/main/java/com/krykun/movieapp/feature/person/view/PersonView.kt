@@ -500,7 +500,7 @@ private fun BackBtn(navHostController: NavHostController) {
     }
 }
 
-fun handleSideEffects(
+private fun handleSideEffects(
     sideEffects: PersonSideEffects,
     personDetails: MutableState<PersonDetails?>,
     personDetailsState: MutableState<PersonDetailsState>

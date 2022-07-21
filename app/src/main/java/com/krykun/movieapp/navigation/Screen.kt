@@ -42,4 +42,8 @@ sealed class Screen(
     data class PersonDetails(
         override val route: String = "person_details_screen",
     ) : Screen(route = route)
+
+    data class PlaylistDetails(
+        override val route: String = "playlist_details_screen",
+    ) : Screen(route = route)
 }

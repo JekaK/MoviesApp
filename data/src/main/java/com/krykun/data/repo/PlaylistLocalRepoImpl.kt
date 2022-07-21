@@ -31,4 +31,13 @@ class PlaylistLocalRepoImpl @Inject constructor(
             }
     }
 
+    override fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<Playlist>> {
+        return playlistsLocalDataSource.getAllPlaylistsWithMoviesByLimit(amount)
+            .map {
+                it.map {
+                    it.toPlaylist()
+                }
+            }
+    }
+
 }

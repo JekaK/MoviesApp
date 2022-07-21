@@ -22,4 +22,8 @@ class PlaylistLocalDataSourceImpl(private val playlistDao: PlaylistDao) :
     override fun getPlaylistsWithMoviesById(playlistId: Long): Flow<PlaylistWithMovies> {
         return playlistDao.getPlaylistsWithMoviesById(playlistId)
     }
+
+    override fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<PlaylistWithMovies>> {
+        return playlistDao.getAllPlaylistsWithMoviesByLimit(amount)
+    }
 }

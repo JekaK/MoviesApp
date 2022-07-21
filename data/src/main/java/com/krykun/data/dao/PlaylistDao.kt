@@ -20,10 +20,10 @@ interface PlaylistDao {
     fun getAllPlaylistsWithMovies(): Flow<List<PlaylistWithMovies>>
 
     @Transaction
-    @Query("SELECT * FROM Playlist LIMIT :amount")
-    fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<PlaylistWithMovies>>
-
-    @Transaction
     @Query("SELECT * FROM Playlist WHERE playlistId==:playlistId")
     fun getPlaylistsWithMoviesById(playlistId: Long): Flow<PlaylistWithMovies>
+
+    @Transaction
+    @Query("select * from Movie inner join PlaylistMovieCrossRef on Movie.movieId = PlaylistMovieCrossRef.movieId inner join Playlist on Playlist.playlistId = PlaylistMovieCrossRef.playlistId WHERE  Playlist.playlistId==1 LIMIT :amount")
+    fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<PlaylistWithMovies>>
 }

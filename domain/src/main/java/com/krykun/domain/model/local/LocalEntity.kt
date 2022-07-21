@@ -3,8 +3,8 @@ package com.krykun.domain.model.local
 
 data class Playlist(
     val playlistId: Long = 0,
-    val name: String,
-    val movieList: List<Movie>
+    val name: String = "",
+    val movieList: List<Movie> = listOf()
 )
 
 data class Movie(

@@ -1,11 +1,8 @@
 package com.krykun.movieapp.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -16,7 +13,8 @@ import com.krykun.movieapp.feature.home.presentation.HomeMoviesViewModel
 import com.krykun.movieapp.feature.home.view.HomeView
 import com.krykun.movieapp.feature.moviedetails.MovieDetailsView
 import com.krykun.movieapp.feature.person.view.PersonView
-import com.krykun.movieapp.feature.playlist.view.PlaylistView
+import com.krykun.movieapp.feature.playlist.details.view.PlaylistDetailsView
+import com.krykun.movieapp.feature.playlist.main.view.PlaylistView
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.feature.search.view.SearchView
 import com.krykun.movieapp.feature.splashscreen.presentation.SplashScreenViewModel
@@ -64,7 +62,7 @@ fun MainNavigation(
             )
         }
         composable(route = Screen.Favourite().route) {
-            PlaylistView()
+            PlaylistView(navHostController = navController)
         }
         composable(route = Screen.MovieDetails().route) {
             MovieDetailsView(navHostController = navController)
@@ -75,12 +73,8 @@ fun MainNavigation(
         composable(route = Screen.PersonDetails().route) {
             PersonView(navHostController = navController)
         }
-    }
-}
-
-@Composable
-fun EmptyView() {
-    Column(modifier = Modifier.fillMaxSize()) {
-
+        composable(route = Screen.PlaylistDetails().route) {
+            PlaylistDetailsView(navHostController = navController)
+        }
     }
 }

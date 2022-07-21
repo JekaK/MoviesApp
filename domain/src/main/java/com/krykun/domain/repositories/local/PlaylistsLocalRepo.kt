@@ -10,4 +10,6 @@ interface PlaylistsLocalRepo {
     fun getAllPlaylists(): Flow<List<Playlist>>
 
     fun getPlaylistById(playlistId: Long): Flow<Playlist>
+
+    fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<Playlist>>
 }
