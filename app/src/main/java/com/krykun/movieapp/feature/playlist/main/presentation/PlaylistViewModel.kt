@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.playlist.main.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.krykun.domain.model.local.Playlist
 import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
@@ -27,6 +28,8 @@ class PlaylistViewModel @Inject constructor(
         getAllPlaylists()
     }
 
+    val playlistState = mutableStateOf(listOf<Playlist>())
+
     private fun getAllPlaylists() = intent {
         viewModelScope.launch {
             getAllPlaylistsUseCase.getAllPlaylists()
@@ -38,6 +41,11 @@ class PlaylistViewModel @Inject constructor(
                             )
                         )
                         state
+                    }
+                    if (isSomePlaylistsHaveItems(it)) {
+                        postSideEffect(PlaylistSideEffects.UpdatePlaylist(it))
+                    } else {
+                        postSideEffect(PlaylistSideEffects.UpdatePlaylist(listOf()))
                     }
                 }
         }
@@ -70,14 +78,14 @@ class PlaylistViewModel @Inject constructor(
         postSideEffect(PlaylistSideEffects.NavigateToPlaylistDetails)
     }
 
-    fun subscribeToState() =
-        container.stateFlow.value.takeWhenChanged {
-            it.playlistState
-        }.map {
-            if (isSomePlaylistsHaveItems(it.playlists)) {
-                it
-            } else {
-                it.copy(playlists = listOf())
-            }
-        }
+//    fun subscribeToState() =
+//        container.stateFlow.value.takeWhenChanged {
+//            it.playlistState
+//        }.map {
+//            if (isSomePlaylistsHaveItems(it.playlists)) {
+//                it
+//            } else {
+//                it.copy(playlists = listOf())
+//            }
+//        }
 }
