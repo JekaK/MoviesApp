@@ -3,6 +3,10 @@ package com.krykun.movieapp.ext
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyListItemInfo
@@ -126,7 +130,7 @@ fun Modifier.scrollEnabled(
         override fun onPreScroll(
             available: Offset,
             source: NestedScrollSource
-        ): Offset = if(enabled) Offset.Zero else available
+        ): Offset = if (enabled) Offset.Zero else available
     }
 )
 

@@ -1,12 +1,14 @@
 package com.krykun.movieapp.feature.person.view
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -45,9 +47,6 @@ import coil.EventListener
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.SizeMode
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.remote.personcombinedcredits.Cast
 import com.krykun.domain.model.remote.personcombinedcredits.Crew
@@ -57,6 +56,7 @@ import com.krykun.movieapp.custom.DynamicThemePrimaryColorsFromImage
 import com.krykun.movieapp.custom.rememberDominantColorState
 import com.krykun.movieapp.custom.verticalGradientScrim
 import com.krykun.movieapp.ext.contrastAgainst
+import com.krykun.movieapp.ext.header
 import com.krykun.movieapp.ext.noRippleClickable
 import com.krykun.movieapp.feature.person.presentation.PersonSideEffects
 import com.krykun.movieapp.feature.person.presentation.PersonViewModel
@@ -77,7 +77,6 @@ fun PersonView(
     val selectedPersonTab = remember {
         mutableStateOf(PersonTabs.FILMOGRAPHY)
     }
-
 
     viewModel.collectSideEffect {
         handleSideEffects(
@@ -105,19 +104,85 @@ fun PersonView(
         CompositionLocalProvider(
             LocalOverscrollConfiguration provides null
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                item {
-                    MainPersonInfo(personDetails = personDetails)
-                }
-                item {
-                    PersonMovies(
-                        selectedPersonTab = selectedPersonTab,
-                        personDetails = personDetails,
-                        viewModel = viewModel
-                    )
+            BoxWithConstraints {
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    columns = GridCells.Adaptive(minSize = 128.dp),
+                ) {
+                    header {
+                        Column() {
+                            MainPersonInfo(
+                                personDetails = personDetails,
+                                modifier = Modifier
+                            )
+                            Card(
+                                elevation = 16.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .padding(
+                                        start = 36.dp,
+                                        end = 36.dp,
+                                    ),
+                                shape = CircleShape,
+                                backgroundColor = Color.White,
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    PersonTab(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        isSelected = selectedPersonTab.value == PersonTabs.FILMOGRAPHY,
+                                        text = stringResource(id = R.string.filmography)
+                                    ) {
+                                        viewModel.setPersonTabSelected(PersonTabs.FILMOGRAPHY)
+                                    }
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    PersonTab(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        isSelected = selectedPersonTab.value == PersonTabs.PRODUCTION,
+                                        text = stringResource(id = R.string.production)
+                                    ) {
+                                        viewModel.setPersonTabSelected(PersonTabs.PRODUCTION)
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+
+                    when (selectedPersonTab.value) {
+                        PersonTabs.FILMOGRAPHY -> {
+                            if (personDetails.value?.personCombinedCredits?.cast?.isNotEmpty() == true) {
+                                itemsIndexed(
+                                    personDetails.value?.personCombinedCredits?.cast
+                                        ?: listOf()
+                                ) { index, item ->
+                                    CastView(castItem = item)
+                                }
+                            } else {
+                                header {
+                                    EmptyView()
+                                }
+                            }
+                        }
+                        PersonTabs.PRODUCTION -> {
+                            if (personDetails.value?.personCombinedCredits?.crew?.isNotEmpty() == true) {
+                                itemsIndexed(
+                                    personDetails.value?.personCombinedCredits?.crew
+                                        ?: listOf()
+                                ) { index, item ->
+                                    CrewView(crewItem = item)
+                                }
+                            } else {
+                                header {
+                                    EmptyView()
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -127,58 +192,6 @@ fun PersonView(
 enum class PersonTabs {
     FILMOGRAPHY,
     PRODUCTION
-}
-
-@Composable
-private fun PersonMovies(
-    selectedPersonTab: MutableState<PersonTabs>,
-    personDetails: MutableState<PersonDetails?>,
-    viewModel: PersonViewModel
-) {
-    Column {
-        Card(
-            elevation = 16.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(
-                    start = 36.dp,
-                    end = 36.dp,
-                ),
-            shape = CircleShape,
-            backgroundColor = Color.White,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                PersonTab(
-                    modifier = Modifier
-                        .weight(1f),
-                    isSelected = selectedPersonTab.value == PersonTabs.FILMOGRAPHY,
-                    text = stringResource(id = R.string.filmography)
-                ) {
-                    viewModel.setPersonTabSelected(PersonTabs.FILMOGRAPHY)
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-
-                PersonTab(
-                    modifier = Modifier
-                        .weight(1f),
-                    isSelected = selectedPersonTab.value == PersonTabs.PRODUCTION,
-                    text = stringResource(id = R.string.production)
-                ) {
-                    viewModel.setPersonTabSelected(PersonTabs.PRODUCTION)
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        AnimatedVisibility(visible = selectedPersonTab.value == PersonTabs.FILMOGRAPHY) {
-            CastViewList(
-                castItems = personDetails.value?.personCombinedCredits?.cast ?: listOf()
-            )
-        }
-        AnimatedVisibility(visible = selectedPersonTab.value == PersonTabs.PRODUCTION) {
-            CrewViewList(personDetails.value?.personCombinedCredits?.crew ?: listOf())
-        }
-    }
 }
 
 @Composable
@@ -223,7 +236,8 @@ private fun PersonTab(
 
 @Composable
 private fun MainPersonInfo(
-    personDetails: MutableState<PersonDetails?>
+    personDetails: MutableState<PersonDetails?>,
+    modifier: Modifier = Modifier
 ) {
 
     val surfaceColor = MaterialTheme.colors.surface
@@ -239,7 +253,7 @@ private fun MainPersonInfo(
 
     DynamicThemePrimaryColorsFromImage(dominantColorState) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .height(330.dp)
                 .verticalGradientScrim(
@@ -314,37 +328,38 @@ private fun MainPersonInfo(
 
 @Composable
 private fun CastViewList(castItems: List<Cast>) {
-    FlowRow(
-        mainAxisSize = SizeMode.Expand,
-        mainAxisAlignment = FlowMainAxisAlignment.SpaceBetween,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        if (castItems.isNotEmpty()) {
-            castItems.forEach {
-                CastView(castItem = it)
+    val scrollState = rememberLazyGridState()
+    if (castItems.isNotEmpty()) {
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = GridCells.Adaptive(minSize = 128.dp),
+            state = scrollState
+        ) {
+            itemsIndexed(castItems) { index, item ->
+                CastView(castItem = item)
             }
-        } else {
-            EmptyView()
         }
+    } else {
+        EmptyView()
     }
 }
 
 @Composable
 private fun CrewViewList(crewItems: List<Crew>) {
-    FlowRow(
-        mainAxisSize = SizeMode.Expand,
-        mainAxisAlignment = FlowMainAxisAlignment.SpaceBetween,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        if (crewItems.isNotEmpty()) {
-            crewItems.forEach {
-                CrewView(crewItem = it)
+    val scrollState = rememberLazyGridState()
+
+    if (crewItems.isNotEmpty()) {
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = GridCells.Adaptive(minSize = 128.dp),
+            state = scrollState
+        ) {
+            itemsIndexed(crewItems) { index, item ->
+                CrewView(crewItem = item)
             }
-        } else {
-            EmptyView()
         }
+    } else {
+        EmptyView()
     }
 }
 
