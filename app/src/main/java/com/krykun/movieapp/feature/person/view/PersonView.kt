@@ -8,61 +8,30 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
-import coil.EventListener
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import com.krykun.data.util.Constants
-import com.krykun.domain.model.remote.personcombinedcredits.Cast
-import com.krykun.domain.model.remote.personcombinedcredits.Crew
 import com.krykun.domain.model.remote.persondetails.PersonDetails
 import com.krykun.movieapp.R
-import com.krykun.movieapp.custom.DynamicThemePrimaryColorsFromImage
-import com.krykun.movieapp.custom.rememberDominantColorState
-import com.krykun.movieapp.custom.verticalGradientScrim
-import com.krykun.movieapp.ext.contrastAgainst
 import com.krykun.movieapp.ext.header
-import com.krykun.movieapp.ext.noRippleClickable
 import com.krykun.movieapp.feature.person.presentation.PersonSideEffects
 import com.krykun.movieapp.feature.person.presentation.PersonViewModel
-import com.skydoves.landscapist.CircularReveal
-import com.skydoves.landscapist.coil.CoilImage
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -71,7 +40,6 @@ fun PersonView(
     viewModel: PersonViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
     val personDetails = remember { mutableStateOf<PersonDetails?>(null) }
     val personDetailsState = remember { mutableStateOf(PersonDetailsState.LOADING) }
     val selectedPersonTab = remember {
@@ -82,19 +50,9 @@ fun PersonView(
         handleSideEffects(
             sideEffects = it,
             personDetails = personDetails,
-            personDetailsState = personDetailsState
+            personDetailsState = personDetailsState,
+            selectedPersonTab = selectedPersonTab
         )
-    }
-    LaunchedEffect(key1 = lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.subscribeToState()
-                .collect {
-                    selectedPersonTab.value = when (it.selectedPersonTab) {
-                        com.krykun.movieapp.feature.person.presentation.PersonTabs.FILMOGRAPHY -> PersonTabs.FILMOGRAPHY
-                        com.krykun.movieapp.feature.person.presentation.PersonTabs.PRODUCTION -> PersonTabs.PRODUCTION
-                    }
-                }
-        }
     }
     Box(
         modifier = Modifier
@@ -195,301 +153,6 @@ enum class PersonTabs {
 }
 
 @Composable
-private fun PersonTab(
-    modifier: Modifier,
-    isSelected: Boolean,
-    text: String,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .height(50.dp)
-            .padding(
-                start = 8.dp,
-                end = 8.dp,
-                top = 8.dp,
-                bottom = 8.dp
-            )
-            .clip(CircleShape)
-            .background(
-                if (isSelected) {
-                    colorResource(id = R.color.selected_container)
-                } else {
-                    Color.Transparent
-                }
-            )
-            .noRippleClickable { onClick() },
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = if (isSelected) {
-                Color.White
-            } else {
-                Color.LightGray
-            },
-        )
-    }
-}
-
-@Composable
-private fun MainPersonInfo(
-    personDetails: MutableState<PersonDetails?>,
-    modifier: Modifier = Modifier
-) {
-
-    val surfaceColor = MaterialTheme.colors.surface
-    val dominantColorState = rememberDominantColorState { color ->
-        color.contrastAgainst(surfaceColor) >= 3f
-    }
-    val parentOffsetState = remember {
-        mutableStateOf(Offset(0f, 0f))
-    }
-    val context = LocalContext.current
-    val url = Constants.IMAGE_BASE_URL + personDetails.value?.profilePath
-    val scope = rememberCoroutineScope()
-
-    DynamicThemePrimaryColorsFromImage(dominantColorState) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(330.dp)
-                .verticalGradientScrim(
-                    color = MaterialTheme.colors.primary,
-                    startYPercentage = 1f,
-                    endYPercentage = 0.5f
-                )
-                .onGloballyPositioned {
-                    val offset = it.positionInRoot()
-                    parentOffsetState.value = offset
-                },
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(50.dp))
-            CoilImage(
-                imageModel = url,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                circularReveal = CircularReveal(duration = 350),
-                placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-                error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-                imageLoader = {
-                    ImageLoader.Builder(context)
-                        .eventListener(object : EventListener {
-                            override fun onSuccess(
-                                request: ImageRequest,
-                                result: SuccessResult
-                            ) {
-                                super.onSuccess(request, result)
-                                scope.launch {
-                                    dominantColorState.updateColorsFromImageUrl(url)
-                                }
-                            }
-                        })
-                        .build()
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = personDetails.value?.name ?: "",
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (personDetails.value?.placeOfBirth?.isNotEmpty() == true) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Icon(
-                        imageVector = Icons.Default.PinDrop,
-                        contentDescription = "",
-                        tint = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = personDetails.value?.placeOfBirth ?: "",
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CastViewList(castItems: List<Cast>) {
-    val scrollState = rememberLazyGridState()
-    if (castItems.isNotEmpty()) {
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = GridCells.Adaptive(minSize = 128.dp),
-            state = scrollState
-        ) {
-            itemsIndexed(castItems) { index, item ->
-                CastView(castItem = item)
-            }
-        }
-    } else {
-        EmptyView()
-    }
-}
-
-@Composable
-private fun CrewViewList(crewItems: List<Crew>) {
-    val scrollState = rememberLazyGridState()
-
-    if (crewItems.isNotEmpty()) {
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = GridCells.Adaptive(minSize = 128.dp),
-            state = scrollState
-        ) {
-            itemsIndexed(crewItems) { index, item ->
-                CrewView(crewItem = item)
-            }
-        }
-    } else {
-        EmptyView()
-    }
-}
-
-@Composable
-private fun CastView(castItem: Cast) {
-    Box(
-        modifier = Modifier
-            .width(128.dp)
-            .height(200.dp)
-            .padding(
-                start = 8.dp,
-                end = 8.dp,
-                top = 8.dp,
-                bottom = 8.dp
-            )
-            .background(colorResource(id = R.color.container_background))
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        CoilImage(
-            imageModel = Constants.IMAGE_BASE_URL + castItem.posterPath,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            circularReveal = CircularReveal(duration = 350),
-            placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-            error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(alignment = Alignment.BottomCenter)
-                .background(colorResource(id = R.color.bottom_bar_start))
-        ) {
-            Text(
-                text = castItem.title ?: "",
-                color = Color.White,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = 6.dp,
-                    bottom = 15.dp
-                ),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = castItem.character.toString(),
-                color = Color.White,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = 15.dp
-                ),
-                fontWeight = FontWeight.Normal,
-                fontSize = 11.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-@Composable
-private fun CrewView(crewItem: Crew) {
-    Box(
-        modifier = Modifier
-            .width(128.dp)
-            .height(200.dp)
-            .padding(
-                start = 8.dp,
-                end = 8.dp,
-                top = 8.dp,
-                bottom = 8.dp
-            )
-            .background(colorResource(id = R.color.container_background))
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        CoilImage(
-            imageModel = Constants.IMAGE_BASE_URL + crewItem.posterPath,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            circularReveal = CircularReveal(duration = 350),
-            placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-            error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(alignment = Alignment.BottomCenter)
-                .background(colorResource(id = R.color.bottom_bar_start))
-        ) {
-            Text(
-                text = crewItem.title ?: "",
-                color = Color.White,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = 6.dp,
-                    bottom = 15.dp
-                ),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = crewItem.job.toString(),
-                color = Color.White,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = 15.dp
-                ),
-                fontWeight = FontWeight.Normal,
-                fontSize = 11.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-@Composable
 private fun BackBtn(navHostController: NavHostController) {
     Row(modifier = Modifier.zIndex(1f)) {
         Spacer(modifier = Modifier.width(24.dp))
@@ -518,7 +181,8 @@ private fun BackBtn(navHostController: NavHostController) {
 private fun handleSideEffects(
     sideEffects: PersonSideEffects,
     personDetails: MutableState<PersonDetails?>,
-    personDetailsState: MutableState<PersonDetailsState>
+    personDetailsState: MutableState<PersonDetailsState>,
+    selectedPersonTab: MutableState<PersonTabs>
 ) {
     when (sideEffects) {
         is PersonSideEffects.ShowPersonDetailsData -> {
@@ -530,6 +194,12 @@ private fun handleSideEffects(
         }
         is PersonSideEffects.ShowLoadingState -> {
             personDetailsState.value = PersonDetailsState.LOADING
+        }
+        is PersonSideEffects.SelectCastTab -> {
+            selectedPersonTab.value = PersonTabs.FILMOGRAPHY
+        }
+        is PersonSideEffects.SelectCrewTab -> {
+            selectedPersonTab.value = PersonTabs.PRODUCTION
         }
     }
 }

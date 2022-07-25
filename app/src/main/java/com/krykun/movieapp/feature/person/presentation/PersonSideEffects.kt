@@ -7,4 +7,6 @@ sealed class PersonSideEffects {
     object ShowLoadingState : PersonSideEffects()
     object ShowErrorState : PersonSideEffects()
 
+    object SelectCastTab : PersonSideEffects()
+    object SelectCrewTab : PersonSideEffects()
 }

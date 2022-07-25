@@ -55,17 +55,20 @@ class PersonViewModel @Inject constructor(
     }
 
     fun setPersonTabSelected(selectedPersonTab: PersonTabs) = intent {
-        val selectedTab = when (selectedPersonTab) {
-            PersonTabs.FILMOGRAPHY -> com.krykun.movieapp.feature.person.presentation.PersonTabs.FILMOGRAPHY
-            PersonTabs.PRODUCTION -> com.krykun.movieapp.feature.person.presentation.PersonTabs.PRODUCTION
-        }
         reduce {
             state.value = state.value.copy(
                 personState = state.value.personState.copy(
-                    selectedPersonTab = selectedTab
+                    selectedPersonTab = when (selectedPersonTab) {
+                        PersonTabs.FILMOGRAPHY -> com.krykun.movieapp.feature.person.presentation.PersonTabs.FILMOGRAPHY
+                        PersonTabs.PRODUCTION -> com.krykun.movieapp.feature.person.presentation.PersonTabs.PRODUCTION
+                    }
                 )
             )
             state
+        }
+        when (selectedPersonTab) {
+            PersonTabs.FILMOGRAPHY -> postSideEffect(PersonSideEffects.SelectCastTab)
+            PersonTabs.PRODUCTION -> postSideEffect(PersonSideEffects.SelectCrewTab)
         }
     }
 }
