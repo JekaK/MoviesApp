@@ -9,5 +9,5 @@ interface MoviesLocalRepo {
     suspend fun insertMovie(movie: TvDetails, playlistId: Long): Long
     fun removeMovieFromPlaylist(movie: MovieDetails, playlistId: Long)
     fun removeMovieFromPlaylist(movie: TvDetails, playlistId: Long)
-    fun isMovieAdded(movieId: Int): Flow<Boolean>
+    fun isMovieAdded(movieId: Int, playlistId: Long): Boolean
 }

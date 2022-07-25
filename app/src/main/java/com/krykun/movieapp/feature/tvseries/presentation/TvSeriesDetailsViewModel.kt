@@ -32,25 +32,25 @@ class TvSeriesDetailsViewModel @Inject constructor(
 
     init {
         loadMovieDetails()
-        checkIsAdded()
+//        checkIsAdded()
     }
 
-    private fun checkIsAdded() = intent {
-        viewModelScope.launch {
-            checkIsMovieAddedUseCase.checkIsMovieInPlaylist(container.stateFlow.value.value.tvSeriesState.tvId)
-                .collect {
-                    reduce {
-                        state.value = state.value.copy(
-                            tvSeriesState = state.value.tvSeriesState.copy(
-                                isAdded = it
-                            )
-                        )
-                        state
-                    }
-                    postSideEffect(sideEffect = TvSeriesDetailsSideEffects.UpdateIsAddedState(it))
-                }
-        }
-    }
+//    private fun checkIsAdded() = intent {
+//        viewModelScope.launch {
+//            checkIsMovieAddedUseCase.checkIsMovieInPlaylist(container.stateFlow.value.value.tvSeriesState.tvId)
+//                .collect {
+//                    reduce {
+//                        state.value = state.value.copy(
+//                            tvSeriesState = state.value.tvSeriesState.copy(
+//                                isAdded = it
+//                            )
+//                        )
+//                        state
+//                    }
+//                    postSideEffect(sideEffect = TvSeriesDetailsSideEffects.UpdateIsAddedState(it))
+//                }
+//        }
+//    }
 
     private fun loadMovieDetails() = intent {
         postSideEffect(TvSeriesDetailsSideEffects.ShowLoadingState)

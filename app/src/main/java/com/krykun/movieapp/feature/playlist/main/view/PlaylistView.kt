@@ -51,7 +51,7 @@ fun PlaylistView(
     }
 }
 
-fun handleSideEffects(
+private fun handleSideEffects(
     sideEffects: PlaylistSideEffects,
     navHostController: NavHostController,
     viewModel: PlaylistViewModel

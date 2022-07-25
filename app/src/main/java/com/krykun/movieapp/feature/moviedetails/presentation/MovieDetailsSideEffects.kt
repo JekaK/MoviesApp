@@ -7,4 +7,5 @@ sealed class MovieDetailsSideEffects {
     object ShowLoadingState : MovieDetailsSideEffects()
     object ShowErrorState : MovieDetailsSideEffects()
     data class UpdateIsAddedState(val isAdded: Boolean) : MovieDetailsSideEffects()
+    object OpenPlaylistSelector : MovieDetailsSideEffects()
 }

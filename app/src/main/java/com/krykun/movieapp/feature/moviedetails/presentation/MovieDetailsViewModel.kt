@@ -7,8 +7,8 @@ import com.krykun.domain.usecase.local.AddMovieToPlaylistUseCase
 import com.krykun.domain.usecase.local.CheckIsMovieAddedUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetMovieCastDetailsUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetMovieDetailsUseCase
-import com.krykun.movieapp.R
 import com.krykun.movieapp.base.BaseViewModel
+import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +31,16 @@ class MovieDetailsViewModel @Inject constructor(
 
     init {
         loadMovieDetails()
-        checkIsAdded()
+//        checkIsAdded()
+    }
+
+    fun clearSelectState() = intent {
+        reduce {
+            state.value = state.value.copy(
+                playlistSelectState = PlaylistSelectState()
+            )
+            state
+        }
     }
 
     private fun loadMovieDetails() = intent {
@@ -60,31 +69,34 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun checkIsAdded() = intent {
-        viewModelScope.launch {
-            checkIsMovieAddedUseCase.checkIsMovieInPlaylist(container.stateFlow.value.value.movieDetailsState.movieId)
-                .collect {
-                    reduce {
-                        state.value = state.value.copy(
-                            movieDetailsState = state.value.movieDetailsState.copy(
-                                isAdded = it
-                            )
-                        )
-                        state
-                    }
-                    postSideEffect(sideEffect = MovieDetailsSideEffects.UpdateIsAddedState(it))
-                }
-        }
-    }
+//    private fun checkIsAdded() = intent {
+//        viewModelScope.launch {
+//            checkIsMovieAddedUseCase.checkIsMovieInPlaylist(container.stateFlow.value.value.movieDetailsState.movieId)
+//                .collect {
+//                    reduce {
+//                        state.value = state.value.copy(
+//                            movieDetailsState = state.value.movieDetailsState.copy(
+//                                isAdded = it
+//                            )
+//                        )
+//                        state
+//                    }
+//                    postSideEffect(sideEffect = MovieDetailsSideEffects.UpdateIsAddedState(it))
+//                }
+//        }
+//    }
 
-    fun addMovie() = intent {
+    fun updateMovieSelector() = intent {
         state.value.movieDetailsState.movieData?.let {
-            addMovieToPlaylistUseCase.insertMovieToPlaylist(
-                movie = it,
-                playlistId = state.value.playlistState.playlists.find {
-                    it.name == context.getString(R.string.favourite_movies)
-                }?.playlistId ?: 0
-            )
+            reduce {
+                state.value = state.value.copy(
+                    playlistSelectState = PlaylistSelectState(
+                        movieDetails = it
+                    )
+                )
+                state
+            }
+            postSideEffect(MovieDetailsSideEffects.OpenPlaylistSelector)
         }
     }
 }

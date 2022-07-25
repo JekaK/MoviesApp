@@ -5,7 +5,6 @@ import com.krykun.data.mappers.local.MoviesMapper.toMovie
 import com.krykun.domain.model.remote.moviedetails.MovieDetails
 import com.krykun.domain.model.remote.tvdetails.TvDetails
 import com.krykun.domain.repositories.local.MoviesLocalRepo
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class MoviesLocalRepoImpl @Inject constructor(
@@ -28,7 +27,10 @@ class MoviesLocalRepoImpl @Inject constructor(
         moviesLocalDataSource.removeMovieFromPlaylist(movie.toMovie(), playlistId)
     }
 
-    override fun isMovieAdded(movieId: Int): Flow<Boolean> {
-        return moviesLocalDataSource.isMovieAdded(movieId)
+    override fun isMovieAdded(movieId: Int, playlistId: Long): Boolean {
+        return moviesLocalDataSource.isMovieAdded(
+            movieId,
+            playlistId
+        )
     }
 }
