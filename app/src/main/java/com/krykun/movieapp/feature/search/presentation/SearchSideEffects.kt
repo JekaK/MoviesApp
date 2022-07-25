@@ -8,4 +8,6 @@ sealed class SearchSideEffects {
     object NavigateToMovie : SearchSideEffects()
     object NavigateToTvSeries : SearchSideEffects()
     object NavigateToPersonDetails : SearchSideEffects()
+
+    data class SetSavedQuery(val query: String) : SearchSideEffects()
 }

@@ -7,13 +7,13 @@ import androidx.paging.PagingData
 import com.krykun.domain.model.remote.search.SearchItem
 import com.krykun.domain.usecase.remote.search.MakeSearchUseCase
 import com.krykun.movieapp.base.BaseViewModel
-import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.feature.person.presentation.PersonDetailsState
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,14 +46,8 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun subscribeToStateUpdate() =
-        container.stateFlow.value.takeWhenChanged {
-            it.searchState.query
-        }
-
     fun updateText(text: String) = intent {
         _text.value = text
-
     }
 
     private fun makeSearch(query: String) = intent {
@@ -68,6 +62,10 @@ class SearchViewModel @Inject constructor(
             state.value.baseMoviesState.genres
         )
         postSideEffect(SearchSideEffects.UpdateSearchResult)
+    }
+
+    fun setSavedQuery() = intent {
+        postSideEffect(SearchSideEffects.SetSavedQuery(state.value.searchState.query))
     }
 
     fun setIsLoading(isLoading: Boolean) = intent {

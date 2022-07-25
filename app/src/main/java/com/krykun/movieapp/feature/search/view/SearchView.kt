@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.search.view
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -9,7 +10,9 @@ import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -22,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -30,6 +34,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -45,6 +51,8 @@ import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.navigation.Screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -59,11 +67,11 @@ fun SearchView(
 
     var searchResults: LazyPagingItems<SearchItem>? =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
-    val scope = rememberCoroutineScope()
     val queryIsEmpty = remember { mutableStateOf(false) }
     val markIsModified = remember { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(false) }
     val query = remember { mutableStateOf("") }
+    val scrollState = rememberLazyGridState()
 
     if (markIsModified.value) {
         markIsModified.value = false
@@ -73,21 +81,15 @@ fun SearchView(
 
     viewModel.collectSideEffect {
         handleSideEffects(
-            it,
-            markIsModified,
-            searchResults,
-            isLoading,
-            navHostController
+            sideEffects = it,
+            markIsModified = markIsModified,
+            searchResults = searchResults,
+            isLoading = isLoading,
+            navHostController = navHostController,
+            query = query,
         )
     }
-    LaunchedEffect(key1 = Unit) {
-        scope.launch {
-            viewModel.subscribeToStateUpdate()
-                .collect {
-                    query.value = it
-                }
-        }
-    }
+
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null
     ) {
@@ -110,7 +112,8 @@ fun SearchView(
                 } else {
                     LazyVerticalGrid(
                         modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Adaptive(minSize = 128.dp)
+                        columns = GridCells.Adaptive(minSize = 128.dp),
+                        state = scrollState
                     ) {
                         items(searchResults?.itemCount ?: 0) { index ->
                             Box(Modifier.padding(8.dp)) {
@@ -134,6 +137,7 @@ fun SearchView(
     LaunchedEffect(key1 = searchResults?.loadState?.refresh) {
         if (searchResults?.loadState?.refresh is LoadState.NotLoading) {
             viewModel.setIsLoading(false)
+            viewModel.setSavedQuery()
         } else if (searchResults?.loadState?.refresh is LoadState.Loading) {
             if (!queryIsEmpty.value) {
                 viewModel.setIsLoading(true)
@@ -265,7 +269,8 @@ private fun handleSideEffects(
     markIsModified: MutableState<Boolean>,
     searchResults: LazyPagingItems<SearchItem>?,
     isLoading: MutableState<Boolean>,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    query: MutableState<String>,
 ) {
     when (sideEffects) {
         is SearchSideEffects.TryReloadTrendingPage -> {
@@ -285,6 +290,9 @@ private fun handleSideEffects(
         }
         is SearchSideEffects.NavigateToPersonDetails -> {
             navHostController.navigate(Screen.PersonDetails().route)
+        }
+        is SearchSideEffects.SetSavedQuery -> {
+            query.value = sideEffects.query
         }
     }
 }
