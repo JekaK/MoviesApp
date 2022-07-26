@@ -13,8 +13,12 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef): Long
 
+    @Transaction
     @Delete
     fun removePlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM PlaylistMovieCrossRef WHERE movieId = :movieId LIMIT 1)")
+    fun searchInCrossRefForMovie(movieId: Int): Long
 
     @Transaction
     @Delete

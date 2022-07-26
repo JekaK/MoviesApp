@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.krykun.domain.usecase.local.AddMovieToPlaylistUseCase
 import com.krykun.domain.usecase.local.CheckIsMovieAddedUseCase
 import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
+import com.krykun.domain.usecase.local.RemoveMovieFromPlaylistUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ class PlaylistSelectViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val addMovieToPlaylistUseCase: AddMovieToPlaylistUseCase,
     private val checkIsMovieAddedUseCase: CheckIsMovieAddedUseCase,
-    private val getAllPlaylistsUseCase: GetAllPlaylistsUseCase
+    private val getAllPlaylistsUseCase: GetAllPlaylistsUseCase,
+    private val removeMovieFromPlaylistUseCase: RemoveMovieFromPlaylistUseCase
 ) : BaseViewModel<PlaylistSelectSideEffects>(appState) {
 
     val playlistState = mutableStateOf(listOf<MappedPlaylist>())
@@ -32,7 +34,11 @@ class PlaylistSelectViewModel @Inject constructor(
             val resultList = mutableListOf<MappedPlaylist>()
             playlists.forEach {
                 val isInPlaylist = checkIsMovieAddedUseCase.checkIsMovieInPlaylist(
-                    movieId = state.value.playlistSelectState.movieDetails.id ?: -1,
+                    movieId = if (state.value.playlistSelectState.movieDetails.id != null) {
+                        state.value.playlistSelectState.movieDetails.id ?: -1
+                    } else {
+                        state.value.playlistSelectState.tvDetails.id ?: -1
+                    },
                     playlistId = it.playlistId.toInt()
                 )
                 resultList.add(
@@ -54,11 +60,44 @@ class PlaylistSelectViewModel @Inject constructor(
         }
     }
 
-    fun addMovieToPlaylist(playlistId: Long) = intent {
-        addMovieToPlaylistUseCase.insertMovieToPlaylist(
-            playlistId = playlistId,
-            movie = state.value.playlistSelectState.movieDetails
-        )
+    private fun addMovieToPlaylist(playlistId: Long) = intent {
+        if (state.value.playlistSelectState.movieDetails.id != null) {
+            addMovieToPlaylistUseCase.insertMovieToPlaylist(
+                playlistId = playlistId,
+                movie = state.value.playlistSelectState.movieDetails
+            )
+        } else {
+            addMovieToPlaylistUseCase.insertMovieToPlaylist(
+                playlistId = playlistId,
+                movie = state.value.playlistSelectState.tvDetails
+            )
+        }
+    }
+
+    private fun removeMovieFromPlaylist(playlistId: Long) = intent {
+        if (state.value.playlistSelectState.movieDetails.id != null) {
+            removeMovieFromPlaylistUseCase.removeMovieFromPlaylist(
+                playlistId = playlistId,
+                movie = state.value.playlistSelectState.movieDetails
+            )
+        } else {
+            removeMovieFromPlaylistUseCase.removeMovieFromPlaylist(
+                playlistId = playlistId,
+                movie = state.value.playlistSelectState.tvDetails
+            )
+        }
+    }
+
+    fun changeMoviePlaylistStatus(playlistId: Long) = intent {
+
+        if (state.value.playlistSelectState.playlists.find {
+                it.playlist.playlistId == playlistId
+            }?.isMovieInPlaylist == false) {
+            addMovieToPlaylist(playlistId)
+        } else {
+            removeMovieFromPlaylist(playlistId)
+        }
         updateAllPlaylists()
+
     }
 }

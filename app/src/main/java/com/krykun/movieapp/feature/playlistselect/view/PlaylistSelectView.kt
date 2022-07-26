@@ -40,7 +40,7 @@ fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
             content = {
                 itemsIndexed(items = viewModel.playlistState.value) { index, item ->
                     Row(modifier = Modifier.clickable {
-                        viewModel.addMovieToPlaylist(playlistId = item.playlist.playlistId)
+                        viewModel.changeMoviePlaylistStatus(playlistId = item.playlist.playlistId)
                     }) {
                         Text(text = item.playlist.name)
                         Icon(

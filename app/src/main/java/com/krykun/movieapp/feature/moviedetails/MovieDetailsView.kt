@@ -77,9 +77,9 @@ fun MovieDetailsView(
     val isRatingVisible = remember {
         mutableStateOf(false)
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
     val bottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val lifecycleOwner = LocalLifecycleOwner.current
     val playlistSelectViewModel: PlaylistSelectViewModel = hiltViewModel()
 
     Crossfade(targetState = movieDetailsState.value) {

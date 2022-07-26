@@ -29,7 +29,7 @@ data class PlaylistWithMovies(
         parentColumn = "playlistId",
         entity = Movie::class,
         entityColumn = "movieId",
-        associateBy = Junction(PlaylistMovieCrossRef::class)
+        associateBy = Junction(PlaylistMovieCrossRef::class),
     )
     val movies: List<Movie>
 )

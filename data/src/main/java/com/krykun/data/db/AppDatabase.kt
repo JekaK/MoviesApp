@@ -8,7 +8,10 @@ import com.krykun.data.model.local.Movie
 import com.krykun.data.model.local.Playlist
 import com.krykun.data.model.local.PlaylistMovieCrossRef
 
-@Database(entities = [Playlist::class, Movie::class, PlaylistMovieCrossRef::class], version = 1)
+@Database(
+    entities = [Playlist::class, Movie::class, PlaylistMovieCrossRef::class],
+    version = 3,
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
     abstract fun movieDao(): MovieDao

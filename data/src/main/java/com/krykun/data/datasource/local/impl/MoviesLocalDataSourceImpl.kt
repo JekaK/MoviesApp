@@ -5,8 +5,7 @@ import com.krykun.data.datasource.local.MoviesLocalDataSource
 import com.krykun.data.model.local.Movie
 import com.krykun.data.model.local.PlaylistMovieCrossRef
 
-class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) :
-    MoviesLocalDataSource {
+class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) : MoviesLocalDataSource {
 
     override suspend fun insertMovie(movie: Movie, playlistId: Long): Long {
         val movieInsert = movieDao.insertMovie(movie)
@@ -20,13 +19,15 @@ class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) :
     }
 
     override fun removeMovieFromPlaylist(movie: Movie, playlistId: Long) {
-        movieDao.removeMovieFromPlaylist(movie)
         movieDao.removePlaylistMovieCrossRef(
             PlaylistMovieCrossRef(
                 playlistId = playlistId,
                 movieId = movie.movieId
             )
         )
+        if (movieDao.searchInCrossRefForMovie(movieId = movie.movieId.toInt()) == 0L) {
+            movieDao.removeMovieFromPlaylist(movie)
+        }
     }
 
     override fun isMovieAdded(movieId: Int, playlistId: Int): Boolean {
