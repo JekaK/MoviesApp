@@ -62,7 +62,10 @@ fun MainNavigation(
             )
         }
         composable(route = Screen.Favourite().route) {
-            PlaylistView(navHostController = navController)
+            PlaylistView(
+                navHostController = navController,
+                innerPadding = innerPadding
+            )
         }
         composable(route = Screen.MovieDetails().route) {
             MovieDetailsView(navHostController = navController)
