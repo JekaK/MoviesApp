@@ -122,7 +122,7 @@ private fun PlaylistItemView(
                 )
             }
             columnScope.AnimatedVisibility(
-                visible = !item.isMovieInPlaylist,
+                visible = item.isMovieInPlaylist,
                 enter = scaleIn(),
                 exit = scaleOut(),
                 modifier = Modifier
