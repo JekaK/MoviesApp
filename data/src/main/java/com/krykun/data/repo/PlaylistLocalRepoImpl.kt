@@ -15,12 +15,19 @@ class PlaylistLocalRepoImpl @Inject constructor(
         playlistsLocalDataSource.insertPlaylist(playlist.toPlaylist())
 
 
-    override fun getAllPlaylists(): Flow<List<Playlist>> {
-        return playlistsLocalDataSource.getPlaylistsWithMovies()
+    override fun getAllPlaylistsFlow(): Flow<List<Playlist>> {
+        return playlistsLocalDataSource.getPlaylistsWithMoviesFlow()
             .map {
                 it.map {
                     it.toPlaylist()
                 }
+            }
+    }
+
+    override fun getAllPlaylists(): List<Playlist> {
+        return playlistsLocalDataSource.getPlaylistsWithMovies()
+            .map {
+                it.toPlaylist()
             }
     }
 

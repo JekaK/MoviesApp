@@ -11,7 +11,9 @@ interface PlaylistLocalDataSource {
 
     suspend fun insertPlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef): Long
 
-    fun getPlaylistsWithMovies(): Flow<List<PlaylistWithMovies>>
+    fun getPlaylistsWithMoviesFlow(): Flow<List<PlaylistWithMovies>>
+
+    fun getPlaylistsWithMovies(): List<PlaylistWithMovies>
 
     fun getPlaylistsWithMoviesById(playlistId: Long): Flow<PlaylistWithMovies>
 

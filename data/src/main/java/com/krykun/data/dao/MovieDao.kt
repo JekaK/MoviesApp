@@ -21,5 +21,5 @@ interface MovieDao {
     fun removeMovieFromPlaylist(movie: Movie)
 
     @Query("SELECT EXISTS(SELECT 1 FROM PlaylistMovieCrossRef WHERE movieId = :movieId AND playlistId = :playlistId LIMIT 1)")
-    fun isAddedToPlaylist(movieId: Int, playlistId: Long): Boolean
+    fun isAddedToPlaylist(movieId: Int, playlistId: Int): Boolean
 }

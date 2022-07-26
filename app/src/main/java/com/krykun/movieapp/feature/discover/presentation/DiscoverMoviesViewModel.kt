@@ -109,7 +109,7 @@ class DiscoverMoviesViewModel @Inject constructor(
             state.value = state.value.copy(
                 movieDetailsState = state.value.movieDetailsState.copy(
                     movieId = movieId
-                )
+                ),
             )
             state
         }

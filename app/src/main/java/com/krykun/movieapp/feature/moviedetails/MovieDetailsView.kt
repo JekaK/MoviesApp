@@ -47,8 +47,8 @@ import com.krykun.domain.model.remote.moviedetails.MovieDetails
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
+import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
 import com.krykun.movieapp.feature.playlistselect.view.PlaylistSelectedView
-import com.krykun.movieapp.feature.trending.presentation.SelectedMovieType
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
@@ -80,6 +80,7 @@ fun MovieDetailsView(
     val bottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val lifecycleOwner = LocalLifecycleOwner.current
+    val playlistSelectViewModel: PlaylistSelectViewModel = hiltViewModel()
 
     Crossfade(targetState = movieDetailsState.value) {
         when (it) {
@@ -89,11 +90,11 @@ fun MovieDetailsView(
             MovieDetailsState.DEFAULT -> {
                 BaseMovieDetailsView(
                     movieData = movieData,
-                    scope = scope,
                     navHostController = navHostController,
                     isRatingVisible = isRatingVisible,
                     viewModel = viewModel,
-                    bottomSheetState = bottomSheetState
+                    bottomSheetState = bottomSheetState,
+                    playlistSelectViewModel = playlistSelectViewModel
                 )
             }
             MovieDetailsState.ERROR -> {
@@ -109,7 +110,8 @@ fun MovieDetailsView(
             isRatingVisible = isRatingVisible,
             movieDetailsState = movieDetailsState,
             scope = scope,
-            bottomSheetState = bottomSheetState
+            bottomSheetState = bottomSheetState,
+            playlistSelectViewModel = playlistSelectViewModel
         )
     }
 
@@ -142,11 +144,11 @@ enum class MovieDetailsState {
 @Composable
 private fun BaseMovieDetailsView(
     movieData: MutableState<MovieDetails?>,
-    scope: CoroutineScope,
     navHostController: NavHostController,
     isRatingVisible: MutableState<Boolean>,
     viewModel: MovieDetailsViewModel,
     bottomSheetState: ModalBottomSheetState,
+    playlistSelectViewModel: PlaylistSelectViewModel,
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -159,13 +161,11 @@ private fun BaseMovieDetailsView(
     ) {
         ModalBottomSheetLayout(
             sheetContent = {
-                PlaylistSelectedView()
+                PlaylistSelectedView(playlistSelectViewModel)
             },
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             sheetState = bottomSheetState
         ) {
-
-
             Scaffold(
                 scaffoldState = scaffoldState,
                 floatingActionButton = {
@@ -571,6 +571,7 @@ private fun handleSideEffects(
     movieDetailsState: MutableState<MovieDetailsState>,
     scope: CoroutineScope,
     bottomSheetState: ModalBottomSheetState,
+    playlistSelectViewModel: PlaylistSelectViewModel,
 ) {
     when (sideEffects) {
         is MovieDetailsSideEffects.ShowLoadingState -> {
@@ -591,6 +592,7 @@ private fun handleSideEffects(
         }
         is MovieDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
+                playlistSelectViewModel.updateAllPlaylists()
                 bottomSheetState.show()
             }
         }

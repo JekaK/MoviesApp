@@ -6,11 +6,9 @@ import com.krykun.domain.model.local.Playlist
 import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
 import com.krykun.domain.usecase.local.GetPlaylistMoviesByLimit
 import com.krykun.movieapp.base.BaseViewModel
-import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -32,7 +30,7 @@ class PlaylistViewModel @Inject constructor(
 
     private fun getAllPlaylists() = intent {
         viewModelScope.launch {
-            getAllPlaylistsUseCase.getAllPlaylists()
+            getAllPlaylistsUseCase.getAllPlaylistsFlow()
                 .collect {
                     reduce {
                         state.value = state.value.copy(

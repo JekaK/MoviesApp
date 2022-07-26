@@ -29,10 +29,10 @@ class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) :
         )
     }
 
-    override fun isMovieAdded(movieId: Int, playlistId: Long): Boolean {
+    override fun isMovieAdded(movieId: Int, playlistId: Int): Boolean {
         return movieDao.isAddedToPlaylist(
-            movieId,
-            playlistId
+            movieId = movieId,
+            playlistId = playlistId
         )
     }
 }

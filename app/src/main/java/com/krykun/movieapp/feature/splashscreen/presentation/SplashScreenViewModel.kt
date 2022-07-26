@@ -56,7 +56,7 @@ class SplashScreenViewModel @Inject constructor(
         intent {
             var job: Job? = null
             job = viewModelScope.launch(Dispatchers.IO) {
-                getAllPlaylistsUseCase.getAllPlaylists()
+                getAllPlaylistsUseCase.getAllPlaylistsFlow()
                     .collect {
                         var playlistMoviesInsertResult: Long = 0
                         var moviesPlaylist: Playlist? = null

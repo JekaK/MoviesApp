@@ -7,5 +7,8 @@ class GetAllPlaylistsUseCase @Inject constructor(
     private val playlistsLocalRepo: PlaylistsLocalRepo
 ) {
 
+    fun getAllPlaylistsFlow() = playlistsLocalRepo.getAllPlaylistsFlow()
+
     fun getAllPlaylists() = playlistsLocalRepo.getAllPlaylists()
+
 }

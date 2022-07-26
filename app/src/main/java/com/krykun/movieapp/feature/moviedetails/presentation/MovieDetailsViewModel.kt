@@ -69,28 +69,11 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
-//    private fun checkIsAdded() = intent {
-//        viewModelScope.launch {
-//            checkIsMovieAddedUseCase.checkIsMovieInPlaylist(container.stateFlow.value.value.movieDetailsState.movieId)
-//                .collect {
-//                    reduce {
-//                        state.value = state.value.copy(
-//                            movieDetailsState = state.value.movieDetailsState.copy(
-//                                isAdded = it
-//                            )
-//                        )
-//                        state
-//                    }
-//                    postSideEffect(sideEffect = MovieDetailsSideEffects.UpdateIsAddedState(it))
-//                }
-//        }
-//    }
-
     fun updateMovieSelector() = intent {
         state.value.movieDetailsState.movieData?.let {
             reduce {
                 state.value = state.value.copy(
-                    playlistSelectState = PlaylistSelectState(
+                    playlistSelectState = state.value.playlistSelectState.copy(
                         movieDetails = it
                     )
                 )

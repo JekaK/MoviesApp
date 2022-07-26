@@ -27,10 +27,10 @@ class MoviesLocalRepoImpl @Inject constructor(
         moviesLocalDataSource.removeMovieFromPlaylist(movie.toMovie(), playlistId)
     }
 
-    override fun isMovieAdded(movieId: Int, playlistId: Long): Boolean {
+    override fun isMovieAdded(movieId: Int, playlistId: Int): Boolean {
         return moviesLocalDataSource.isMovieAdded(
-            movieId,
-            playlistId
+            movieId = movieId,
+            playlistId = playlistId
         )
     }
 }

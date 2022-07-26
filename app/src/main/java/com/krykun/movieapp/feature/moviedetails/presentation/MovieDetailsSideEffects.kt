@@ -6,6 +6,5 @@ sealed class MovieDetailsSideEffects {
     data class ShowMovieData(val movieDetails: MovieDetails?) : MovieDetailsSideEffects()
     object ShowLoadingState : MovieDetailsSideEffects()
     object ShowErrorState : MovieDetailsSideEffects()
-    data class UpdateIsAddedState(val isAdded: Boolean) : MovieDetailsSideEffects()
     object OpenPlaylistSelector : MovieDetailsSideEffects()
 }

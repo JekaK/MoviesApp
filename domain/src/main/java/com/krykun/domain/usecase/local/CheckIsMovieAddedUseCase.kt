@@ -7,7 +7,9 @@ class CheckIsMovieAddedUseCase @Inject constructor(
     private val moviesLocalDataSource: MoviesLocalRepo,
 ) {
 
-    fun checkIsMovieInPlaylist(movieId: Int, playlistId: Long) =
-        moviesLocalDataSource.isMovieAdded(movieId,
-        playlistId)
+    fun checkIsMovieInPlaylist(movieId: Int, playlistId: Int) =
+        moviesLocalDataSource.isMovieAdded(
+            movieId = movieId,
+            playlistId = playlistId
+        )
 }

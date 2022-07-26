@@ -16,4 +16,5 @@
     <string name="empty_playlists">Your playlists is empty or not created. Please add something to it!</string>
     <string name="movie_added_to_playlist">Movie added to playlist</string>
     <string name="tv_series_added_to_playlist">TV Series added to playlist</string>
+    <string name="select_playlist_for">Select playlist for movie:</string>
 </resources>
