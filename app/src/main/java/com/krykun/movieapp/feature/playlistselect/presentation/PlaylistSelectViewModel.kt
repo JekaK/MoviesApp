@@ -89,7 +89,6 @@ class PlaylistSelectViewModel @Inject constructor(
     }
 
     fun changeMoviePlaylistStatus(playlistId: Long) = intent {
-
         if (state.value.playlistSelectState.playlists.find {
                 it.playlist.playlistId == playlistId
             }?.isMovieInPlaylist == false) {

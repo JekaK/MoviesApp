@@ -10,5 +10,4 @@ class GetAllPlaylistsUseCase @Inject constructor(
     fun getAllPlaylistsFlow() = playlistsLocalRepo.getAllPlaylistsFlow()
 
     fun getAllPlaylists() = playlistsLocalRepo.getAllPlaylists()
-
 }

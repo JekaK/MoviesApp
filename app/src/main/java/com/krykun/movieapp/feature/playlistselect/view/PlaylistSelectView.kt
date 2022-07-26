@@ -1,34 +1,47 @@
 package com.krykun.movieapp.feature.playlistselect.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.room.util.TableInfo
+import com.krykun.data.util.Constants
 import com.krykun.movieapp.R
+import com.krykun.movieapp.ext.header
+import com.krykun.movieapp.feature.playlistselect.presentation.MappedPlaylist
 import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectSideEffects
 import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
+import com.skydoves.landscapist.coil.CoilImage
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
 
     Column(
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(16.dp),
     ) {
         Text(
             text = stringResource(R.string.select_playlist_for),
@@ -36,21 +49,12 @@ fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
         )
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(top = 16.dp),
             content = {
                 itemsIndexed(items = viewModel.playlistState.value) { index, item ->
-                    Row(modifier = Modifier.clickable {
-                        viewModel.changeMoviePlaylistStatus(playlistId = item.playlist.playlistId)
-                    }) {
-                        Text(text = item.playlist.name)
-                        Icon(
-                            imageVector = if (item.isMovieInPlaylist) {
-                                Icons.Outlined.AddCircle
-                            } else {
-                                Icons.Default.Remove
-                            }, contentDescription = ""
-                        )
-                    }
+
+                    PlaylistItemView(viewModel, item, this@Column)
                 }
             }
         )
@@ -63,6 +67,152 @@ fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
             sideEffects = it,
             viewModel = viewModel
         )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun PlaylistItemView(
+    viewModel: PlaylistSelectViewModel,
+    item: MappedPlaylist,
+    columnScope: ColumnScope
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = 8.dp,
+                bottom = 8.dp
+            ),
+        elevation = 16.dp,
+        shape = RoundedCornerShape(20.dp),
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(modifier = Modifier
+                .clickable {
+                    viewModel.changeMoviePlaylistStatus(playlistId = item.playlist.playlistId)
+                }
+                .padding(
+                    start = 8.dp,
+                    top = 8.dp,
+                    bottom = 8.dp,
+                    end = 16.dp
+                )
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically) {
+                val imageList = if (item.playlist.movieList.size >= 4) {
+                    item.playlist.movieList.subList(0, 4)
+                } else {
+                    item.playlist.movieList
+                }
+                ImageCollageView(
+                    imageList.map {
+                        it.poster
+                    })
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = item.playlist.name,
+                    maxLines = 1,
+                    modifier = Modifier.padding(end = 32.dp),
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            columnScope.AnimatedVisibility(
+                visible = !item.isMovieInPlaylist,
+                enter = scaleIn(),
+                exit = scaleOut(),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Check,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(24.dp)
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun ImageCollageView(imageList: List<String>) {
+    Card(
+        modifier = Modifier.size(width = 50.dp, height = 75.dp),
+        elevation = 16.dp,
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = GridCells.Adaptive(minSize = 25.dp),
+        ) {
+            if (imageList.size == 1) {
+                header {
+                    CoilImage(
+                        imageModel = Constants.IMAGE_BASE_URL + imageList.first(),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        modifier = Modifier.size(75.dp)
+                    )
+                }
+            }
+
+            if (imageList.size == 3) {
+                items(count = 2) { index ->
+                    CoilImage(
+                        imageModel = Constants.IMAGE_BASE_URL + imageList[index],
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        modifier = Modifier.size(width = 25.dp, height = 37.5.dp)
+                    )
+                }
+                header {
+                    CoilImage(
+                        imageModel = Constants.IMAGE_BASE_URL + imageList[2],
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        modifier = Modifier
+                            .height(37.5.dp)
+                            .fillMaxWidth()
+                    )
+                }
+            }
+
+            if (imageList.size == 2 || imageList.size == 4) {
+                items(count = imageList.size) { index ->
+                    CoilImage(
+                        imageModel = Constants.IMAGE_BASE_URL + imageList[index],
+                        contentDescription = null,
+                        contentScale = if (imageList.size == 2) {
+                            ContentScale.FillHeight
+                        } else {
+                            ContentScale.FillBounds
+                        },
+                        placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
+                        modifier = Modifier.size(
+                            width = 25.dp, height = if (imageList.size == 2) {
+                                75.dp
+                            } else {
+                                37.5.dp
+                            }
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 
