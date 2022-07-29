@@ -3,6 +3,7 @@ package com.krykun.movieapp.feature.playlist.main.presentation
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.krykun.domain.model.local.Playlist
+import com.krykun.domain.usecase.local.AddPlaylistUseCase
 import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
 import com.krykun.domain.usecase.local.GetPlaylistMoviesByLimit
 import com.krykun.movieapp.base.BaseViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class PlaylistViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val getAllPlaylistsUseCase: GetAllPlaylistsUseCase,
-    private val getPlaylistMoviesByLimit: GetPlaylistMoviesByLimit
+    private val getPlaylistMoviesByLimit: GetPlaylistMoviesByLimit,
+    private val addPlaylistUseCase: AddPlaylistUseCase
 ) : BaseViewModel<PlaylistSideEffects>(appState) {
 
     init {
@@ -40,26 +42,9 @@ class PlaylistViewModel @Inject constructor(
                         )
                         state
                     }
-                    if (isSomePlaylistsHaveItems(it)) {
-                        postSideEffect(PlaylistSideEffects.UpdatePlaylist(it))
-                    } else {
-                        postSideEffect(PlaylistSideEffects.UpdatePlaylist(listOf()))
-                    }
+                    postSideEffect(PlaylistSideEffects.UpdatePlaylist(it))
                 }
         }
-    }
-
-    private fun isSomePlaylistsHaveItems(allPlaylists: List<Playlist>): Boolean {
-        var isPlaylistNotEmpty = false
-        run breaking@{
-            allPlaylists.forEach {
-                isPlaylistNotEmpty = it.movieList.isNotEmpty()
-                if (isPlaylistNotEmpty) {
-                    return@breaking
-                }
-            }
-        }
-        return isPlaylistNotEmpty
     }
 
     fun navigateToPlaylistDetails(playlistId: Long) = intent {
@@ -76,14 +61,9 @@ class PlaylistViewModel @Inject constructor(
         postSideEffect(PlaylistSideEffects.NavigateToPlaylistDetails)
     }
 
-//    fun subscribeToState() =
-//        container.stateFlow.value.takeWhenChanged {
-//            it.playlistState
-//        }.map {
-//            if (isSomePlaylistsHaveItems(it.playlists)) {
-//                it
-//            } else {
-//                it.copy(playlists = listOf())
-//            }
-//        }
+    fun addPlaylist(name: String) {
+        viewModelScope.launch {
+            addPlaylistUseCase.addPlaylist(Playlist(name = name))
+        }
+    }
 }

@@ -104,13 +104,8 @@ private fun PlaylistItemView(
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically) {
-                val imageList = if (item.playlist.movieList.size >= 4) {
-                    item.playlist.movieList.subList(0, 4)
-                } else {
-                    item.playlist.movieList
-                }
                 ImageCollageView(
-                    imageList.map {
+                    item.playlist.movieList.map {
                         it.poster
                     })
                 Spacer(modifier = Modifier.width(16.dp))

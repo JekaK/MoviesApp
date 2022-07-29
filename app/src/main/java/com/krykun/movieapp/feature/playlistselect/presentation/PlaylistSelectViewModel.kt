@@ -43,7 +43,11 @@ class PlaylistSelectViewModel @Inject constructor(
                 )
                 resultList.add(
                     MappedPlaylist(
-                        playlist = it,
+                        playlist = if (it.movieList.size >= 4) {
+                            it.copy(movieList = it.movieList.subList(0, 4))
+                        } else {
+                            it.copy(movieList = it.movieList)
+                        },
                         isMovieInPlaylist = isInPlaylist
                     )
                 )
