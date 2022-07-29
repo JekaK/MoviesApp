@@ -11,55 +11,110 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.room.util.TableInfo
 import com.krykun.data.util.Constants
 import com.krykun.movieapp.R
 import com.krykun.movieapp.ext.header
+import com.krykun.movieapp.feature.playlist.main.view.CreatePlaylistView
 import com.krykun.movieapp.feature.playlistselect.presentation.MappedPlaylist
 import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectSideEffects
 import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import org.orbitmvi.orbit.compose.collectSideEffect
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
 
-    Column(
+    var showPlaylistCreationDialog by remember {
+        mutableStateOf(false)
+    }
+    if (showPlaylistCreationDialog) {
+        CreatePlaylistView(
+            onApply = {
+                viewModel.addPlaylist(it)
+                viewModel.updateAllPlaylists()
+                showPlaylistCreationDialog = false
+            },
+            onDismiss = {
+                showPlaylistCreationDialog = false
+            })
+    }
+    Box(
         modifier = Modifier.padding(16.dp),
     ) {
-        Text(
-            text = stringResource(R.string.select_playlist_for),
-            style = MaterialTheme.typography.h6
-        )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            content = {
-                itemsIndexed(items = viewModel.playlistState.value) { index, item ->
-
-                    PlaylistItemView(viewModel, item, this@Column)
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
+            Text(
+                text = stringResource(R.string.select_playlist_for),
+                style = MaterialTheme.typography.h6,
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = 16.dp,
+                        bottom = 16.dp
+                    ),
+                content = {
+                    itemsIndexed(items = viewModel.playlistState.value) { index, item ->
+                        PlaylistItemView(viewModel, item, this@Column)
+                    }
                 }
-            }
-        )
-        Button(onClick = { }) {
-            Text("Cancel")
+            )
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 8.dp,
+                    bottom = 8.dp
+                )
+                .align(Alignment.BottomCenter),
+            elevation = 16.dp,
+            backgroundColor = colorResource(id = R.color.purple_500),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Text(
+                text = "+ Add playlist",
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
+                    .clickable {
+                        showPlaylistCreationDialog = true
+                    }
+            )
         }
     }
     viewModel.collectSideEffect {

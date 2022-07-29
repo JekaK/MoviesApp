@@ -1,6 +1,7 @@
 package com.krykun.movieapp.feature.tvseries
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -137,6 +138,21 @@ private fun TvSeriesDetailsBasicView(
     val scrollSate = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
     val message = stringResource(R.string.tv_series_added_to_playlist)
+
+    val scope = rememberCoroutineScope()
+
+    BackHandler {
+        if (bottomSheetState.isVisible ||
+            bottomSheetState.isAnimationRunning
+        ) {
+            scope.launch {
+                bottomSheetState.hide()
+            }
+        } else {
+            navHostController.popBackStack()
+        }
+    }
+
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null
     ) {
@@ -599,7 +615,7 @@ private fun handleSideEffects(
         is TvSeriesDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
                 playlistSelectViewModel.updateAllPlaylists()
-                bottomSheetState.show()
+                bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
             }
         }
     }

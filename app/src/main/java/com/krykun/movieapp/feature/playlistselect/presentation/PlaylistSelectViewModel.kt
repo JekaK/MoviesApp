@@ -2,10 +2,8 @@ package com.krykun.movieapp.feature.playlistselect.presentation
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.krykun.domain.usecase.local.AddMovieToPlaylistUseCase
-import com.krykun.domain.usecase.local.CheckIsMovieAddedUseCase
-import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
-import com.krykun.domain.usecase.local.RemoveMovieFromPlaylistUseCase
+import com.krykun.domain.model.local.Playlist
+import com.krykun.domain.usecase.local.*
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +21,8 @@ class PlaylistSelectViewModel @Inject constructor(
     private val addMovieToPlaylistUseCase: AddMovieToPlaylistUseCase,
     private val checkIsMovieAddedUseCase: CheckIsMovieAddedUseCase,
     private val getAllPlaylistsUseCase: GetAllPlaylistsUseCase,
-    private val removeMovieFromPlaylistUseCase: RemoveMovieFromPlaylistUseCase
+    private val removeMovieFromPlaylistUseCase: RemoveMovieFromPlaylistUseCase,
+    private val addPlaylistUseCase: AddPlaylistUseCase
 ) : BaseViewModel<PlaylistSelectSideEffects>(appState) {
 
     val playlistState = mutableStateOf(listOf<MappedPlaylist>())
@@ -101,6 +100,11 @@ class PlaylistSelectViewModel @Inject constructor(
             removeMovieFromPlaylist(playlistId)
         }
         updateAllPlaylists()
+    }
 
+    fun addPlaylist(name: String) {
+        viewModelScope.launch {
+            addPlaylistUseCase.addPlaylist(Playlist(name = name))
+        }
     }
 }

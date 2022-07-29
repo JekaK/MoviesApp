@@ -1,6 +1,7 @@
 package com.krykun.movieapp.feature.moviedetails
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -155,6 +156,19 @@ private fun BaseMovieDetailsView(
     val scrollSate = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
     val message = stringResource(R.string.movie_added_to_playlist)
+    val scope = rememberCoroutineScope()
+
+    BackHandler {
+        if (bottomSheetState.isVisible ||
+            bottomSheetState.isAnimationRunning
+        ) {
+            scope.launch {
+                bottomSheetState.hide()
+            }
+        } else {
+            navHostController.popBackStack()
+        }
+    }
 
     CompositionLocalProvider(
         LocalOverscrollConfiguration provides null
@@ -593,7 +607,7 @@ private fun handleSideEffects(
         is MovieDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
                 playlistSelectViewModel.updateAllPlaylists()
-                bottomSheetState.show()
+                bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
             }
         }
     }
