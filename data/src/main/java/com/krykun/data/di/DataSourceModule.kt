@@ -37,8 +37,10 @@ object DataSourceModule {
 
     @Provides
     @Singleton
-    fun providePlaylistsLocalDataSource(playlistDao: PlaylistDao): PlaylistLocalDataSource =
-        PlaylistLocalDataSourceImpl(playlistDao)
+    fun providePlaylistsLocalDataSource(
+        playlistDao: PlaylistDao,
+        movieDao: MovieDao
+    ): PlaylistLocalDataSource = PlaylistLocalDataSourceImpl(playlistDao, movieDao)
 
     @Provides
     @Singleton

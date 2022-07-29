@@ -24,8 +24,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.krykun.domain.model.local.Playlist
 import com.krykun.movieapp.R
-import com.krykun.movieapp.ext.noRippleClickable
+import com.krykun.movieapp.ext.noRippleLongClickable
 import com.krykun.movieapp.feature.playlist.main.presentation.PlaylistSideEffects
 import com.krykun.movieapp.feature.playlist.main.presentation.PlaylistViewModel
 import com.krykun.movieapp.navigation.Screen
@@ -44,6 +45,28 @@ fun PlaylistView(
     var showPlaylistCreationDialog by remember {
         mutableStateOf(false)
     }
+
+    var showPlaylistDeleteDialog by remember {
+        mutableStateOf(false)
+    }
+    var selectedPlaylistItem by remember {
+        mutableStateOf(Playlist())
+    }
+
+    if (showPlaylistDeleteDialog) {
+        DeletePlaylistConfirmationView(
+            onApply = {
+                viewModel.removePlaylist(it)
+                showPlaylistDeleteDialog = false
+            },
+            onDismiss = {
+                showPlaylistDeleteDialog = false
+            },
+            item = selectedPlaylistItem
+        )
+    }
+
+
     if (showPlaylistCreationDialog) {
         CreatePlaylistView(
             onApply = {
@@ -87,9 +110,13 @@ fun PlaylistView(
                         itemsIndexed(items = viewModel.playlistState.value) { index, item ->
                             PlaylistItemView(
                                 playlist = item,
-                                modifier = Modifier.noRippleClickable {
+                                modifier = Modifier.noRippleLongClickable(onLongClick = {
+                                    selectedPlaylistItem = item
+                                    showPlaylistDeleteDialog = true
+                                }, onClick = {
                                     viewModel.navigateToPlaylistDetails(item.playlistId)
                                 })
+                            )
                         }
                     }
                 }

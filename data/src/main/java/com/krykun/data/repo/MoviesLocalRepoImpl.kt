@@ -19,11 +19,11 @@ class MoviesLocalRepoImpl @Inject constructor(
         moviesLocalDataSource.insertMovie(movie.toMovie(), playlistId)
 
 
-    override fun removeMovieFromPlaylist(movie: MovieDetails, playlistId: Long) {
+    override suspend fun removeMovieFromPlaylist(movie: MovieDetails, playlistId: Long) {
         moviesLocalDataSource.removeMovieFromPlaylist(movie.toMovie(), playlistId)
     }
 
-    override fun removeMovieFromPlaylist(movie: TvDetails, playlistId: Long) {
+    override suspend fun removeMovieFromPlaylist(movie: TvDetails, playlistId: Long) {
         moviesLocalDataSource.removeMovieFromPlaylist(movie.toMovie(), playlistId)
     }
 

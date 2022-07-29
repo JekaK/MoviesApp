@@ -14,6 +14,10 @@ class PlaylistLocalRepoImpl @Inject constructor(
     override suspend fun insertPlaylist(playlist: Playlist): Long =
         playlistsLocalDataSource.insertPlaylist(playlist.toPlaylist())
 
+    override suspend fun removePlaylist(playlistId: Long) {
+        playlistsLocalDataSource.removePlaylist(playlistId)
+    }
+
 
     override fun getAllPlaylistsFlow(): Flow<List<Playlist>> {
         return playlistsLocalDataSource.getPlaylistsWithMoviesFlow()

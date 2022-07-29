@@ -79,15 +79,19 @@ class PlaylistSelectViewModel @Inject constructor(
 
     private fun removeMovieFromPlaylist(playlistId: Long) = intent {
         if (state.value.playlistSelectState.movieDetails.id != null) {
-            removeMovieFromPlaylistUseCase.removeMovieFromPlaylist(
-                playlistId = playlistId,
-                movie = state.value.playlistSelectState.movieDetails
-            )
+            viewModelScope.launch {
+                removeMovieFromPlaylistUseCase.removeMovieFromPlaylist(
+                    playlistId = playlistId,
+                    movie = state.value.playlistSelectState.movieDetails
+                )
+            }
         } else {
-            removeMovieFromPlaylistUseCase.removeMovieFromPlaylist(
-                playlistId = playlistId,
-                movie = state.value.playlistSelectState.tvDetails
-            )
+            viewModelScope.launch {
+                removeMovieFromPlaylistUseCase.removeMovieFromPlaylist(
+                    playlistId = playlistId,
+                    movie = state.value.playlistSelectState.tvDetails
+                )
+            }
         }
     }
 

@@ -7,6 +7,8 @@ interface PlaylistsLocalRepo {
 
     suspend fun insertPlaylist(playlist: Playlist): Long
 
+    suspend fun removePlaylist(playlistId: Long)
+
     fun getAllPlaylistsFlow(): Flow<List<Playlist>>
 
     fun getAllPlaylists(): List<Playlist>

@@ -18,7 +18,7 @@ class MoviesLocalDataSourceImpl(private val movieDao: MovieDao) : MoviesLocalDat
         return movieInsert
     }
 
-    override fun removeMovieFromPlaylist(movie: Movie, playlistId: Long) {
+    override suspend fun removeMovieFromPlaylist(movie: Movie, playlistId: Long) {
         movieDao.removePlaylistMovieCrossRef(
             PlaylistMovieCrossRef(
                 playlistId = playlistId,

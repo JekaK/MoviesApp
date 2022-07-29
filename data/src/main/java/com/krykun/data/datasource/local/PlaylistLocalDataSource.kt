@@ -18,4 +18,6 @@ interface PlaylistLocalDataSource {
     fun getPlaylistsWithMoviesById(playlistId: Long): Flow<PlaylistWithMovies>
 
     fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<PlaylistWithMovies>>
+
+    suspend fun removePlaylist(playlistId: Long)
 }

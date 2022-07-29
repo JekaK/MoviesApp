@@ -59,9 +59,7 @@ fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
                 showPlaylistCreationDialog = false
             })
     }
-    Box(
-        modifier = Modifier.padding(16.dp),
-    ) {
+    Box(modifier = Modifier.padding(16.dp)) {
         Column(
             modifier = Modifier.align(Alignment.TopCenter)
         ) {

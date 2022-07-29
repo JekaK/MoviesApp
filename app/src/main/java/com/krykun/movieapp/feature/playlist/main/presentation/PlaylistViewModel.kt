@@ -6,6 +6,7 @@ import com.krykun.domain.model.local.Playlist
 import com.krykun.domain.usecase.local.AddPlaylistUseCase
 import com.krykun.domain.usecase.local.GetAllPlaylistsUseCase
 import com.krykun.domain.usecase.local.GetPlaylistMoviesByLimit
+import com.krykun.domain.usecase.local.RemovePlaylistUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +21,8 @@ import javax.inject.Inject
 class PlaylistViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val getAllPlaylistsUseCase: GetAllPlaylistsUseCase,
-    private val getPlaylistMoviesByLimit: GetPlaylistMoviesByLimit,
-    private val addPlaylistUseCase: AddPlaylistUseCase
+    private val addPlaylistUseCase: AddPlaylistUseCase,
+    private val removePlaylistUseCase: RemovePlaylistUseCase
 ) : BaseViewModel<PlaylistSideEffects>(appState) {
 
     init {
@@ -64,6 +65,12 @@ class PlaylistViewModel @Inject constructor(
     fun addPlaylist(name: String) {
         viewModelScope.launch {
             addPlaylistUseCase.addPlaylist(Playlist(name = name))
+        }
+    }
+
+    fun removePlaylist(playlistId: Long) {
+        viewModelScope.launch {
+            removePlaylistUseCase.removePlaylist(playlistId = playlistId)
         }
     }
 }

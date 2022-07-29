@@ -1,6 +1,7 @@
 package com.krykun.data.dao
 
 import androidx.room.*
+import com.krykun.data.model.local.Movie
 import com.krykun.data.model.local.Playlist
 import com.krykun.data.model.local.PlaylistMovieCrossRef
 import com.krykun.data.model.local.PlaylistWithMovies
@@ -30,4 +31,14 @@ interface PlaylistDao {
     @Transaction
     @Query("select * from Movie inner join PlaylistMovieCrossRef on Movie.movieId = PlaylistMovieCrossRef.movieId inner join Playlist on Playlist.playlistId = PlaylistMovieCrossRef.playlistId WHERE  Playlist.playlistId==1 LIMIT :amount")
     fun getAllPlaylistsWithMoviesByLimit(amount: Int): Flow<List<PlaylistWithMovies>>
+
+    @Transaction
+    @Query("DELETE FROM Playlist WHERE playlistId = :playlistId")
+    suspend fun removePlaylist(playlistId: Long)
+
+    @Query("SELECT * FROM PlaylistMovieCrossRef WHERE playlistId = :playlistId")
+    suspend fun searchInCrossRefForPlaylist(playlistId: Long): List<PlaylistMovieCrossRef>
+
+    @Query("DELETE FROM PLAYLISTMOVIECROSSREF WHERE playlistId = :playlistId")
+    suspend fun deleteAllPlaylistCrossRefById(playlistId: Long)
 }

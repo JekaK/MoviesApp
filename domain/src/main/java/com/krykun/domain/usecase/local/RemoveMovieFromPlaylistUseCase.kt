@@ -9,9 +9,9 @@ class RemoveMovieFromPlaylistUseCase @Inject constructor(
     private val moviesLocalRepo: MoviesLocalRepo
 ) {
 
-    fun removeMovieFromPlaylist(movie: MovieDetails, playlistId: Long) =
+    suspend fun removeMovieFromPlaylist(movie: MovieDetails, playlistId: Long) =
         moviesLocalRepo.removeMovieFromPlaylist(movie, playlistId)
 
-    fun removeMovieFromPlaylist(movie: TvDetails, playlistId: Long) =
+    suspend fun removeMovieFromPlaylist(movie: TvDetails, playlistId: Long) =
         moviesLocalRepo.removeMovieFromPlaylist(movie, playlistId)
 }

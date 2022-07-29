@@ -7,7 +7,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -47,6 +49,19 @@ fun <T : Any> Flow<PagingData<T>>.collectAndHandleState(
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier = composed {
     clickable(indication = null,
         interactionSource = remember { MutableInteractionSource() }) {
+        onClick()
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+inline fun Modifier.noRippleLongClickable(
+    crossinline onClick: () -> Unit,
+    crossinline onLongClick: () -> Unit
+): Modifier = composed {
+    combinedClickable(indication = null,
+        interactionSource = remember { MutableInteractionSource() }, onLongClick = {
+            onLongClick()
+        }) {
         onClick()
     }
 }
