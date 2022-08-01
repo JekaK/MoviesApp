@@ -15,7 +15,7 @@ interface MovieDao {
 
     @Transaction
     @Delete
-    fun removePlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)
+    suspend fun removePlaylistMovieCrossRef(crossRef: PlaylistMovieCrossRef)
 
     @Query("SELECT EXISTS(SELECT 1 FROM PlaylistMovieCrossRef WHERE movieId = :movieId LIMIT 1)")
     suspend fun searchInCrossRefForMovie(movieId: Int): Long
@@ -25,7 +25,7 @@ interface MovieDao {
 
     @Transaction
     @Delete
-    fun removeMovieFromPlaylist(movie: Movie)
+    suspend fun removeMovieFromPlaylist(movie: Movie)
 
     @Transaction
     @Query("DELETE FROM MOVIE WHERE movieId = :movieId")
