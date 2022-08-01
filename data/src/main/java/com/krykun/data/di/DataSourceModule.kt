@@ -25,16 +25,19 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataSourceModule {
 
+    /* Providing a dependency for the `MoviesRemoteDataSource` interface. */
     @Provides
     @Singleton
     fun provideRemoteDataSource(apiService: ApiService): MoviesRemoteDataSource =
         MoviesRemoteDataSourceImpl(apiService)
 
+    /* Providing a dependency for the `MoviesLocalDataSource` interface. */
     @Provides
     @Singleton
     fun provideMoviesLocalDataSource(movieDao: MovieDao): MoviesLocalDataSource =
         MoviesLocalDataSourceImpl(movieDao)
 
+    /* Providing a dependency for the `PlaylistLocalDataSource` interface. */
     @Provides
     @Singleton
     fun providePlaylistsLocalDataSource(
@@ -42,16 +45,19 @@ object DataSourceModule {
         movieDao: MovieDao
     ): PlaylistLocalDataSource = PlaylistLocalDataSourceImpl(playlistDao, movieDao)
 
+    /* Providing a dependency for the `MoviesRemoteRepo` interface. */
     @Provides
     @Singleton
     fun provideMoviesRemoteRepo(remoteDataSource: MoviesRemoteDataSource): MoviesRemoteRepo =
         MoviesRemoteRepoImpl(remoteDataSource)
 
+    /* Providing a dependency for the `MoviesLocalRepo` interface. */
     @Provides
     @Singleton
     fun provideMoviesLocalRepo(moviesLocalDataSource: MoviesLocalDataSource): MoviesLocalRepo =
         MoviesLocalRepoImpl(moviesLocalDataSource)
 
+    /* Providing a dependency for the `PlaylistsLocalRepo` interface. */
     @Provides
     @Singleton
     fun providePlaylistsLocalRepo(playlistLocalDataSource: PlaylistLocalDataSource): PlaylistsLocalRepo =

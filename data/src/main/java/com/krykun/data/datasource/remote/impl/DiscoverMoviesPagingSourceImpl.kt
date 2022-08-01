@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.krykun.data.api.ApiService
 import com.krykun.data.model.remote.movielistitem.MovieItem
 
-class DiscoverMoviesPagingSource(
+class DiscoverMoviesPagingSourceImpl(
     private val apiService: ApiService,
 ) : PagingSource<Int, MovieItem>() {
 

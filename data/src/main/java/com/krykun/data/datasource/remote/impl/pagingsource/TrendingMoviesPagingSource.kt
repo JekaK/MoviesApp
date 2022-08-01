@@ -9,6 +9,24 @@ class TrendingMoviesPagingSource(
     private val apiService: ApiService,
 ) : PagingSource<Int, MovieItemResponse>() {
 
+    /**
+     * We are trying to load the next page of data from the API, and if we get a response, we return a
+     * LoadResult.Page object with the data, the previous key (which is null in this case), and the
+     * next key (which is the next page number). If we get an error, we return a LoadResult.Error
+     * object with the error
+     *
+     * @param params LoadParams<Int> - This is the page number that we want to load.
+     * @return LoadResult.Page(
+     *                 data = response.results as List<MovieItemResponse>,
+     *                 prevKey = null,
+     *                 nextKey = when {
+     *                     (response.page + 1) <= response.totalPages -> {
+     *                         response.page + 1
+     *                     }
+     *                     else -> null
+     *                 }
+     *             )
+     */
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieItemResponse> {
         try {
             val nextPageNumber = params.key ?: 1

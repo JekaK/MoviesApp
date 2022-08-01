@@ -26,6 +26,15 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
     private val apiService: ApiService
 ) : MoviesRemoteDataSource {
 
+    /**
+     * > We're creating a pager that will use the `DiscoverMoviesPagingSourceImpl` to fetch data from
+     * the API
+     *
+     * @param country The ISO 3166-1 code of the country to get the movies for.
+     * @param language The language to include.
+     * @param category The category of movies to be fetched.
+     * @return A Flow of PagingData of MovieItem
+     */
     override fun getUpcomingMovies(
         country: String?,
         language: String?,
@@ -34,7 +43,7 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
-                DiscoverMoviesPagingSource(
+                DiscoverMoviesPagingSourceImpl(
                     apiService = apiService,
                 )
             }
