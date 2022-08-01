@@ -35,13 +35,13 @@ In my case I'm using MVI based architecture with Jetpack Compose in Single Activ
 ---
 
 <p align="center">
-  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup.png" width="50%">
-  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup%20(1).png" width="50%">
+  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup.png" width="100%">
+  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup%20(1).png" width="100%">
 </p>
 
 <p align="center">
-  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup%20(2).png" width="50%">
-  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup%20(3).png" width="50%">
+  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup%20(2).png" width="100%">
+  <img src="https://github.com/JekaK/MoviesApp/blob/main/images/Pixel%20True%20Mockup%20(3).png" width="100%">
 </p>
 
 ---
