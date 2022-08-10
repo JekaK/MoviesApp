@@ -66,7 +66,6 @@ fun PlaylistView(
         )
     }
 
-
     if (showPlaylistCreationDialog) {
         CreatePlaylistView(
             onApply = {

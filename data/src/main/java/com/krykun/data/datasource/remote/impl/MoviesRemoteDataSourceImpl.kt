@@ -50,6 +50,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         ).flow
     }
 
+    /**
+     * We're calling the API service, and if the result is successful, we're returning a success result
+     * with the list of genres, otherwise we're returning a failure result with an exception
+     *
+     * @return Result<List<Genre>>
+     */
     override suspend fun getGenres(): Result<List<Genre>> {
         val result = apiService.getGenres()
         return if (result.isSuccessful) {
@@ -59,6 +65,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * We're calling the API service, and if the result is successful, we're returning a success result
+     * with the list of genres, otherwise we're returning a failure result with an exception
+     *
+     * @return Result<List<Genre>>
+     */
     override suspend fun getTvGenres(): Result<List<Genre>> {
         val result = apiService.getTvGenres()
         return if (result.isSuccessful) {
@@ -68,6 +80,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * It fetches the movie details from the API.
+     *
+     * @param movieId The id of the movie you want to get details for.
+     * @return Result<MovieDetailsResponse>
+     */
     override suspend fun getMovieDetails(movieId: Int): Result<MovieDetailsResponse> {
         val result = apiService.getMovieDetails(movieId)
         return if (result.isSuccessful) {
@@ -77,6 +95,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * It's a suspend function that returns a Result object
+     *
+     * @param movieId The id of the movie you want to get details for.
+     * @return Result<TvDetailsResponse>
+     */
     override suspend fun getTvDetails(movieId: Int): Result<TvDetailsResponse> {
         val result = apiService.getTvDetails(movieId)
         return if (result.isSuccessful) {
@@ -86,6 +110,13 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * It makes a network call to the API, and returns the result of the network call as a Result
+     * object
+     *
+     * @param movieId The id of the movie whose cast details are to be fetched.
+     * @return Result<CastDetailsResponse>
+     */
     override suspend fun getMovieCastDetails(movieId: Int): Result<CastDetailsResponse> {
         val result = apiService.getMovieCastDetails(movieId)
         return if (result.isSuccessful) {
@@ -95,6 +126,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * It fetches the cast details of a TV show.
+     *
+     * @param movieId The id of the movie you want to get the cast details for.
+     * @return Result<TvCastDetailsResponse>
+     */
     override suspend fun getTvCastDetails(movieId: Int): Result<TvCastDetailsResponse> {
         val result = apiService.getTvCastDetails(movieId)
         return if (result.isSuccessful) {
@@ -104,6 +141,13 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * We are creating a Pager object with a PagingConfig object that has a pageSize of 20, and a
+     * pagingSourceFactory that creates a TrendingMoviesPagingSource object that uses the apiService to
+     * fetch data
+     *
+     * @return A Flow of PagingData of MovieItemResponse
+     */
     override fun getTrendingMovies(): Flow<PagingData<MovieItemResponse>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
@@ -115,6 +159,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         ).flow
     }
 
+    /**
+     * We are creating a pager with a page size of 20, and the paging source factory is a
+     * PopularMoviesPagingSource which is a class that we will create in the next step
+     *
+     * @return A Flow of PagingData of MovieItemResponse
+     */
     override fun getPopularMovies(): Flow<PagingData<MovieItemResponse>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
@@ -126,6 +176,13 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         ).flow
     }
 
+    /**
+     * We are creating a Pager object with a PagingConfig object that has a pageSize of 20, and a
+     * pagingSourceFactory that creates a TopRatedMoviesPagingSource object that uses the apiService to
+     * get the data
+     *
+     * @return A Flow of PagingData of MovieItemResponse
+     */
     override fun getTopRatedMovies(): Flow<PagingData<MovieItemResponse>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
@@ -137,6 +194,13 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         ).flow
     }
 
+    /**
+     * > We create a Pager object with a PagingConfig object that specifies the page size, and a paging
+     * source factory that creates a SearchPagingSource object
+     *
+     * @param query The search query
+     * @return A Flow of PagingData of SearchItem
+     */
     override fun makeSearch(query: String): Flow<PagingData<SearchItem>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
@@ -149,6 +213,12 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         ).flow
     }
 
+    /**
+     * It fetches the person details from the API.
+     *
+     * @param movieId The id of the movie you want to get the details of.
+     * @return Result<PersonDetailsResponse>
+     */
     override suspend fun getPersonDetails(movieId: Int): Result<PersonDetailsResponse> {
         val result = apiService.getPersonDetails(movieId)
         return if (result.isSuccessful) {
@@ -158,6 +228,13 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    /**
+     * `getPersonCombinedCredits` is a function that takes an integer as a parameter and returns a
+     * Result object that contains either a PersonCombinedCreditsResponse object or an Exception object
+     *
+     * @param personId The id of the person you want to get the credits for.
+     * @return Result<PersonCombinedCreditsResponse>
+     */
     override suspend fun getPersonCombinedCredits(personId: Int): Result<PersonCombinedCreditsResponse> {
         val result = apiService.getPersonCombinedCredits(personId)
         return if (result.isSuccessful) {
