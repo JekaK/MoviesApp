@@ -10,4 +10,9 @@ sealed class SearchSideEffects {
     object NavigateToPersonDetails : SearchSideEffects()
 
     data class SetSavedQuery(val query: String) : SearchSideEffects()
+
+    data class GetCurrentDiscoverPageAndScrollOffset(
+        val currentPageAndOffset: Int
+    ) : SearchSideEffects()
+
 }

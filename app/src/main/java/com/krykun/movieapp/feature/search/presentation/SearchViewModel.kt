@@ -129,4 +129,39 @@ class SearchViewModel @Inject constructor(
             setIsLoading(false)
         }
     }
+
+    fun setScrollOffset(scrollOffset: Int) = intent {
+        reduce {
+            state.value = state.value.copy(
+                searchState = state.value.searchState.copy(
+                    scrollOffset = scrollOffset
+                )
+            )
+            state
+        }
+    }
+
+    fun getCurrentPageAndScrollOffset() = intent {
+        val page = when {
+            state.value.searchState.lastSavedPage > 0 -> state.value.searchState.lastSavedPage
+            state.value.searchState.scrollOffset > 0f -> state.value.searchState.scrollOffset
+            else -> 0
+        }
+        postSideEffect(
+            SearchSideEffects.GetCurrentDiscoverPageAndScrollOffset(page)
+        )
+    }
+
+    fun setLastScrolledPage(index: Int) = intent {
+        if (index != state.value.searchState.lastSavedPage) {
+            reduce {
+                state.value = state.value.copy(
+                    searchState = state.value.searchState.copy(
+                        lastSavedPage = index
+                    )
+                )
+                state
+            }
+        }
+    }
 }

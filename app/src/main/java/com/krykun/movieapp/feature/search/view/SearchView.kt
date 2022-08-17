@@ -66,6 +66,7 @@ fun SearchView(
     navHostController: NavHostController,
     innerPadding: PaddingValues
 ) {
+
     var searchResults =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
 
@@ -74,6 +75,7 @@ fun SearchView(
     val isLoading = remember { mutableStateOf(false) }
     val query = remember { mutableStateOf("") }
     val scrollState = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
 
     if (markIsModified.value) {
         markIsModified.value = false
@@ -90,6 +92,8 @@ fun SearchView(
             isLoading = isLoading,
             navHostController = navHostController,
             query = query,
+            scope = scope,
+            scrollState = scrollState
         )
     }
 
@@ -137,10 +141,29 @@ fun SearchView(
         }
     }
 
+    //TODO remove this when HorizontalPager will remember scroll position when recomposing
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                viewModel.setLastScrolledPage(scrollState.firstVisibleItemIndex)
+                viewModel.setScrollOffset(scrollState.firstVisibleItemScrollOffset)
+            }
+        }
+
+        // Add the observer to the lifecycle
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // When the effect leaves the Composition, remove the observer
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     LaunchedEffect(key1 = searchResults?.loadState?.refresh) {
         if (searchResults?.loadState?.refresh is LoadState.NotLoading) {
             viewModel.setIsLoading(false)
             viewModel.setSavedQuery()
+            viewModel.getCurrentPageAndScrollOffset()
         } else if (searchResults?.loadState?.refresh is LoadState.Loading) {
             if (!queryIsEmpty.value) {
                 viewModel.setIsLoading(true)
@@ -274,6 +297,8 @@ private fun handleSideEffects(
     isLoading: MutableState<Boolean>,
     navHostController: NavHostController,
     query: MutableState<String>,
+    scope: CoroutineScope,
+    scrollState: LazyGridState
 ) {
     when (sideEffects) {
         is SearchSideEffects.TryReloadPage -> {
@@ -296,6 +321,12 @@ private fun handleSideEffects(
         }
         is SearchSideEffects.SetSavedQuery -> {
             query.value = sideEffects.query
+        }
+        is SearchSideEffects.GetCurrentDiscoverPageAndScrollOffset -> {
+            val currentPage = sideEffects.currentPageAndOffset
+            scope.launch {
+                scrollState.scrollToItem(currentPage, 0)
+            }
         }
     }
 }
