@@ -49,12 +49,20 @@ class DiscoverMoviesViewModel @Inject constructor(
             it.homeState.discoverMoviesState
         }
 
+    /**
+     * `setScrollOffset` is a function that takes an `Int` and returns an `Intent` that reduces the
+     * state by copying the current state, updating the `scrollOffsetUpcoming` property of the
+     * `discoverMoviesState` property of the `homeState` property of the state with the given `Int`,
+     * and then returning the state
+     *
+     * @param scrollOffset The scroll offset of the recycler view
+     */
     fun setScrollOffset(scrollOffset: Int) = intent {
         reduce {
             state.value = state.value.copy(
                 homeState = state.value.homeState.copy(
                     discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
-                        scrollOffsetUpcoming = scrollOffset
+                        scrollOffset = scrollOffset
                     )
                 )
             )
@@ -62,10 +70,13 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * > Get the current page and scroll offset of the upcoming movies list
+     */
     fun getCurrentPageAndScrollOffset() = intent {
         val page = when {
-            state.value.homeState.discoverMoviesState.lastSavedPageUpcoming > 0 -> state.value.homeState.discoverMoviesState.lastSavedPageUpcoming
-            state.value.homeState.discoverMoviesState.scrollOffsetUpcoming > 0f -> state.value.homeState.discoverMoviesState.scrollOffsetUpcoming.toInt()
+            state.value.homeState.discoverMoviesState.lastSavedPage > 0 -> state.value.homeState.discoverMoviesState.lastSavedPage
+            state.value.homeState.discoverMoviesState.scrollOffset > 0f -> state.value.homeState.discoverMoviesState.scrollOffset.toInt()
             else -> 0
         }
         postSideEffect(
@@ -73,13 +84,18 @@ class DiscoverMoviesViewModel @Inject constructor(
         )
     }
 
+    /**
+     * > It sets the last scrolled page of the upcoming movies list
+     *
+     * @param index The index of the page that was last scrolled to.
+     */
     fun setLastScrolledPage(index: Int) = intent {
-        if (index != state.value.homeState.discoverMoviesState.lastSavedPageUpcoming) {
+        if (index != state.value.homeState.discoverMoviesState.lastSavedPage) {
             reduce {
                 state.value = state.value.copy(
                     homeState = state.value.homeState.copy(
                         discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
-                            lastSavedPageUpcoming = index
+                            lastSavedPage = index
                         )
                     )
                 )
@@ -88,13 +104,19 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * > If the current page index is different than the index passed in, then update the state and
+     * trigger the side effect
+     *
+     * @param index The index of the page that was selected.
+     */
     fun triggerOnPageChanged(index: Int) = intent {
-        if (index != state.value.homeState.discoverMoviesState.currentUpcomingPageIndex) {
+        if (index != state.value.homeState.discoverMoviesState.currentPageIndex) {
             reduce {
                 state.value = state.value.copy(
                     homeState = state.value.homeState.copy(
                         discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
-                            currentUpcomingPageIndex = index
+                            currentPageIndex = index
                         )
                     )
                 )
@@ -104,6 +126,12 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * It takes a movieId and returns a function that takes a state and returns a new state with the
+     * movieId set in the movieDetailsState
+     *
+     * @param movieId The id of the movie that we want to get the details for.
+     */
     fun setMovieDetailsId(movieId: Int) = intent {
         reduce {
             state.value = state.value.copy(
@@ -128,6 +156,12 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
+    /**
+     * If any of the load states are in error, post a side effect to try reloading the page
+     *
+     * @param loadStates LoadStates - This is the LoadStates object that is passed to the
+     * PagingDataAdapter.
+     */
     fun handleLoadState(loadStates: LoadStates) = intent {
         val errorLoadState = arrayOf(
             loadStates.append,

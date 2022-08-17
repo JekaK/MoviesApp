@@ -41,7 +41,7 @@ fun AnimatedSplashScreen(
         handleSideEffect(it, navHostController)
     }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
         viewModel.startAnimFlag.value = true
     }
     Splash(alphaAnim)

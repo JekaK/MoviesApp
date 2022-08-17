@@ -261,9 +261,7 @@ private fun handleSideEffects(
         is DiscoverMoviesSideEffects.GetCurrentDiscoverPageAndScrollOffset -> {
             val currentPage = sideEffects.currentPageAndOffset
             scope.launch {
-
                 lazyListState.scrollToItem(currentPage, 0)
-
             }
         }
         is DiscoverMoviesSideEffects.TryReloadDiscoverPage -> {
