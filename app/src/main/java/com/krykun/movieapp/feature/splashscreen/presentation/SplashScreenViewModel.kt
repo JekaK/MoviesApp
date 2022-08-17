@@ -13,11 +13,8 @@ import com.krykun.movieapp.R
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.syntax.simple.SimpleSyntax
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -58,62 +55,8 @@ class SplashScreenViewModel @Inject constructor(
             job = viewModelScope.launch(Dispatchers.IO) {
                 getAllPlaylistsUseCase.getAllPlaylistsFlow()
                     .collect {
-                        var playlistMoviesInsertResult: Long = 0
-                        var moviesPlaylist: Playlist? = null
-                        var tvSeriesPlaylist: Playlist? = null
-                        var playlistTvSeriesInsertResult: Long = 0
-                        if (it.find {
-                                it.name == context.getString(R.string.favourite_movies)
-                            } == null) {
-                            moviesPlaylist = Playlist(
-                                name = context.getString(R.string.favourite_movies),
-                                movieList = listOf()
-                            )
-
-                            playlistMoviesInsertResult =
-                                addPlaylistUseCase.addPlaylist(moviesPlaylist)
-                        }
-                        if (it.find {
-                                it.name == context.getString(R.string.favourite_tv_series)
-                            } == null) {
-                            tvSeriesPlaylist = Playlist(
-                                name = context.getString(R.string.favourite_tv_series),
-                                movieList = listOf()
-                            )
-                            playlistTvSeriesInsertResult =
-                                addPlaylistUseCase.addPlaylist(tvSeriesPlaylist)
-                        }
-                        if (playlistMoviesInsertResult >= 1) {
-                            moviesPlaylist?.copy(
-                                playlistId = playlistMoviesInsertResult
-                            )?.let {
-                                reduce {
-                                    state.value = state.value.copy(
-                                        playlistState = state.value.playlistState.copy(
-                                            playlists = state.value.playlistState.playlists + it
-
-                                        )
-                                    )
-                                    state
-                                }
-                            }
-                        }
-
-                        if (playlistTvSeriesInsertResult >= 1) {
-                            tvSeriesPlaylist?.copy(
-                                playlistId = playlistTvSeriesInsertResult
-                            )?.let {
-                                reduce {
-                                    state.value = state.value.copy(
-                                        playlistState = state.value.playlistState.copy(
-                                            playlists = state.value.playlistState.playlists + it
-
-                                        )
-                                    )
-                                    state
-                                }
-                            }
-                        }
+                        insertPlaylist(it, this@intent, PlaylistType.MOVIE)
+                        insertPlaylist(it, this@intent, PlaylistType.TVSERIES)
                         if (it.isNotEmpty()) {
                             reduce {
                                 state.value = state.value.copy(
@@ -130,14 +73,59 @@ class SplashScreenViewModel @Inject constructor(
             }
         }
 
+    private enum class PlaylistType {
+        MOVIE,
+        TVSERIES
+    }
+
+    private suspend fun insertPlaylist(
+        it: List<Playlist>,
+        intent: SimpleSyntax<MutableStateFlow<AppState>, SplashScreenSideEffect>,
+        type: PlaylistType
+    ) {
+        var playlist: Playlist? = null
+        var playlistInsertResult: Long = 0
+
+        if (it.find {
+                when (type) {
+                    PlaylistType.MOVIE -> it.name == context.getString(R.string.favourite_movies)
+                    PlaylistType.TVSERIES -> it.name == context.getString(R.string.favourite_tv_series)
+                }
+            } == null) {
+            playlist = Playlist(
+                name = when (type) {
+                    PlaylistType.MOVIE -> context.getString(R.string.favourite_movies)
+                    PlaylistType.TVSERIES -> context.getString(R.string.favourite_tv_series)
+                },
+                movieList = listOf()
+            )
+            playlistInsertResult =
+                addPlaylistUseCase.addPlaylist(playlist)
+        }
+
+        if (playlistInsertResult >= 1) {
+            playlist?.copy(
+                playlistId = playlistInsertResult
+            )?.let {
+                intent.reduce {
+                    state.value = state.value.copy(
+                        playlistState = state.value.playlistState.copy(
+                            playlists = state.value.playlistState.playlists + it
+
+                        )
+                    )
+                    state
+                }
+            }
+        }
+    }
+
     private fun makeInitialDelay() {
         insertDefaultPlaylist {
             viewModelScope.launch(Dispatchers.IO) {
                 val response = getMovieGenresUseCase.getMovieGenres()
                 val tvResponse = getTvGenresUseCase.getTvGenres()
-                if (response.isSuccess &&
-                    tvResponse.isSuccess
-                ) {
+                if (response.isSuccess && tvResponse.isSuccess) {
                     reduce {
                         state.value = state.value.copy(
                             baseMoviesState = state.value.baseMoviesState.copy(

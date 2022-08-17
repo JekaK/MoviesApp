@@ -1,9 +1,6 @@
 package com.krykun.movieapp.feature.moviedetails.presentation
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.viewModelScope
-import com.krykun.domain.model.local.Playlist
-import com.krykun.domain.usecase.local.AddPlaylistUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetMovieCastDetailsUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetMovieDetailsUseCase
 import com.krykun.movieapp.base.BaseViewModel
@@ -11,7 +8,6 @@ import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectSta
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
