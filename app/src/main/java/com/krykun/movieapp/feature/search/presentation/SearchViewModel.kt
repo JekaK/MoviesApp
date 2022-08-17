@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.krykun.domain.model.remote.search.SearchItem
 import com.krykun.domain.usecase.remote.search.MakeSearchUseCase
 import com.krykun.movieapp.base.BaseViewModel
@@ -60,7 +61,7 @@ class SearchViewModel @Inject constructor(
         searchResults = makeSearchUseCase.makeSearch(
             query,
             state.value.baseMoviesState.genres
-        )
+        ).cachedIn(viewModelScope)
         postSideEffect(SearchSideEffects.UpdateSearchResult)
     }
 
@@ -120,7 +121,7 @@ class SearchViewModel @Inject constructor(
         if (throwable != null &&
             (throwable as HttpException).code() != 422
         ) {
-            postSideEffect(SearchSideEffects.TryReloadTrendingPage)
+            postSideEffect(SearchSideEffects.TryReloadPage)
         }
         if (throwable != null &&
             (throwable as HttpException).code() == 422
@@ -128,5 +129,4 @@ class SearchViewModel @Inject constructor(
             setIsLoading(false)
         }
     }
-
 }

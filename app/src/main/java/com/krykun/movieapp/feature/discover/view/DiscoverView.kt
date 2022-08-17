@@ -81,11 +81,11 @@ fun DiscoverView(
 
     viewModel.collectSideEffect {
         handleSideEffects(
-            it,
-            movies,
-            dominantColorState,
-            lazyListState,
-            scope
+            sideEffects = it,
+            movies = movies,
+            dominantColorState = dominantColorState,
+            lazyListState = lazyListState,
+            scope = scope
         )
     }
 

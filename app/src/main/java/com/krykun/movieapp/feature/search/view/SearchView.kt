@@ -8,9 +8,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -23,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -31,6 +37,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -46,6 +55,8 @@ import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.feature.search.presentation.SearchSideEffects
 import com.krykun.movieapp.feature.search.presentation.SearchViewModel
 import com.krykun.movieapp.navigation.Screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -55,9 +66,9 @@ fun SearchView(
     navHostController: NavHostController,
     innerPadding: PaddingValues
 ) {
-
-    var searchResults: LazyPagingItems<SearchItem>? =
+    var searchResults =
         viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
+
     val queryIsEmpty = remember { mutableStateOf(false) }
     val markIsModified = remember { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(false) }
@@ -69,6 +80,7 @@ fun SearchView(
         searchResults =
             viewModel.searchResults?.collectAndHandleState(viewModel::handleLoadSearchItemsState)
     }
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     viewModel.collectSideEffect {
         handleSideEffects(
@@ -106,12 +118,12 @@ fun SearchView(
                         columns = GridCells.Adaptive(minSize = 128.dp),
                         state = scrollState
                     ) {
-                        items(searchResults?.itemCount ?: 0) { index ->
-                            Box(Modifier.padding(8.dp)) {
+                        items(count = searchResults?.itemCount ?: 0) { index ->
+                            Box(modifier = Modifier.padding(8.dp)) {
                                 searchResults?.get(index)?.let {
                                     SearchItemView(
-                                        it,
-                                        viewModel,
+                                        searchItem = it,
+                                        viewModel = viewModel,
                                     )
                                 }
                             }
@@ -264,7 +276,7 @@ private fun handleSideEffects(
     query: MutableState<String>,
 ) {
     when (sideEffects) {
-        is SearchSideEffects.TryReloadTrendingPage -> {
+        is SearchSideEffects.TryReloadPage -> {
             searchResults?.retry()
         }
         is SearchSideEffects.UpdateSearchResult -> {
