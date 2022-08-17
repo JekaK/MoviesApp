@@ -2,7 +2,9 @@ package com.krykun.movieapp.feature.tvseries.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.krykun.domain.usecase.local.AddMovieToPlaylistUseCase
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.krykun.domain.model.remote.tvdetails.TvDetails
 import com.krykun.domain.usecase.remote.tvdetails.GetTvCastDetailsUseCase
 import com.krykun.domain.usecase.remote.tvdetails.GetTvDetailsUseCase
 import com.krykun.movieapp.base.BaseViewModel
@@ -21,8 +23,17 @@ class TvSeriesDetailsViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
     private val getTvDetailsUseCase: GetTvDetailsUseCase,
     private val getTvCastDetailsUseCase: GetTvCastDetailsUseCase,
-    private val addMovieToPlaylistUseCase: AddMovieToPlaylistUseCase,
 ) : BaseViewModel<TvSeriesDetailsSideEffects>(appState) {
+
+    enum class MovieDetailsState {
+        LOADING,
+        DEFAULT,
+        ERROR
+    }
+
+    val movieData = mutableStateOf<TvDetails?>(null)
+    val movieDetailsState = mutableStateOf(MovieDetailsState.LOADING)
+    val isRatingVisible = mutableStateOf(false)
 
     init {
         loadMovieDetails()

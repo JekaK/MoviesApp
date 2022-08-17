@@ -6,6 +6,8 @@ import com.krykun.domain.model.remote.tvcastdetails.Cast
 import com.krykun.domain.model.remote.tvcastdetails.Crew
 import com.krykun.domain.model.remote.tvcastdetails.TvCastDetails
 import com.krykun.domain.model.remote.tvdetails.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 object TvDetailsMapper {
 
@@ -25,7 +27,15 @@ object TvDetailsMapper {
             episodeRunTime = episodeRunTime?.map {
                 it
             },
-            firstAirDate = firstAirDate,
+            firstAirDate = if (firstAirDate?.isNotEmpty() == true) {
+                val calendar = Calendar.getInstance(TimeZone.getDefault())
+                calendar.time = SimpleDateFormat("yyyy-MM-dd").parse(
+                    firstAirDate
+                )
+                calendar.get(Calendar.YEAR).toString()
+            } else {
+                ""
+            },
             genres = genres?.map {
                 Genre(
                     id = it?.id,

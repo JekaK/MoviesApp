@@ -48,14 +48,13 @@ import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectVie
 import com.krykun.movieapp.feature.playlistselect.view.PlaylistSelectedView
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsSideEffects
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsViewModel
+import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsViewModel.MovieDetailsState
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
-import java.text.SimpleDateFormat
-import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalMotionApi
@@ -65,30 +64,19 @@ fun TvSeriesDetailsView(
     navHostController: NavHostController
 ) {
 
-    val movieData = remember {
-        mutableStateOf<TvDetails?>(null)
-    }
-    val movieDetailsState = remember {
-        mutableStateOf(MovieDetailsState.LOADING)
-    }
     val scope = rememberCoroutineScope()
 
-    val isRatingVisible = remember {
-        mutableStateOf(false)
-    }
     val bottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val playlistSelectViewModel: PlaylistSelectViewModel = hiltViewModel()
-    Crossfade(targetState = movieDetailsState.value) {
+    Crossfade(targetState = viewModel.movieDetailsState.value) {
         when (it) {
             MovieDetailsState.LOADING -> {
                 LoadingView()
             }
             MovieDetailsState.DEFAULT -> {
                 TvSeriesDetailsBasicView(
-                    movieData = movieData,
                     navHostController = navHostController,
-                    isRatingVisible = isRatingVisible,
                     viewModel = viewModel,
                     bottomSheetState = bottomSheetState,
                     playlistSelectViewModel = playlistSelectViewModel
@@ -103,20 +91,13 @@ fun TvSeriesDetailsView(
     viewModel.collectSideEffect {
         handleSideEffects(
             sideEffects = it,
-            movieData = movieData,
-            isRatingVisible = isRatingVisible,
-            movieDetailsState = movieDetailsState,
+            movieData = viewModel.movieData,
+            isRatingVisible = viewModel.isRatingVisible,
+            movieDetailsState = viewModel.movieDetailsState,
             scope = scope,
             bottomSheetState = bottomSheetState,
-            playlistSelectViewModel = playlistSelectViewModel
         )
     }
-}
-
-enum class MovieDetailsState {
-    LOADING,
-    DEFAULT,
-    ERROR
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -126,9 +107,7 @@ enum class MovieDetailsState {
 )
 @Composable
 private fun TvSeriesDetailsBasicView(
-    movieData: MutableState<TvDetails?>,
     navHostController: NavHostController,
-    isRatingVisible: MutableState<Boolean>,
     viewModel: TvSeriesDetailsViewModel,
     bottomSheetState: ModalBottomSheetState,
     playlistSelectViewModel: PlaylistSelectViewModel,
@@ -138,7 +117,7 @@ private fun TvSeriesDetailsBasicView(
     val scrollSate = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
     val message = stringResource(R.string.tv_series_added_to_playlist)
-
+    val movieData = viewModel.movieData
     val scope = rememberCoroutineScope()
 
     BackHandler {
@@ -198,7 +177,7 @@ private fun TvSeriesDetailsBasicView(
                             backdropPath = movieData.value?.backdropPath ?: ""
                         )
                         RatingView(
-                            isRatingVisible = isRatingVisible,
+                            isRatingVisible = viewModel.isRatingVisible,
                             screenWidth = screenWidth,
                             movieData = movieData
                         )
@@ -297,15 +276,7 @@ fun TitleView(movieData: MutableState<TvDetails?>) {
     Spacer(modifier = Modifier.height(16.dp))
     Row {
         Text(
-            text = if (movieData.value?.firstAirDate?.isNotEmpty() == true) {
-                val calendar = Calendar.getInstance(TimeZone.getDefault())
-                calendar.time = SimpleDateFormat("yyyy-MM-dd").parse(
-                    movieData.value?.firstAirDate ?: ""
-                )
-                calendar.get(Calendar.YEAR).toString()
-            } else {
-                ""
-            },
+            text = movieData.value?.firstAirDate ?: "",
             color = colorResource(id = R.color.light_gray_color),
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -593,7 +564,6 @@ private fun handleSideEffects(
     movieDetailsState: MutableState<MovieDetailsState>,
     scope: CoroutineScope,
     bottomSheetState: ModalBottomSheetState,
-    playlistSelectViewModel: PlaylistSelectViewModel,
 ) {
     when (sideEffects) {
         is TvSeriesDetailsSideEffects.ShowLoadingState -> {
@@ -614,7 +584,6 @@ private fun handleSideEffects(
         }
         is TvSeriesDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
-                playlistSelectViewModel.updateAllPlaylists()
                 bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
             }
         }

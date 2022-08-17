@@ -32,8 +32,10 @@ class SplashScreenViewModel @Inject constructor(
     private val getAllPlaylistsUseCase: GetAllPlaylistsUseCase
 ) : BaseViewModel<SplashScreenSideEffect>(appState) {
 
+    /* It's a delay that is used to show the splash screen for 1 second. */
     private val splashDelay = 1000L
 
+    /* It's a flag that is used to start the animation in the `SplashScreen` */
     val startAnimFlag = mutableStateOf(false)
 
     init {
@@ -41,6 +43,11 @@ class SplashScreenViewModel @Inject constructor(
         makeInitialDelay()
     }
 
+    /**
+     * > The function `setScreenOpen` is a private function that returns an intent that reduces the
+     * state by copying the current state and setting the `isScreenOpen` property of the
+     * `splashScreenState` property of the state to `true`
+     */
     private fun setScreenOpen() = intent {
         reduce {
             state.value =
@@ -49,35 +56,48 @@ class SplashScreenViewModel @Inject constructor(
         }
     }
 
+    /**
+     * It inserts the default playlists if they don't exist, and then calls the callback function
+     *
+     * @param callback SimpleSyntax<MutableStateFlow<AppState>, SplashScreenSideEffect>.() -> Unit
+     */
     private fun insertDefaultPlaylist(callback: SimpleSyntax<MutableStateFlow<AppState>, SplashScreenSideEffect>.() -> Unit) =
         intent {
             var job: Job? = null
             job = viewModelScope.launch(Dispatchers.IO) {
-                getAllPlaylistsUseCase.getAllPlaylistsFlow()
-                    .collect {
-                        insertPlaylist(it, this@intent, PlaylistType.MOVIE)
-                        insertPlaylist(it, this@intent, PlaylistType.TVSERIES)
-                        if (it.isNotEmpty()) {
-                            reduce {
-                                state.value = state.value.copy(
-                                    playlistState = state.value.playlistState.copy(
-                                        playlists = state.value.playlistState.playlists + it
-                                    )
-                                )
-                                state
-                            }
-                        }
-                        callback(this@intent)
-                        job?.cancel()
+                val allPlaylists = getAllPlaylistsUseCase.getAllPlaylists()
+                insertPlaylist(allPlaylists, this@intent, PlaylistType.MOVIE)
+                insertPlaylist(allPlaylists, this@intent, PlaylistType.TVSERIES)
+                if (allPlaylists.isNotEmpty()) {
+                    reduce {
+                        state.value = state.value.copy(
+                            playlistState = state.value.playlistState.copy(
+                                playlists = state.value.playlistState.playlists + allPlaylists
+                            )
+                        )
+                        state
                     }
+                }
+                callback(this@intent)
+                job?.cancel()
+
             }
         }
 
+    /* An enum class that has two values: MOVIE and TVSERIES. */
     private enum class PlaylistType {
         MOVIE,
         TVSERIES
     }
 
+    /**
+     * It checks if the favourite playlist exists, if it doesn't, it creates it and adds it to the
+     * state
+     *
+     * @param it List<Playlist> - the list of playlists that are currently in the database
+     * @param intent SimpleSyntax<MutableStateFlow<AppState>, SplashScreenSideEffect>
+     * @param type PlaylistType
+     */
     private suspend fun insertPlaylist(
         it: List<Playlist>,
         intent: SimpleSyntax<MutableStateFlow<AppState>, SplashScreenSideEffect>,
@@ -120,6 +140,10 @@ class SplashScreenViewModel @Inject constructor(
         }
     }
 
+    /**
+     * We're making a network call to get the movie genres and tv genres, and if the response is
+     * successful, we're updating the state with the genres and then moving to the next screen
+     */
     private fun makeInitialDelay() {
         insertDefaultPlaylist {
             viewModelScope.launch(Dispatchers.IO) {

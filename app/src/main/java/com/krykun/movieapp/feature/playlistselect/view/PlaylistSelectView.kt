@@ -52,7 +52,6 @@ fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
         CreatePlaylistView(
             onApply = {
                 viewModel.addPlaylist(it)
-                viewModel.updateAllPlaylists()
                 showPlaylistCreationDialog = false
             },
             onDismiss = {

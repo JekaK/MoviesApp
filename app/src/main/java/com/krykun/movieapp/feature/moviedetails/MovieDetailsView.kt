@@ -606,7 +606,6 @@ private fun handleSideEffects(
         }
         is MovieDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
-                playlistSelectViewModel.updateAllPlaylists()
                 bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
             }
         }
