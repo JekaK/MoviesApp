@@ -50,7 +50,7 @@ class PlaylistDetailsViewModel @Inject constructor(
     fun navigateToMovieDetails(movieId: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = MovieDetailsState(movieId = movieId)
+                movieDetailsState = MovieDetailsState(id = movieId)
             )
             state
         }
@@ -60,7 +60,7 @@ class PlaylistDetailsViewModel @Inject constructor(
     fun navigateToTvDetailsDetails(tvId: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                tvSeriesState = TvSeriesDetailsState(tvId = tvId)
+                tvSeriesState = TvSeriesDetailsState(id = tvId)
             )
             state
         }

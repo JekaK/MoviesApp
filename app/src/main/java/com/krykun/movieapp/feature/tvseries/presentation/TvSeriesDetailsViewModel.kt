@@ -3,7 +3,6 @@ package com.krykun.movieapp.feature.tvseries.presentation
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import com.krykun.domain.model.remote.tvdetails.TvDetails
 import com.krykun.domain.usecase.remote.tvdetails.GetTvCastDetailsUseCase
 import com.krykun.domain.usecase.remote.tvdetails.GetTvDetailsUseCase
@@ -43,8 +42,8 @@ class TvSeriesDetailsViewModel @Inject constructor(
     private fun loadMovieDetails() = intent {
         postSideEffect(TvSeriesDetailsSideEffects.ShowLoadingState)
         val castResult =
-            getTvCastDetailsUseCase.getTvCastDetails(state.value.tvSeriesState.tvId)
-        val result = getTvDetailsUseCase.getTvDetails(state.value.tvSeriesState.tvId)
+            getTvCastDetailsUseCase.getTvCastDetails(state.value.tvSeriesState.id)
+        val result = getTvDetailsUseCase.getTvDetails(state.value.tvSeriesState.id)
 
         if (result.isSuccess && castResult.isSuccess) {
             val verifiedResponse = result.map {
@@ -55,7 +54,7 @@ class TvSeriesDetailsViewModel @Inject constructor(
             reduce {
                 state.value = state.value.copy(
                     tvSeriesState = TvSeriesDetailsState(
-                        tvDetails = verifiedResponse.getOrNull()
+                        details = verifiedResponse.getOrNull()
                     )
                 )
                 state
@@ -67,7 +66,7 @@ class TvSeriesDetailsViewModel @Inject constructor(
     }
 
     fun updateMovieSelector() = intent {
-        state.value.tvSeriesState.tvDetails?.let {
+        state.value.tvSeriesState.details?.let {
             reduce {
                 state.value = state.value.copy(
                     playlistSelectState = state.value.playlistSelectState.copy(

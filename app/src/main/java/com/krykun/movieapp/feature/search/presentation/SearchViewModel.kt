@@ -14,7 +14,6 @@ import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,7 +83,7 @@ class SearchViewModel @Inject constructor(
     fun navigateToMovie(id: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = MovieDetailsState(movieId = id)
+                movieDetailsState = MovieDetailsState(id = id)
             )
             state
         }
@@ -94,7 +93,7 @@ class SearchViewModel @Inject constructor(
     fun navigateToTvState(id: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                tvSeriesState = TvSeriesDetailsState(tvId = id)
+                tvSeriesState = TvSeriesDetailsState(id = id)
             )
             state
         }

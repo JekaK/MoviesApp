@@ -136,7 +136,7 @@ class DiscoverMoviesViewModel @Inject constructor(
         reduce {
             state.value = state.value.copy(
                 movieDetailsState = state.value.movieDetailsState.copy(
-                    movieId = movieId
+                    id = movieId
                 ),
             )
             state

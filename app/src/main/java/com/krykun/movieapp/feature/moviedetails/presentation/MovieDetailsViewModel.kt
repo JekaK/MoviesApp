@@ -37,8 +37,8 @@ class MovieDetailsViewModel @Inject constructor(
     private fun loadMovieDetails() = intent {
         postSideEffect(MovieDetailsSideEffects.ShowLoadingState)
         val castResult =
-            getMovieCastDetailsUseCase.getMovieCastDetails(state.value.movieDetailsState.movieId)
-        val result = getMovieDetailsUseCase.getMovieDetail(state.value.movieDetailsState.movieId)
+            getMovieCastDetailsUseCase.getMovieCastDetails(state.value.movieDetailsState.id)
+        val result = getMovieDetailsUseCase.getMovieDetail(state.value.movieDetailsState.id)
 
         if (result.isSuccess && castResult.isSuccess) {
             val verifiedResponse = result.map {
@@ -49,7 +49,7 @@ class MovieDetailsViewModel @Inject constructor(
             reduce {
                 state.value = state.value.copy(
                     movieDetailsState = MovieDetailsState(
-                        movieData = verifiedResponse.getOrNull()
+                        details = verifiedResponse.getOrNull()
                     )
                 )
                 state
@@ -61,7 +61,7 @@ class MovieDetailsViewModel @Inject constructor(
     }
 
     fun updateMovieSelector() = intent {
-        state.value.movieDetailsState.movieData?.let {
+        state.value.movieDetailsState.details?.let {
             reduce {
                 state.value = state.value.copy(
                     playlistSelectState = state.value.playlistSelectState.copy(
