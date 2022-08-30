@@ -57,4 +57,8 @@ interface MoviesRemoteRepo {
         genres: List<Genre>
     ): Result<PersonCombinedCredits>
 
+    fun getMovieRecommendations(
+        movieId: Int,
+        genres: List<Genre>
+    ): Flow<PagingData<MovieDiscoverItem>>
 }

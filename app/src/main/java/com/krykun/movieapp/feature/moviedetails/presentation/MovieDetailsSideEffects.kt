@@ -4,7 +4,9 @@ import com.krykun.domain.model.remote.moviedetails.MovieDetails
 
 sealed class MovieDetailsSideEffects {
     data class ShowMovieData(val movieDetails: MovieDetails?) : MovieDetailsSideEffects()
+    class GetCurrentPageAndScrollOffset(page: Int) : MovieDetailsSideEffects()
     object ShowLoadingState : MovieDetailsSideEffects()
     object ShowErrorState : MovieDetailsSideEffects()
     object OpenPlaylistSelector : MovieDetailsSideEffects()
+    object TryReloadRecommendationsPage : MovieDetailsSideEffects()
 }

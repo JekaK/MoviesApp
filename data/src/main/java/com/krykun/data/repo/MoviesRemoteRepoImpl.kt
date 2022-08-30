@@ -137,4 +137,17 @@ class MoviesRemoteRepoImpl @Inject constructor(
             it.toPersonCombinedCredits(genres)
         }
     }
+
+    override fun getMovieRecommendations(
+        movieId: Int,
+        genres: List<Genre>
+    ): Flow<PagingData<MovieDiscoverItem>> {
+        return remoteDataSource.getMovieRecommendations(
+            movieId = movieId
+        ).map {
+            it.map { movieItem ->
+                movieItem.toMovieDiscoverItem(genres)
+            }
+        }
+    }
 }

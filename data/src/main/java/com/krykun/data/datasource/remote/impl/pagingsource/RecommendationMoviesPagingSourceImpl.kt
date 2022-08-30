@@ -1,12 +1,13 @@
-package com.krykun.data.datasource.remote.impl
+package com.krykun.data.datasource.remote.impl.pagingsource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.krykun.data.api.ApiService
 import com.krykun.data.model.remote.movielistitem.MovieItem
 
-class DiscoverMoviesPagingSourceImpl(
+class RecommendationMoviesPagingSourceImpl(
     private val apiService: ApiService,
+    private val movieId: Int
 ) : PagingSource<Int, MovieItem>() {
 
     /**
@@ -29,8 +30,9 @@ class DiscoverMoviesPagingSourceImpl(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieItem> {
         try {
             val nextPageNumber = params.key ?: 1
-            val response = apiService.getDiscoverMovies(
+            val response = apiService.getRecommendationMovies(
                 page = nextPageNumber,
+                movieId = movieId
             )
             return LoadResult.Page(
                 data = response.results as List<MovieItem>,

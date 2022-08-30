@@ -26,6 +26,12 @@ interface ApiService {
         @Query("include_video") includeVideo: Boolean = true,
     ): BasicMoviesResponse<MovieItem>
 
+    @GET("movie/{id}/recommendations")
+    suspend fun getRecommendationMovies(
+        @Path("id") movieId: Int,
+        @Query("page") page: Int = 0,
+    ): BasicMoviesResponse<MovieItem>
+
     @GET("genre/movie/list")
     suspend fun getGenres(): Response<GenresResponse>
 

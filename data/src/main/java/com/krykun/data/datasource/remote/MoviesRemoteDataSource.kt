@@ -41,7 +41,11 @@ interface MoviesRemoteDataSource {
 
     fun makeSearch(query: String): Flow<PagingData<SearchItem>>
 
-    suspend fun getPersonDetails( movieId: Int): Result<PersonDetailsResponse>
+    suspend fun getPersonDetails(movieId: Int): Result<PersonDetailsResponse>
 
     suspend fun getPersonCombinedCredits(personId: Int): Result<PersonCombinedCreditsResponse>
+
+    fun getMovieRecommendations(
+        movieId: Int
+    ): Flow<PagingData<MovieItem>>
 }
