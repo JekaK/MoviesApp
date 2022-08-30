@@ -41,7 +41,11 @@ fun RecommendedMoviesView(
             text = stringResource(R.string.recommendations),
             fontWeight = FontWeight.Bold,
             color = Color.White,
-            fontSize = 20.sp
+            fontSize = 20.sp,
+            modifier = Modifier.padding(
+                start = 24.dp,
+                end = 24.dp
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
         LazyRow(
@@ -52,7 +56,11 @@ fun RecommendedMoviesView(
             itemsIndexed(items = recommendedMovies) { index, item ->
                 Box(
                     modifier = Modifier.padding(
-                        start = 2.dp,
+                        start  = if (index == 0) {
+                            24.dp
+                        } else {
+                            2.dp
+                        },
                         end = 2.dp
                     )
                 ) {

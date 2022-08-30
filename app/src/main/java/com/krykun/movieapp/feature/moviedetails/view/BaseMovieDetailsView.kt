@@ -159,35 +159,47 @@ fun BaseMovieDetailsView(
                                     Spacer(modifier = Modifier.width(8.dp))
                                 }
                             }
-                            Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
-
-                                Spacer(modifier = Modifier.height(30.dp))
-                                Text(
-                                    text = stringResource(R.string.plot_summary),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    fontSize = 20.sp
+                            Spacer(
+                                modifier = Modifier
+                                    .height(30.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.plot_summary),
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(
+                                    start = 24.dp,
+                                    end = 24.dp
                                 )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = viewModel.movieData.value?.overview ?: "",
-                                    fontWeight = FontWeight.Normal,
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontSize = 14.sp
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = viewModel.movieData.value?.overview ?: "",
+                                fontWeight = FontWeight.Normal,
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(
+                                    start = 24.dp,
+                                    end = 24.dp
                                 )
-                                Spacer(modifier = Modifier.height(30.dp))
-                                RecommendedMoviesView(
-                                    recommendedMovies = recommendedMovies,
-                                    lazyListState = lazyListState
+                            )
+                            Spacer(modifier = Modifier.height(30.dp))
+                            RecommendedMoviesView(
+                                recommendedMovies = recommendedMovies,
+                                lazyListState = lazyListState
+                            )
+                            Text(
+                                text = stringResource(R.string.cast_and_crew),
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(
+                                    start = 24.dp,
+                                    end = 24.dp
                                 )
-                                Text(
-                                    text = stringResource(R.string.cast_and_crew),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    fontSize = 20.sp
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                         CastAndCrewView(viewModel = viewModel)
                     }
