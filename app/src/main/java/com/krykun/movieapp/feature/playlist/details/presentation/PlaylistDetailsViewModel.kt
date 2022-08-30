@@ -50,7 +50,7 @@ class PlaylistDetailsViewModel @Inject constructor(
     fun navigateToMovieDetails(movieId: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = MovieDetailsState(id = movieId)
+                movieDetailsState = state.value.movieDetailsState + MovieDetailsState(id = movieId)
             )
             state
         }

@@ -44,8 +44,8 @@ import com.krykun.domain.model.remote.tvcastdetails.Crew
 import com.krykun.domain.model.remote.tvdetails.Season
 import com.krykun.domain.model.remote.tvdetails.TvDetails
 import com.krykun.movieapp.R
-import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
-import com.krykun.movieapp.feature.playlistselect.view.PlaylistSelectedView
+import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectViewModel
+import com.krykun.movieapp.feature.addtoplaylist.view.PlaylistSelectedView
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsSideEffects
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsViewModel
 import com.krykun.movieapp.feature.tvseries.presentation.TvSeriesDetailsViewModel.MovieDetailsState
@@ -96,6 +96,7 @@ fun TvSeriesDetailsView(
             movieDetailsState = viewModel.movieDetailsState,
             scope = scope,
             bottomSheetState = bottomSheetState,
+            playlistSelectViewModel = playlistSelectViewModel
         )
     }
 }
@@ -564,6 +565,7 @@ private fun handleSideEffects(
     movieDetailsState: MutableState<MovieDetailsState>,
     scope: CoroutineScope,
     bottomSheetState: ModalBottomSheetState,
+    playlistSelectViewModel: PlaylistSelectViewModel
 ) {
     when (sideEffects) {
         is TvSeriesDetailsSideEffects.ShowLoadingState -> {
@@ -584,6 +586,7 @@ private fun handleSideEffects(
         }
         is TvSeriesDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
+                playlistSelectViewModel.updateAllPlaylists()
                 bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
             }
         }

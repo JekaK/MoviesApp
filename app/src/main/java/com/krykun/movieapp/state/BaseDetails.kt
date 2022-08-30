@@ -5,9 +5,6 @@ abstract class BaseDetails<T> {
     abstract var state: DetailsState
     abstract var isAdded: Boolean
     abstract var details:T?
-    abstract var currentPageIndex: Int
-    abstract var scrollOffset: Int
-    abstract var lastSavedPage: Int
     abstract var loadingState: LoadingState
 }
 

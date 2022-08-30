@@ -85,7 +85,8 @@ fun DiscoverView(
             movies = movies,
             dominantColorState = dominantColorState,
             lazyListState = lazyListState,
-            scope = scope
+            scope = scope,
+            navHostController = navHostController
         )
     }
 
@@ -185,11 +186,10 @@ fun DiscoverView(
                                                     if (index == lazyListState.firstVisibleItemIndex ||
                                                         index == lazyListState.firstVisibleItemScrollOffset.absoluteValue
                                                     ) {
-                                                        viewModel.setMovieDetailsId(
+                                                        viewModel.navigateToMovieDetails(
                                                             movies.itemSnapshotList.items[index].id
                                                                 ?: -1
                                                         )
-                                                        navHostController.navigate(Screen.MovieDetails().route)
                                                     }
                                                 })
                                             }
@@ -245,7 +245,8 @@ private fun handleSideEffects(
     movies: LazyPagingItems<MovieDiscoverItem>,
     dominantColorState: DominantColorState,
     lazyListState: LazyListState,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    navHostController: NavHostController
 ) {
     when (sideEffects) {
         is DiscoverMoviesSideEffects.TriggerOnPageChanged -> {
@@ -266,6 +267,9 @@ private fun handleSideEffects(
         }
         is DiscoverMoviesSideEffects.TryReloadDiscoverPage -> {
             movies.retry()
+        }
+        is DiscoverMoviesSideEffects.NavigateToMovie -> {
+            navHostController.navigate(Screen.MovieDetails().route)
         }
     }
 }

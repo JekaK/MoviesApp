@@ -36,9 +36,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
 
-@OptIn(
-    ExperimentalSnapperApi::class
-)
 @Composable
 fun TrendingView(
     viewModel: TrendingViewModel,
@@ -214,16 +211,17 @@ fun TrendingView(
 
     viewModel.collectSideEffect {
         handleSideEffects(
-            it,
-            trendingMovies,
-            popularMovies,
-            topRatedMovies,
-            trendingLazyListState,
-            popularLazyListState,
-            topRatedLazyListState,
-            selectedMovieType,
-            viewModel,
-            scope,
+            sideEffects = it,
+            movies = trendingMovies,
+            popularMovies = popularMovies,
+            topRatedMovies = topRatedMovies,
+            trendingLazyListState = trendingLazyListState,
+            popularLazyListState = popularLazyListState,
+            topRatedLazyListState = topRatedLazyListState,
+            selectedMovieType = selectedMovieType,
+            viewModel = viewModel,
+            scope = scope,
+            navHostController = navHostController
         )
     }
 }
@@ -264,8 +262,7 @@ private fun BasicMoviesItem(
                             modifier = Modifier
                                 .pointerInput(Unit) {
                                     detectTapGestures(onTap = {
-                                        viewModel.setMovieDetailsId(movie.id ?: -1)
-                                        navHostController.navigate(Screen.MovieDetails().route)
+                                        viewModel.navigateToMovieDetails(movie.id ?: -1)
                                     })
                                 }
                         )
@@ -286,7 +283,8 @@ private fun handleSideEffects(
     topRatedLazyListState: LazyListState,
     selectedMovieType: MutableState<SelectedMovieType>,
     viewModel: TrendingViewModel,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    navHostController: NavHostController
 ) {
     when (sideEffects) {
         is TrendingMoviesSideEffects.GetCurrentTrendingPageAndScrollOffset -> {
@@ -318,6 +316,9 @@ private fun handleSideEffects(
             viewModel.setLastScrolledPage(0)
             viewModel.setScrollOffset(0f)
             viewModel.getCurrentPageAndScrollOffset()
+        }
+        is TrendingMoviesSideEffects.NavigateToMovie->{
+            navHostController.navigate(Screen.MovieDetails().route)
         }
     }
 }

@@ -7,14 +7,10 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -25,7 +21,8 @@ import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewMod
 import com.krykun.movieapp.feature.moviedetails.view.BaseMovieDetailsView
 import com.krykun.movieapp.feature.moviedetails.view.ErrorView
 import com.krykun.movieapp.feature.moviedetails.view.LoadingView
-import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
+import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectViewModel
+import com.krykun.movieapp.navigation.Screen
 import com.krykun.movieapp.state.DetailsState
 import com.krykun.movieapp.state.LoadingState
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +42,6 @@ fun MovieDetailsView(
         viewModel.getDiscoverMovies.collectAndHandleState(viewModel::handleLoadState)
     val lazyListState = rememberLazyListState()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
     val bottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val playlistSelectViewModel: PlaylistSelectViewModel = hiltViewModel()
@@ -77,45 +73,15 @@ fun MovieDetailsView(
             scope = scope,
             bottomSheetState = bottomSheetState,
             movies = recommendedMovies,
-            viewModel = viewModel
+            viewModel = viewModel,
+            navHostController = navHostController,
+            playlistSelectViewModel = playlistSelectViewModel
         )
     }
 
-    DisposableEffect(key1 = lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
-                viewModel.clearSelectState()
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    //TODO remove this when HorizontalPager will remember scroll position when recomposing
-    DisposableEffect(key1 = lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
-                viewModel.setLastScrolledPage(lazyListState.firstVisibleItemIndex)
-                viewModel.setScrollOffset(lazyListState.firstVisibleItemScrollOffset)
-            }
-        }
-
-        // Add the observer to the lifecycle
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        // When the effect leaves the Composition, remove the observer
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
     //TODO remove this when HorizontalPager will remember scroll position when recomposing
     LaunchedEffect(key1 = recommendedMovies.loadState.refresh) {
         if (recommendedMovies.loadState.refresh is LoadState.NotLoading) {
-            viewModel.getCurrentPageAndScrollOffset()
             viewModel.setLoadingState(LoadingState.STATIONARY)
         } else if (recommendedMovies.loadState.refresh is LoadState.Loading) {
             viewModel.setLoadingState(LoadingState.LOADING)
@@ -130,6 +96,8 @@ private fun handleSideEffects(
     bottomSheetState: ModalBottomSheetState,
     movies: LazyPagingItems<MovieDiscoverItem>,
     viewModel: MovieDetailsViewModel,
+    navHostController: NavHostController,
+    playlistSelectViewModel: PlaylistSelectViewModel
 ) {
     when (sideEffects) {
         is MovieDetailsSideEffects.ShowLoadingState -> {
@@ -150,11 +118,15 @@ private fun handleSideEffects(
         }
         is MovieDetailsSideEffects.OpenPlaylistSelector -> {
             scope.launch {
+                playlistSelectViewModel.updateAllPlaylists()
                 bottomSheetState.animateTo(ModalBottomSheetValue.Expanded)
             }
         }
         is MovieDetailsSideEffects.TryReloadRecommendationsPage -> {
             movies.retry()
+        }
+        is MovieDetailsSideEffects.NavigateToMovie -> {
+            navHostController.navigate(Screen.MovieDetails().route)
         }
     }
 }

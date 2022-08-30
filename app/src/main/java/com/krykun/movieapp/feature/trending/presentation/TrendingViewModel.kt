@@ -11,6 +11,7 @@ import com.krykun.domain.usecase.remote.filteredmovies.GetTopRatedMoviesUseCase
 import com.krykun.domain.usecase.remote.filteredmovies.GetTrendingMoviesUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
+import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -248,15 +249,16 @@ class TrendingViewModel @Inject constructor(
         }
     }
 
-    fun setMovieDetailsId(movieId: Int) = intent {
+    fun navigateToMovieDetails(movieId: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = state.value.movieDetailsState.copy(
+                movieDetailsState = state.value.movieDetailsState + MovieDetailsState(
                     id = movieId
                 )
             )
             state
         }
+        postSideEffect(TrendingMoviesSideEffects.NavigateToMovie)
     }
 
     fun handleLoadTrendingState(loadStates: LoadStates) = intent {

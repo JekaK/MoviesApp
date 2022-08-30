@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.playlistselect.presentation
+package com.krykun.movieapp.feature.addtoplaylist.presentation
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,6 @@ import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -28,45 +27,39 @@ class PlaylistSelectViewModel @Inject constructor(
 
     val playlistState = mutableStateOf(listOf<MappedPlaylist>())
 
-    init {
-        subscribeToPlaylistsUpdate()
-    }
-
-    private fun subscribeToPlaylistsUpdate() = intent {
+    fun updateAllPlaylists() = intent {
         viewModelScope.launch(Dispatchers.IO) {
-            getAllPlaylistsUseCase.getAllPlaylistsFlow()
-                .collect { playlists ->
-                    val resultList = mutableListOf<MappedPlaylist>()
-                    playlists.forEach {
-                        val isInPlaylist = checkIsMovieAddedUseCase.checkIsMovieInPlaylist(
-                            movieId = if (state.value.playlistSelectState.movieDetails.id != null) {
-                                state.value.playlistSelectState.movieDetails.id ?: -1
-                            } else {
-                                state.value.playlistSelectState.tvDetails.id ?: -1
-                            },
-                            playlistId = it.playlistId.toInt()
-                        )
-                        resultList.add(
-                            MappedPlaylist(
-                                playlist = if (it.movieList.size >= 4) {
-                                    it.copy(movieList = it.movieList.subList(0, 4))
-                                } else {
-                                    it.copy(movieList = it.movieList)
-                                },
-                                isMovieInPlaylist = isInPlaylist
-                            )
-                        )
-                    }
-                    reduce {
-                        state.value = state.value.copy(
-                            playlistSelectState = state.value.playlistSelectState.copy(
-                                playlists = resultList
-                            )
-                        )
-                        state
-                    }
-                    postSideEffect(PlaylistSelectSideEffects.UpdatePlaylistSelectList(resultList))
-                }
+            val playlists = getAllPlaylistsUseCase.getAllPlaylists()
+            val resultList = mutableListOf<MappedPlaylist>()
+            playlists.forEach {
+                val isInPlaylist = checkIsMovieAddedUseCase.checkIsMovieInPlaylist(
+                    movieId = if (state.value.playlistSelectState.movieDetails.id != null) {
+                        state.value.playlistSelectState.movieDetails.id ?: -1
+                    } else {
+                        state.value.playlistSelectState.tvDetails.id ?: -1
+                    },
+                    playlistId = it.playlistId.toInt()
+                )
+                resultList.add(
+                    MappedPlaylist(
+                        playlist = if (it.movieList.size >= 4) {
+                            it.copy(movieList = it.movieList.subList(0, 4))
+                        } else {
+                            it.copy(movieList = it.movieList)
+                        },
+                        isMovieInPlaylist = isInPlaylist
+                    )
+                )
+            }
+            reduce {
+                state.value = state.value.copy(
+                    playlistSelectState = state.value.playlistSelectState.copy(
+                        playlists = resultList
+                    )
+                )
+                state
+            }
+            postSideEffect(PlaylistSelectSideEffects.UpdatePlaylistSelectList(resultList))
         }
     }
 
@@ -106,6 +99,7 @@ class PlaylistSelectViewModel @Inject constructor(
         } else {
             removeMovieFromPlaylist(playlistId)
         }
+        updateAllPlaylists()
     }
 
     fun addPlaylist(name: String) {

@@ -27,13 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
-import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
-import com.krykun.movieapp.feature.playlistselect.view.PlaylistSelectedView
+import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectViewModel
+import com.krykun.movieapp.feature.addtoplaylist.view.PlaylistSelectedView
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -65,6 +64,7 @@ fun BaseMovieDetailsView(
                 bottomSheetState.hide()
             }
         } else {
+            viewModel.clearSelectState()
             navHostController.popBackStack()
         }
     }
@@ -104,7 +104,10 @@ fun BaseMovieDetailsView(
                 backgroundColor = Color.Transparent,
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    BackBtn(navHostController = navHostController)
+                    BackBtn(
+                        navHostController = navHostController,
+                        viewModel = viewModel
+                    )
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -119,11 +122,10 @@ fun BaseMovieDetailsView(
                             movieData = viewModel.movieData
                         )
                         Column(modifier = Modifier.fillMaxWidth()) {
-                            Column(modifier = Modifier
-                                .padding(start = 24.dp, end = 24.dp)
-                                .clickable {
-//                                    navHostController.navigate(Screen.MovieDetails().route)
-                                }) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(start = 24.dp, end = 24.dp)
+                            ) {
                                 TitleView(viewModel.movieData)
                             }
                             LazyRow {
@@ -187,7 +189,9 @@ fun BaseMovieDetailsView(
                             Spacer(modifier = Modifier.height(30.dp))
                             RecommendedMoviesView(
                                 recommendedMovies = recommendedMovies,
-                                lazyListState = lazyListState
+                                lazyListState = lazyListState,
+                                viewModel = viewModel,
+                                navHostController = navHostController
                             )
                             Text(
                                 text = stringResource(R.string.cast_and_crew),

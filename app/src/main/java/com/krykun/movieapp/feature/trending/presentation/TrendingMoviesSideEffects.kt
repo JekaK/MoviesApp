@@ -1,5 +1,7 @@
 package com.krykun.movieapp.feature.trending.presentation
 
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
+
 sealed class TrendingMoviesSideEffects {
     data class GetCurrentTrendingPageAndScrollOffset(
         val currentPageAndOffset: Int
@@ -12,4 +14,7 @@ sealed class TrendingMoviesSideEffects {
     object TryReloadTopRatedPage : TrendingMoviesSideEffects()
 
     object ChangeMoviesSelectedItem : TrendingMoviesSideEffects()
+
+    object NavigateToMovie : TrendingMoviesSideEffects()
+
 }

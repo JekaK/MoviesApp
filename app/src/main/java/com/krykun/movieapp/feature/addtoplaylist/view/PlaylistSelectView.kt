@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.playlistselect.view
+package com.krykun.movieapp.feature.addtoplaylist.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -36,9 +36,9 @@ import com.krykun.data.util.Constants
 import com.krykun.movieapp.R
 import com.krykun.movieapp.ext.header
 import com.krykun.movieapp.feature.playlist.main.view.CreatePlaylistView
-import com.krykun.movieapp.feature.playlistselect.presentation.MappedPlaylist
-import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectSideEffects
-import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectViewModel
+import com.krykun.movieapp.feature.addtoplaylist.presentation.MappedPlaylist
+import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectSideEffects
+import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -52,6 +52,7 @@ fun PlaylistSelectedView(viewModel: PlaylistSelectViewModel = hiltViewModel()) {
         CreatePlaylistView(
             onApply = {
                 viewModel.addPlaylist(it)
+                viewModel.updateAllPlaylists()
                 showPlaylistCreationDialog = false
             },
             onDismiss = {

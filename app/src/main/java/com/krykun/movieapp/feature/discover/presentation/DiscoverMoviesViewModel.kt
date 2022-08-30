@@ -9,6 +9,8 @@ import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.domain.usecase.remote.discover.GetDiscoverMoviesUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
+import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
+import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -132,15 +134,14 @@ class DiscoverMoviesViewModel @Inject constructor(
      *
      * @param movieId The id of the movie that we want to get the details for.
      */
-    fun setMovieDetailsId(movieId: Int) = intent {
+    fun navigateToMovieDetails(movieId: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = state.value.movieDetailsState.copy(
-                    id = movieId
-                ),
+                movieDetailsState = state.value.movieDetailsState + MovieDetailsState(id = movieId),
             )
             state
         }
+        postSideEffect(DiscoverMoviesSideEffects.NavigateToMovie)
     }
 
     fun setLoadingState(loadingState: LoadingState) = intent {

@@ -10,8 +10,5 @@ data class TvSeriesDetailsState(
     override var details: TvDetails? = null,
     override var state: DetailsState = DetailsState.DEFAULT,
     override var isAdded: Boolean = true,
-    override var currentPageIndex: Int = -1,
-    override var scrollOffset: Int = 0,
-    override var lastSavedPage: Int = 0,
     override var loadingState: LoadingState = LoadingState.LOADING
 ) : BaseDetails<TvDetails>()

@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.playlistselect.presentation
+package com.krykun.movieapp.feature.addtoplaylist.presentation
 
 sealed class PlaylistSelectSideEffects {
     data class UpdatePlaylistSelectList(

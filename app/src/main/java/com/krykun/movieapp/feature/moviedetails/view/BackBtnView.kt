@@ -15,9 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
 
 @Composable
-fun BackBtn(navHostController: NavHostController) {
+fun BackBtn(
+    navHostController: NavHostController,
+    viewModel: MovieDetailsViewModel
+) {
     Row(modifier = Modifier.zIndex(1f)) {
         Spacer(modifier = Modifier.width(24.dp))
         Column {
@@ -28,6 +32,7 @@ fun BackBtn(navHostController: NavHostController) {
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White)
                     .clickable {
+                        viewModel.clearSelectState()
                         navHostController.popBackStack()
                     },
                 contentAlignment = Alignment.Center

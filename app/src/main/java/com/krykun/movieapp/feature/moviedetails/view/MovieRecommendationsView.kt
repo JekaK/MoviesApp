@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.moviedetails.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemsIndexed
@@ -26,13 +28,18 @@ import com.krykun.data.util.Constants
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.domain.model.remote.tvdetails.Season
 import com.krykun.movieapp.R
+import com.krykun.movieapp.ext.noRippleClickable
+import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
+import com.krykun.movieapp.navigation.Screen
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun RecommendedMoviesView(
     recommendedMovies: LazyPagingItems<MovieDiscoverItem>,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    viewModel: MovieDetailsViewModel,
+    navHostController: NavHostController
 ) {
     if (recommendedMovies.itemCount != 0 &&
         recommendedMovies.loadState.refresh is LoadState.NotLoading
@@ -55,14 +62,20 @@ fun RecommendedMoviesView(
         ) {
             itemsIndexed(items = recommendedMovies) { index, item ->
                 Box(
-                    modifier = Modifier.padding(
-                        start  = if (index == 0) {
-                            24.dp
-                        } else {
-                            2.dp
-                        },
-                        end = 2.dp
-                    )
+                    modifier = Modifier
+                        .padding(
+                            start = if (index == 0) {
+                                24.dp
+                            } else {
+                                2.dp
+                            },
+                            end = 2.dp
+                        )
+                        .noRippleClickable {
+                            item?.id?.let {
+                                viewModel.navigateToMovie(it)
+                            }
+                        }
                 ) {
                     item?.let { MovieItemView(movieItem = it) }
                 }

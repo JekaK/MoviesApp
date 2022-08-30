@@ -2,7 +2,6 @@ package com.krykun.movieapp.feature.moviedetails.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
@@ -15,7 +14,7 @@ import com.krykun.domain.usecase.remote.moviedetails.GetMovieDetailsUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetRecommendationsUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
-import com.krykun.movieapp.feature.playlistselect.presentation.PlaylistSelectState
+import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectState
 import com.krykun.movieapp.state.AppState
 import com.krykun.movieapp.state.DetailsState
 import com.krykun.movieapp.state.LoadingState
@@ -53,7 +52,7 @@ class MovieDetailsViewModel @Inject constructor(
                 .collect {
                     getDiscoverMovies =
                         getRecommendationsUseCase.getRecommendations(
-                            movieId = appState.value.movieDetailsState.id,
+                            movieId = appState.value.movieDetailsState.last().id,
                             genres = appState.value.baseMoviesState.genres
                         ).cachedIn(scope = viewModelScope)
                     job?.cancel()
@@ -65,7 +64,12 @@ class MovieDetailsViewModel @Inject constructor(
     fun clearSelectState() = intent {
         reduce {
             state.value = state.value.copy(
-                playlistSelectState = PlaylistSelectState()
+                playlistSelectState = if (state.value.movieDetailsState.size > 1) {
+                    PlaylistSelectState(movieDetails = state.value.movieDetailsState[state.value.movieDetailsState.size - 1].details!!)
+                } else {
+                    PlaylistSelectState()
+                },
+                movieDetailsState = state.value.movieDetailsState - state.value.movieDetailsState.last()
             )
             state
         }
@@ -74,9 +78,9 @@ class MovieDetailsViewModel @Inject constructor(
     private fun loadMovieDetails() = intent {
         postSideEffect(MovieDetailsSideEffects.ShowLoadingState)
         val castResult =
-            getMovieCastDetailsUseCase.getMovieCastDetails(movieId = state.value.movieDetailsState.id)
+            getMovieCastDetailsUseCase.getMovieCastDetails(movieId = state.value.movieDetailsState.last().id)
         val result =
-            getMovieDetailsUseCase.getMovieDetail(movieId = state.value.movieDetailsState.id)
+            getMovieDetailsUseCase.getMovieDetail(movieId = state.value.movieDetailsState.last().id)
 
         if (result.isSuccess && castResult.isSuccess) {
             val verifiedResponse = result.map {
@@ -86,9 +90,15 @@ class MovieDetailsViewModel @Inject constructor(
             }
             reduce {
                 state.value = state.value.copy(
-                    movieDetailsState = MovieDetailsState(
-                        details = verifiedResponse.getOrNull()
-                    )
+                    movieDetailsState = state.value.movieDetailsState.mapIndexed { index, movieDetailsState ->
+                        if (index == state.value.movieDetailsState.size - 1) {
+                            movieDetailsState.copy(
+                                details = verifiedResponse.getOrNull()
+                            )
+                        } else {
+                            movieDetailsState
+                        }
+                    }
                 )
                 state
             }
@@ -98,8 +108,17 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun setMovieDetailsId(movieId: Int) = intent {
+        reduce {
+            state.value = state.value.copy(
+                movieDetailsState = state.value.movieDetailsState + MovieDetailsState(id = movieId),
+            )
+            state
+        }
+    }
+
     fun updateMovieSelector() = intent {
-        state.value.movieDetailsState.details?.let {
+        state.value.movieDetailsState.last().details?.let {
             reduce {
                 state.value = state.value.copy(
                     playlistSelectState = state.value.playlistSelectState.copy(
@@ -112,50 +131,23 @@ class MovieDetailsViewModel @Inject constructor(
         }
     }
 
-    fun setLastScrolledPage(index: Int) = intent {
-        if (index != state.value.movieDetailsState.lastSavedPage) {
-            reduce {
-                state.value = state.value.copy(
-                    movieDetailsState = state.value.movieDetailsState.copy(
-                        lastSavedPage = index
-                    )
-                )
-                state
-            }
-        }
-    }
-
-    fun setScrollOffset(scrollOffset: Int) = intent {
-        reduce {
-            state.value = state.value.copy(
-                movieDetailsState = state.value.movieDetailsState.copy(
-                    scrollOffset = scrollOffset
-                )
-            )
-            state
-        }
-    }
-
-    /**
-     * > Get the current page and scroll offset of the upcoming movies list
-     */
-    fun getCurrentPageAndScrollOffset() = intent {
-        val page = when {
-            state.value.movieDetailsState.lastSavedPage > 0 -> state.value.movieDetailsState.lastSavedPage
-            state.value.movieDetailsState.scrollOffset > 0f -> state.value.movieDetailsState.scrollOffset
-            else -> 0
-        }
-        postSideEffect(
-            MovieDetailsSideEffects.GetCurrentPageAndScrollOffset(page)
-        )
+    fun navigateToMovie(movieId: Int) = intent {
+        setMovieDetailsId(movieId)
+        postSideEffect(MovieDetailsSideEffects.NavigateToMovie(movieId))
     }
 
     fun setLoadingState(loadingState: LoadingState) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = state.value.movieDetailsState.copy(
-                    loadingState = loadingState
-                )
+                movieDetailsState = state.value.movieDetailsState.mapIndexed { index, movieDetailsState ->
+                    if (index == state.value.movieDetailsState.size - 1) {
+                        movieDetailsState.copy(
+                            loadingState = loadingState
+                        )
+                    } else {
+                        movieDetailsState
+                    }
+                }
             )
             state
         }

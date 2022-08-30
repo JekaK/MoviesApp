@@ -83,7 +83,7 @@ class SearchViewModel @Inject constructor(
     fun navigateToMovie(id: Int) = intent {
         reduce {
             state.value = state.value.copy(
-                movieDetailsState = MovieDetailsState(id = id)
+                movieDetailsState = state.value.movieDetailsState +MovieDetailsState(id = id)
             )
             state
         }

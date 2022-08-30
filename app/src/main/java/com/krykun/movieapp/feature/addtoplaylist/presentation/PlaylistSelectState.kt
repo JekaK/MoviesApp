@@ -1,4 +1,4 @@
-package com.krykun.movieapp.feature.playlistselect.presentation
+package com.krykun.movieapp.feature.addtoplaylist.presentation
 
 import com.krykun.domain.model.local.Playlist
 import com.krykun.domain.model.remote.moviedetails.MovieDetails

@@ -7,4 +7,5 @@ sealed class DiscoverMoviesSideEffects {
     ) : DiscoverMoviesSideEffects()
 
     object TryReloadDiscoverPage : DiscoverMoviesSideEffects()
+    object NavigateToMovie : DiscoverMoviesSideEffects()
 }
