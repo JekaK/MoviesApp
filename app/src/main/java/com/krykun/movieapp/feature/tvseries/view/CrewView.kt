@@ -1,56 +1,53 @@
-package com.krykun.movieapp.feature.tvseries
+package com.krykun.movieapp.feature.tvseries.view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.krykun.data.util.Constants
-import com.krykun.domain.model.remote.tvdetails.Season
+import com.krykun.domain.model.remote.tvcastdetails.Crew
 import com.krykun.movieapp.R
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun SeasonsItemView(seasonsItem: Season) {
+fun CrewView(crewItem: Crew) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .height(250.dp)
+            .width(150.dp)
     ) {
         CoilImage(
-            imageModel = Constants.IMAGE_BASE_URL + seasonsItem.posterPath,
+            imageModel = Constants.IMAGE_BASE_URL + crewItem.profilePath,
             contentDescription = null,
-            modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(20.dp)),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
             circularReveal = CircularReveal(duration = 500),
             placeHolder = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder),
             error = ImageVector.vectorResource(id = R.drawable.ic_movie_placeholder)
         )
         Spacer(modifier = Modifier.height(20.dp))
+
         Text(
-            text = seasonsItem.name ?: "",
+            text = crewItem.name ?: "",
             fontWeight = FontWeight.SemiBold,
             color = Color.White,
-            fontSize = 14.sp,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
+            fontSize = 14.sp
         )
         Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = crewItem.department ?: "",
+            fontWeight = FontWeight.Normal,
+            color = Color.White.copy(alpha = 0.7f),
+            fontSize = 10.sp
+        )
     }
 }
+

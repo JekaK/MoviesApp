@@ -18,4 +18,5 @@
     <string name="tv_series_added_to_playlist">TV Series added to playlist</string>
     <string name="select_playlist_for">Select playlist for movie:</string>
     <string name="recommendations">Recommendations</string>
+    <string name="error_str">ERROR</string>
 </resources>
