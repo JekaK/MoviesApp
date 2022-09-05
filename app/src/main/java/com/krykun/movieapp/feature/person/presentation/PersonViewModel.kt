@@ -1,10 +1,10 @@
 package com.krykun.movieapp.feature.person.presentation
 
+import androidx.compose.runtime.mutableStateOf
+import com.krykun.domain.model.remote.persondetails.PersonDetails
 import com.krykun.domain.usecase.remote.persondetails.GetPersonCombinedCreditsUseCase
 import com.krykun.domain.usecase.remote.persondetails.GetPersonDetailsUseCase
 import com.krykun.movieapp.base.BaseViewModel
-import com.krykun.movieapp.ext.takeWhenChanged
-import com.krykun.movieapp.feature.person.view.PersonTabs
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +20,14 @@ class PersonViewModel @Inject constructor(
     private val getPersonCombinedCreditsUseCase: GetPersonCombinedCreditsUseCase,
 ) : BaseViewModel<PersonSideEffects>(appState) {
 
+    val personDetails = mutableStateOf<PersonDetails?>(null)
+    val personDetailsState = mutableStateOf(PersonLoadingState.LOADING)
+    val selectedPersonTab = mutableStateOf(PersonTabs.FILMOGRAPHY)
+
     init {
         loadPersonDetails()
     }
 
-    fun subscribeToState() = container.stateFlow.value.takeWhenChanged {
-        it.personState
-    }
 
     private fun loadPersonDetails() = intent {
         postSideEffect(PersonSideEffects.ShowLoadingState)
