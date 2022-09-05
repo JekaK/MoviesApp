@@ -28,7 +28,6 @@ class PersonViewModel @Inject constructor(
         loadPersonDetails()
     }
 
-
     private fun loadPersonDetails() = intent {
         postSideEffect(PersonSideEffects.ShowLoadingState)
 

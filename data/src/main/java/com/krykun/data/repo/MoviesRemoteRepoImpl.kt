@@ -10,6 +10,7 @@ import com.krykun.data.mappers.remote.MovieDetailMapper.toMovieDetails
 import com.krykun.data.mappers.remote.MoviesMapper.toMovie
 import com.krykun.data.mappers.remote.PersonCombinedCreditsMapper.toPersonCombinedCredits
 import com.krykun.data.mappers.remote.PersonDetailsMapper.toPersonDetails
+import com.krykun.data.mappers.remote.RecommendationMoviesMapper.toMovieRecommendations
 import com.krykun.data.mappers.remote.SearchMapper.toSearchItem
 import com.krykun.data.mappers.remote.TvDetailsMapper.toTvCastDetails
 import com.krykun.data.mappers.remote.TvDetailsMapper.toTvDetails
@@ -18,6 +19,7 @@ import com.krykun.domain.model.remote.Genre
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.domain.model.remote.moviecastdetails.CastDetails
 import com.krykun.domain.model.remote.moviedetails.MovieDetails
+import com.krykun.domain.model.remote.movierecommendations.MovieRecommendationItem
 import com.krykun.domain.model.remote.movies.Movie
 import com.krykun.domain.model.remote.persondetails.PersonDetails
 import com.krykun.domain.model.remote.search.SearchItem
@@ -140,13 +142,12 @@ class MoviesRemoteRepoImpl @Inject constructor(
 
     override fun getMovieRecommendations(
         movieId: Int,
-        genres: List<Genre>
-    ): Flow<PagingData<MovieDiscoverItem>> {
+    ): Flow<PagingData<MovieRecommendationItem>> {
         return remoteDataSource.getMovieRecommendations(
             movieId = movieId
         ).map {
             it.map { movieItem ->
-                movieItem.toMovieDiscoverItem(genres)
+                movieItem.toMovieRecommendations()
             }
         }
     }

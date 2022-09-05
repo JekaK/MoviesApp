@@ -4,11 +4,12 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.krykun.data.api.ApiService
 import com.krykun.data.model.remote.movielistitem.MovieItem
+import com.krykun.data.model.remote.movierecommendations.MovieRecommendationResponse
 
 class RecommendationMoviesPagingSourceImpl(
     private val apiService: ApiService,
     private val movieId: Int
-) : PagingSource<Int, MovieItem>() {
+) : PagingSource<Int, MovieRecommendationResponse>() {
 
     /**
      * We're trying to get the next page number from the params, if it's null, we set it to 1. Then we
@@ -27,7 +28,7 @@ class RecommendationMoviesPagingSourceImpl(
      *                 }
      *             )
      */
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieItem> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieRecommendationResponse> {
         try {
             val nextPageNumber = params.key ?: 1
             val response = apiService.getRecommendationMovies(
@@ -35,7 +36,7 @@ class RecommendationMoviesPagingSourceImpl(
                 movieId = movieId
             )
             return LoadResult.Page(
-                data = response.results as List<MovieItem>,
+                data = response.results as List<MovieRecommendationResponse>,
                 prevKey = null,
                 nextKey = when {
                     (response.page + 1) <= response.totalPages -> {
@@ -57,7 +58,7 @@ class RecommendationMoviesPagingSourceImpl(
      * @param state PagingState<Int, MovieItem>
      * @return The key of the next page to load.
      */
-    override fun getRefreshKey(state: PagingState<Int, MovieItem>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, MovieRecommendationResponse>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
             anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)

@@ -10,6 +10,7 @@ import com.krykun.data.model.remote.moviecastdetails.CastDetailsResponse
 import com.krykun.data.model.remote.genre.Genre
 import com.krykun.data.model.remote.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.remote.movielistitem.MovieItem
+import com.krykun.data.model.remote.movierecommendations.MovieRecommendationResponse
 import com.krykun.data.model.remote.movies.MovieItemResponse
 import com.krykun.data.model.remote.personcombinedcredits.PersonCombinedCreditsResponse
 import com.krykun.data.model.remote.persondetails.PersonDetailsResponse
@@ -243,7 +244,7 @@ class MoviesRemoteDataSourceImpl @Inject constructor(
 
     override fun getMovieRecommendations(
         movieId: Int
-    ): Flow<PagingData<MovieItem>> {
+    ): Flow<PagingData<MovieRecommendationResponse>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {

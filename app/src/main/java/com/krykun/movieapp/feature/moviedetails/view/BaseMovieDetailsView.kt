@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import com.krykun.domain.model.remote.MovieDiscoverItem
+import com.krykun.domain.model.remote.movierecommendations.MovieRecommendationItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
 import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectViewModel
@@ -46,7 +47,7 @@ fun BaseMovieDetailsView(
     viewModel: MovieDetailsViewModel,
     bottomSheetState: ModalBottomSheetState,
     playlistSelectViewModel: PlaylistSelectViewModel,
-    recommendedMovies: LazyPagingItems<MovieDiscoverItem>,
+    recommendedMovies: LazyPagingItems<MovieRecommendationItem>,
     lazyListState: LazyListState,
 ) {
     val configuration = LocalConfiguration.current

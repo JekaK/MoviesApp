@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.krykun.domain.model.remote.MovieDiscoverItem
+import com.krykun.domain.model.remote.movierecommendations.MovieRecommendationItem
 import com.krykun.movieapp.ext.collectAndHandleState
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
@@ -94,7 +95,7 @@ private fun handleSideEffects(
     sideEffects: MovieDetailsSideEffects,
     scope: CoroutineScope,
     bottomSheetState: ModalBottomSheetState,
-    movies: LazyPagingItems<MovieDiscoverItem>,
+    movies: LazyPagingItems<MovieRecommendationItem>,
     viewModel: MovieDetailsViewModel,
     navHostController: NavHostController,
     playlistSelectViewModel: PlaylistSelectViewModel

@@ -24,6 +24,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.krykun.data.util.Constants
 import com.krykun.domain.model.remote.MovieDiscoverItem
+import com.krykun.domain.model.remote.movierecommendations.MovieRecommendationItem
 import com.krykun.movieapp.R
 import com.krykun.movieapp.ext.noRippleClickable
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsViewModel
@@ -32,7 +33,7 @@ import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun RecommendedMoviesView(
-    recommendedMovies: LazyPagingItems<MovieDiscoverItem>,
+    recommendedMovies: LazyPagingItems<MovieRecommendationItem>,
     lazyListState: LazyListState,
     viewModel: MovieDetailsViewModel
 ) {
@@ -86,7 +87,7 @@ fun RecommendedMoviesView(
 }
 
 @Composable
-private fun MovieItemView(movieItem: MovieDiscoverItem) {
+private fun MovieItemView(movieItem: MovieRecommendationItem) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -106,7 +107,7 @@ private fun MovieItemView(movieItem: MovieDiscoverItem) {
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = movieItem.originalTitle ?: "",
+            text = movieItem.title ?: "",
             fontWeight = FontWeight.SemiBold,
             color = Color.White,
             fontSize = 14.sp,

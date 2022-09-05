@@ -6,6 +6,7 @@ import com.krykun.domain.model.remote.Genre
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.domain.model.remote.moviecastdetails.CastDetails
 import com.krykun.domain.model.remote.moviedetails.MovieDetails
+import com.krykun.domain.model.remote.movierecommendations.MovieRecommendationItem
 import com.krykun.domain.model.remote.movies.Movie
 import com.krykun.domain.model.remote.persondetails.PersonDetails
 import com.krykun.domain.model.remote.search.SearchItem
@@ -59,6 +60,5 @@ interface MoviesRemoteRepo {
 
     fun getMovieRecommendations(
         movieId: Int,
-        genres: List<Genre>
-    ): Flow<PagingData<MovieDiscoverItem>>
+    ): Flow<PagingData<MovieRecommendationItem>>
 }

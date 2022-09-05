@@ -5,6 +5,7 @@ import com.krykun.data.model.remote.moviecastdetails.CastDetailsResponse
 import com.krykun.data.model.remote.genre.GenresResponse
 import com.krykun.data.model.remote.moviedetails.MovieDetailsResponse
 import com.krykun.data.model.remote.movielistitem.MovieItem
+import com.krykun.data.model.remote.movierecommendations.MovieRecommendationResponse
 import com.krykun.data.model.remote.movies.MovieItemResponse
 import com.krykun.data.model.remote.personcombinedcredits.PersonCombinedCreditsResponse
 import com.krykun.data.model.remote.persondetails.PersonDetailsResponse
@@ -30,7 +31,7 @@ interface ApiService {
     suspend fun getRecommendationMovies(
         @Path("id") movieId: Int,
         @Query("page") page: Int = 0,
-    ): BasicMoviesResponse<MovieItem>
+    ): BasicMoviesResponse<MovieRecommendationResponse>
 
     @GET("genre/movie/list")
     suspend fun getGenres(): Response<GenresResponse>

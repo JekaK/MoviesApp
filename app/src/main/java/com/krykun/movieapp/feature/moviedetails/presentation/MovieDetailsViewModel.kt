@@ -7,22 +7,18 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.domain.model.remote.moviedetails.MovieDetails
-import com.krykun.domain.usecase.remote.moviedetails.GetMovieCastDetailsUseCase
-import com.krykun.domain.usecase.remote.moviedetails.GetMovieDetailsUseCase
+import com.krykun.domain.model.remote.movierecommendations.MovieRecommendationItem
+import com.krykun.domain.usecase.remote.moviedetails.GetMovieDetailsAndCastUseCase
 import com.krykun.domain.usecase.remote.moviedetails.GetRecommendationsUseCase
 import com.krykun.movieapp.base.BaseViewModel
-import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.addtoplaylist.presentation.PlaylistSelectState
 import com.krykun.movieapp.state.AppState
 import com.krykun.movieapp.state.DetailsState
 import com.krykun.movieapp.state.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
@@ -32,32 +28,21 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailsViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
-    private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
-    private val getMovieCastDetailsUseCase: GetMovieCastDetailsUseCase,
-    private val getRecommendationsUseCase: GetRecommendationsUseCase
+    private val getMovieDetailsAndCastUseCase: GetMovieDetailsAndCastUseCase,
+    getRecommendationsUseCase: GetRecommendationsUseCase
 ) : BaseViewModel<MovieDetailsSideEffects>(appState) {
-    lateinit var getDiscoverMovies: Flow<PagingData<MovieDiscoverItem>>
+
+    var getDiscoverMovies: Flow<PagingData<MovieRecommendationItem>> =
+        getRecommendationsUseCase.getRecommendations(
+            movieId = appState.value.movieDetailsState.last().id,
+        ).cachedIn(scope = viewModelScope)
     val movieData = mutableStateOf<MovieDetails?>(null)
     val movieDetailsState =
         mutableStateOf(DetailsState.LOADING)
     val isRatingVisible = mutableStateOf(false)
 
     init {
-        var job: Job? = null
-        job = viewModelScope.launch {
-            container.stateFlow.value
-                .takeWhenChanged {
-                    it.baseMoviesState.genres
-                }
-                .collect {
-                    getDiscoverMovies =
-                        getRecommendationsUseCase.getRecommendations(
-                            movieId = appState.value.movieDetailsState.last().id,
-                            genres = appState.value.baseMoviesState.genres
-                        ).cachedIn(scope = viewModelScope)
-                    job?.cancel()
-                }
-        }
+
         loadMovieDetails()
     }
 
@@ -77,23 +62,15 @@ class MovieDetailsViewModel @Inject constructor(
 
     private fun loadMovieDetails() = intent {
         postSideEffect(MovieDetailsSideEffects.ShowLoadingState)
-        val castResult =
-            getMovieCastDetailsUseCase.getMovieCastDetails(movieId = state.value.movieDetailsState.last().id)
         val result =
-            getMovieDetailsUseCase.getMovieDetail(movieId = state.value.movieDetailsState.last().id)
-
-        if (result.isSuccess && castResult.isSuccess) {
-            val verifiedResponse = result.map {
-                it.copy(
-                    cast = castResult.getOrNull()
-                )
-            }
+            getMovieDetailsAndCastUseCase.getMovieDetailsAndCast(movieId = state.value.movieDetailsState.last().id)
+        if (result != null) {
             reduce {
                 state.value = state.value.copy(
                     movieDetailsState = state.value.movieDetailsState.mapIndexed { index, movieDetailsState ->
                         if (index == state.value.movieDetailsState.size - 1) {
                             movieDetailsState.copy(
-                                details = verifiedResponse.getOrNull()
+                                details = result.getOrNull()
                             )
                         } else {
                             movieDetailsState
@@ -102,7 +79,7 @@ class MovieDetailsViewModel @Inject constructor(
                 )
                 state
             }
-            postSideEffect(MovieDetailsSideEffects.ShowMovieData(verifiedResponse.getOrNull()))
+            postSideEffect(MovieDetailsSideEffects.ShowMovieData(result.getOrNull()))
         } else {
             postSideEffect(MovieDetailsSideEffects.ShowErrorState)
         }
