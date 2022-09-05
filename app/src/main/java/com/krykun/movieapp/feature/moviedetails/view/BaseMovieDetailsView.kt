@@ -190,8 +190,7 @@ fun BaseMovieDetailsView(
                             RecommendedMoviesView(
                                 recommendedMovies = recommendedMovies,
                                 lazyListState = lazyListState,
-                                viewModel = viewModel,
-                                navHostController = navHostController
+                                viewModel = viewModel
                             )
                             Text(
                                 text = stringResource(R.string.cast_and_crew),

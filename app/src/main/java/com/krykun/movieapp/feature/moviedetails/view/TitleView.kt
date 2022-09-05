@@ -29,15 +29,7 @@ fun TitleView(movieData: MutableState<MovieDetails?>) {
     Spacer(modifier = Modifier.height(16.dp))
     Row {
         Text(
-            text = if (movieData.value?.releaseDate?.isNotEmpty() == true) {
-                val calendar = Calendar.getInstance(TimeZone.getDefault())
-                calendar.time = SimpleDateFormat("yyyy-MM-dd").parse(
-                    movieData.value?.releaseDate ?: ""
-                )
-                calendar.get(Calendar.YEAR).toString()
-            } else {
-                ""
-            },
+            text = movieData.value?.releaseDate ?: "",
             color = colorResource(id = R.color.light_gray_color),
         )
         Spacer(modifier = Modifier.width(16.dp))

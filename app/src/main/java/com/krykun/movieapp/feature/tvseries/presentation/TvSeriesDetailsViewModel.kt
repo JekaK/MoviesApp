@@ -1,7 +1,6 @@
 package com.krykun.movieapp.feature.tvseries.presentation
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.krykun.domain.model.remote.tvdetails.TvDetails
 import com.krykun.domain.usecase.remote.tvdetails.GetTvCastDetailsUseCase
@@ -18,7 +17,6 @@ import javax.inject.Inject
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class TvSeriesDetailsViewModel @Inject constructor(
-    private val context: Context,
     appState: MutableStateFlow<AppState>,
     private val getTvDetailsUseCase: GetTvDetailsUseCase,
     private val getTvCastDetailsUseCase: GetTvCastDetailsUseCase,

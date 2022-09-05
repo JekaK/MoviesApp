@@ -61,14 +61,13 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun TvSeriesDetailsView(
     viewModel: TvSeriesDetailsViewModel = hiltViewModel(),
+    playlistSelectViewModel: PlaylistSelectViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
-
     val scope = rememberCoroutineScope()
 
     val bottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val playlistSelectViewModel: PlaylistSelectViewModel = hiltViewModel()
     Crossfade(targetState = viewModel.movieDetailsState.value) {
         when (it) {
             MovieDetailsState.LOADING -> {

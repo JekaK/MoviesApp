@@ -1,13 +1,17 @@
 package com.krykun.data.mappers.remote
 
+import android.annotation.SuppressLint
 import com.krykun.data.model.remote.moviecastdetails.CastDetailsResponse
 import com.krykun.data.model.remote.moviedetails.MovieDetailsResponse
 import com.krykun.domain.model.remote.moviecastdetails.Cast
 import com.krykun.domain.model.remote.moviecastdetails.CastDetails
 import com.krykun.domain.model.remote.moviecastdetails.Crew
 import com.krykun.domain.model.remote.moviedetails.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 object MovieDetailMapper {
+    @SuppressLint("SimpleDateFormat")
     fun MovieDetailsResponse.toMovieDetails(): MovieDetails {
         return MovieDetails(
             adult = adult,
@@ -47,7 +51,15 @@ object MovieDetailMapper {
                     name = it?.name,
                 )
             },
-            releaseDate = releaseDate,
+            releaseDate = if (releaseDate?.isNotEmpty() == true) {
+                val calendar = Calendar.getInstance(TimeZone.getDefault())
+                calendar.time = SimpleDateFormat("yyyy-MM-dd").parse(
+                    releaseDate
+                ) as Date
+                calendar.get(Calendar.YEAR).toString()
+            } else {
+                ""
+            },
             revenue = revenue,
             runtime = runtime,
             spokenLanguages = spokenLanguages?.map {
