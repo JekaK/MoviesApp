@@ -62,15 +62,17 @@ class MovieDetailsViewModel @Inject constructor(
 
     private fun loadMovieDetails() = intent {
         postSideEffect(MovieDetailsSideEffects.ShowLoadingState)
-        val result =
-            getMovieDetailsAndCastUseCase.getMovieDetailsAndCast(movieId = state.value.movieDetailsState.last().id)
+        var result: Result<MovieDetails>? = null
+        getMovieDetailsAndCastUseCase.getMovieDetailsAndCast(movieId = state.value.movieDetailsState.last().id) {
+            result = it
+        }
         if (result != null) {
             reduce {
                 state.value = state.value.copy(
                     movieDetailsState = state.value.movieDetailsState.mapIndexed { index, movieDetailsState ->
                         if (index == state.value.movieDetailsState.size - 1) {
                             movieDetailsState.copy(
-                                details = result.getOrNull()
+                                details = result?.getOrNull()
                             )
                         } else {
                             movieDetailsState
@@ -79,7 +81,7 @@ class MovieDetailsViewModel @Inject constructor(
                 )
                 state
             }
-            postSideEffect(MovieDetailsSideEffects.ShowMovieData(result.getOrNull()))
+            postSideEffect(MovieDetailsSideEffects.ShowMovieData(result?.getOrNull()))
         } else {
             postSideEffect(MovieDetailsSideEffects.ShowErrorState)
         }
