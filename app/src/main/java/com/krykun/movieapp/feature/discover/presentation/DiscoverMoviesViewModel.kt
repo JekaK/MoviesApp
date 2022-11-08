@@ -45,11 +45,6 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
     }
 
-    fun subscribeToStateUpdate() = container.stateFlow.value
-        .takeWhenChanged {
-            it.homeState.discoverMoviesState
-        }
-
     /**
      * > Get the current page and scroll offset of the upcoming movies list
      */
@@ -119,19 +114,6 @@ class DiscoverMoviesViewModel @Inject constructor(
             state
         }
         postSideEffect(DiscoverMoviesSideEffects.NavigateToMovie)
-    }
-
-    fun setLoadingState(loadingState: LoadingState) = intent {
-        reduce {
-            state.value = state.value.copy(
-                homeState = state.value.homeState.copy(
-                    discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
-                        loadingState = loadingState
-                    )
-                )
-            )
-            state
-        }
     }
 
     /**

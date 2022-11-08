@@ -1,6 +1,5 @@
 package com.krykun.movieapp.feature.discover.view
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -49,12 +48,10 @@ import com.krykun.movieapp.ext.contrastAgainst
 import com.krykun.movieapp.ext.lerp
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesViewModel
-import com.krykun.movieapp.feature.discover.presentation.LoadingState
 import com.krykun.movieapp.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalSnapperApi::class)
@@ -75,10 +72,6 @@ fun DiscoverView(
         mutableStateOf(Offset(0f, 0f))
     }
 
-    val isLoading = remember {
-        mutableStateOf(LoadingState.LOADING)
-    }
-
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     viewModel.collectSideEffect {
@@ -92,7 +85,7 @@ fun DiscoverView(
         )
     }
 
-    if (isLoading.value == LoadingState.LOADING) {
+    if (movies.itemCount == 0) {
         LoadingView()
     } else {
         DynamicThemePrimaryColorsFromImage(dominantColorState) {
@@ -228,18 +221,6 @@ fun DiscoverView(
     LaunchedEffect(key1 = movies.loadState.refresh) {
         if (movies.loadState.refresh is LoadState.NotLoading) {
             viewModel.getCurrentPageAndScrollOffset()
-            viewModel.setLoadingState(LoadingState.STATIONARY)
-        } else if (movies.loadState.refresh is LoadState.Loading) {
-            viewModel.setLoadingState(LoadingState.LOADING)
-        }
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        scope.launch {
-            viewModel.subscribeToStateUpdate()
-                .collect {
-                    isLoading.value = it.loadingState
-                }
         }
     }
 }
