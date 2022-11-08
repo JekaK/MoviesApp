@@ -25,22 +25,8 @@ class InitDiscoverFeatureMiddleware constructor(
     }
 
     fun reduce(discoverMiddlewaresMoviesSideEffects: DiscoverMoviesSideEffectsMiddleware) {
-        val discoverMoviesMiddleware = middlewareList.find {
-            it is DiscoverMoviesMiddleware
-        } as DiscoverMoviesMiddleware
-        when (discoverMiddlewaresMoviesSideEffects) {
-            is DiscoverMoviesSideEffectsMiddleware.TriggerOnPageChanged -> {
-                discoverMoviesMiddleware.triggerOnPageChanged(discoverMiddlewaresMoviesSideEffects.index)
-            }
-            is DiscoverMoviesSideEffectsMiddleware.GetCurrentDiscoverPageAndScrollOffset -> {
-                discoverMoviesMiddleware.getCurrentPageAndScrollOffset()
-            }
-            is DiscoverMoviesSideEffectsMiddleware.NavigateToMovie -> {
-                discoverMoviesMiddleware.navigateToMovieDetails(discoverMiddlewaresMoviesSideEffects.movieId)
-            }
-            is DiscoverMoviesSideEffectsMiddleware.SetLastScrolledPage->{
-                discoverMoviesMiddleware.setLastScrolledPage(discoverMiddlewaresMoviesSideEffects.page)
-            }
+        middlewareList.forEach {
+            it.reduce(discoverMiddlewaresMoviesSideEffects)
         }
     }
 }

@@ -3,6 +3,7 @@ package com.krykun.movieapp.feature.discover.middleware
 import androidx.paging.PagingData
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffectsMiddleware
 import com.krykun.movieapp.state.AppState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -16,4 +17,6 @@ interface IDiscoverMoviesMiddleware {
         viewModelScope: CoroutineScope,
         callback: (Flow<PagingData<MovieDiscoverItem>>) -> Unit
     )
+
+    fun reduce(discoverMiddlewaresMoviesSideEffects: DiscoverMoviesSideEffectsMiddleware)
 }

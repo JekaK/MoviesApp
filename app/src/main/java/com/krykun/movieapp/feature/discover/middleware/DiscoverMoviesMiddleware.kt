@@ -7,6 +7,7 @@ import com.krykun.domain.usecase.remote.discover.GetDiscoverMoviesUseCase
 import com.krykun.movieapp.base.BaseMiddleware
 import com.krykun.movieapp.ext.takeWhenChanged
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffectsMiddleware
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.state.AppState
 import kotlinx.coroutines.CoroutineScope
@@ -46,6 +47,23 @@ class DiscoverMoviesMiddleware @Inject constructor(
                         .cachedIn(viewModelScope)
                 callback(getDiscoverMovies)
                 job?.cancel()
+            }
+        }
+    }
+
+    override fun reduce(discoverMiddlewaresMoviesSideEffects: DiscoverMoviesSideEffectsMiddleware) {
+        when (discoverMiddlewaresMoviesSideEffects) {
+            is DiscoverMoviesSideEffectsMiddleware.TriggerOnPageChanged -> {
+                triggerOnPageChanged(discoverMiddlewaresMoviesSideEffects.index)
+            }
+            is DiscoverMoviesSideEffectsMiddleware.GetCurrentDiscoverPageAndScrollOffset -> {
+                getCurrentPageAndScrollOffset()
+            }
+            is DiscoverMoviesSideEffectsMiddleware.NavigateToMovie -> {
+                navigateToMovieDetails(discoverMiddlewaresMoviesSideEffects.movieId)
+            }
+            is DiscoverMoviesSideEffectsMiddleware.SetLastScrolledPage -> {
+                setLastScrolledPage(discoverMiddlewaresMoviesSideEffects.page)
             }
         }
     }
@@ -132,4 +150,5 @@ class DiscoverMoviesMiddleware @Inject constructor(
             postSideEffect(DiscoverMoviesSideEffects.NavigateToMovie)
         }
     }
+
 }
