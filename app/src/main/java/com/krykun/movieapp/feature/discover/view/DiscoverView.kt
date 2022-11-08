@@ -1,5 +1,6 @@
 package com.krykun.movieapp.feature.discover.view
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -53,6 +54,7 @@ import com.krykun.movieapp.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectSideEffect
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalSnapperApi::class)
@@ -122,6 +124,7 @@ fun DiscoverView(
                             snapOffsetForItem = SnapOffsets.Center,
                             endContentPadding = 100.dp,
                             snapIndex = { layoutInfo, startIndex, targetIndex ->
+                                viewModel.triggerOnPageChanged(targetIndex)
                                 targetIndex.coerceIn(startIndex - 1, startIndex + 1)
                             }
                         ),
@@ -131,7 +134,6 @@ fun DiscoverView(
                         contentPadding = PaddingValues(horizontal = 110.dp),
                     ) {
                         itemsIndexed(movies) { index, item ->
-                            viewModel.triggerOnPageChanged(lazyListState.firstVisibleItemIndex)
                             Card(
                                 Modifier
                                     .graphicsLayer {
@@ -169,7 +171,6 @@ fun DiscoverView(
                                         ).also { scale ->
                                             translationY = scale
                                         }
-
                                     },
                                 shape = RoundedCornerShape(20.dp)
                             ) {
@@ -183,14 +184,10 @@ fun DiscoverView(
                                             }
                                             .pointerInput(Unit) {
                                                 detectTapGestures(onTap = {
-                                                    if (index == lazyListState.firstVisibleItemIndex ||
-                                                        index == lazyListState.firstVisibleItemScrollOffset.absoluteValue
-                                                    ) {
-                                                        viewModel.navigateToMovieDetails(
-                                                            movies.itemSnapshotList.items[index].id
-                                                                ?: -1
-                                                        )
-                                                    }
+                                                    viewModel.navigateToMovieDetails(
+                                                        movies.itemSnapshotList.items[index].id
+                                                            ?: -1
+                                                    )
                                                 })
                                             }
                                     )
@@ -206,8 +203,15 @@ fun DiscoverView(
     DisposableEffect(key1 = lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
-                viewModel.setLastScrolledPage(lazyListState.firstVisibleItemIndex)
-                viewModel.setScrollOffset(lazyListState.firstVisibleItemScrollOffset)
+                val calculatedOffset =
+                    lazyListState.calculateCurrentOffsetForPage(lazyListState.firstVisibleItemIndex)
+                viewModel.setLastScrolledPage(
+                    if (calculatedOffset != 0f) {
+                        lazyListState.firstVisibleItemIndex + 1
+                    } else {
+                        lazyListState.firstVisibleItemIndex
+                    }
+                )
             }
         }
 
@@ -251,7 +255,7 @@ private fun handleSideEffects(
     when (sideEffects) {
         is DiscoverMoviesSideEffects.TriggerOnPageChanged -> {
             scope.launch {
-                if (movies.itemCount >= sideEffects.index) {
+                if (movies.itemCount >= sideEffects.index && movies.itemCount != 0) {
                     dominantColorState.updateColorsFromImageUrl(
                         Constants.IMAGE_BASE_URL +
                                 movies[sideEffects.index]?.backdropPath

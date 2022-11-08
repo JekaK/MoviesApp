@@ -63,7 +63,7 @@ private fun handleSideEffect(
 fun Splash(alpha: State<Float>) {
     Box(
         modifier = Modifier
-            .background(if (isSystemInDarkTheme()) Color.Black else Purple700)
+            .background(Purple700)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {

@@ -28,7 +28,6 @@ fun MainNavigation(
     navController: NavHostController,
     innerPadding: PaddingValues
 ) {
-    val homeViewModel: HomeMoviesViewModel = hiltViewModel()
     val discoverMoviesViewModel: DiscoverMoviesViewModel = hiltViewModel()
     val splashScreenViewModel: SplashScreenViewModel = hiltViewModel()
     val trendingViewModel: TrendingViewModel = hiltViewModel()
@@ -48,7 +47,6 @@ fun MainNavigation(
         }
         composable(route = Screen.Home().route) {
             HomeView(
-                viewModel = homeViewModel,
                 discoverMoviesViewModel = discoverMoviesViewModel,
                 trendingViewModel = trendingViewModel,
                 navHostController = navController

@@ -9,7 +9,6 @@ import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.domain.usecase.remote.discover.GetDiscoverMoviesUseCase
 import com.krykun.movieapp.base.BaseViewModel
 import com.krykun.movieapp.ext.takeWhenChanged
-import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsSideEffects
 import com.krykun.movieapp.feature.moviedetails.presentation.MovieDetailsState
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,33 +51,11 @@ class DiscoverMoviesViewModel @Inject constructor(
         }
 
     /**
-     * `setScrollOffset` is a function that takes an `Int` and returns an `Intent` that reduces the
-     * state by copying the current state, updating the `scrollOffsetUpcoming` property of the
-     * `discoverMoviesState` property of the `homeState` property of the state with the given `Int`,
-     * and then returning the state
-     *
-     * @param scrollOffset The scroll offset of the recycler view
-     */
-    fun setScrollOffset(scrollOffset: Int) = intent {
-        reduce {
-            state.value = state.value.copy(
-                homeState = state.value.homeState.copy(
-                    discoverMoviesState = state.value.homeState.discoverMoviesState.copy(
-                        scrollOffset = scrollOffset
-                    )
-                )
-            )
-            state
-        }
-    }
-
-    /**
      * > Get the current page and scroll offset of the upcoming movies list
      */
     fun getCurrentPageAndScrollOffset() = intent {
         val page = when {
             state.value.homeState.discoverMoviesState.lastSavedPage > 0 -> state.value.homeState.discoverMoviesState.lastSavedPage
-            state.value.homeState.discoverMoviesState.scrollOffset > 0f -> state.value.homeState.discoverMoviesState.scrollOffset.toInt()
             else -> 0
         }
         postSideEffect(
@@ -169,8 +146,14 @@ class DiscoverMoviesViewModel @Inject constructor(
             loadStates.prepend,
             loadStates.refresh
         ).filterIsInstance(LoadState.Error::class.java).firstOrNull()
+        val loadState = arrayOf(
+            loadStates.append,
+            loadStates.prepend,
+            loadStates.refresh
+        ).filterIsInstance(LoadState.Loading::class.java).firstOrNull()
+
         val throwable = errorLoadState?.error
-        if (throwable != null) {
+        if (throwable != null || loadState == null) {
             postSideEffect(DiscoverMoviesSideEffects.TryReloadDiscoverPage)
         }
     }
