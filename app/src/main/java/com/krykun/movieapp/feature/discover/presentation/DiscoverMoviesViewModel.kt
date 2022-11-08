@@ -6,7 +6,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import com.krykun.domain.model.remote.MovieDiscoverItem
 import com.krykun.movieapp.base.BaseViewModel
-import com.krykun.movieapp.feature.discover.middleware.DiscoverMoviesMiddleware
+import com.krykun.movieapp.feature.discover.middleware.InitDiscoverFeatureMiddleware
 import com.krykun.movieapp.state.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -18,31 +18,31 @@ import javax.inject.Inject
 @HiltViewModel
 class DiscoverMoviesViewModel @Inject constructor(
     appState: MutableStateFlow<AppState>,
-    private val discoverMoviesMiddleware: DiscoverMoviesMiddleware
+    private val initDiscoverFeatureMiddleware: InitDiscoverFeatureMiddleware
 ) : BaseViewModel<DiscoverMoviesSideEffects>(appState) {
 
     lateinit var getDiscoverMovies: Flow<PagingData<MovieDiscoverItem>>
 
     init {
-        discoverMoviesMiddleware.init(container, viewModelScope) {
+        initDiscoverFeatureMiddleware.init(container, viewModelScope) {
             getDiscoverMovies = it
         }
     }
 
     fun getCurrentPageAndScrollOffset() = intent {
-        discoverMoviesMiddleware.getCurrentPageAndScrollOffset()
+        initDiscoverFeatureMiddleware.reduce(DiscoverMoviesSideEffectsMiddleware.GetCurrentDiscoverPageAndScrollOffset)
     }
 
     fun setLastScrolledPage(index: Int) = intent {
-        discoverMoviesMiddleware.setLastScrolledPage(index)
+        initDiscoverFeatureMiddleware.reduce(DiscoverMoviesSideEffectsMiddleware.SetLastScrolledPage(index))
     }
 
     fun triggerOnPageChanged(index: Int) = intent {
-        discoverMoviesMiddleware.triggerOnPageChanged(index)
+        initDiscoverFeatureMiddleware.reduce(DiscoverMoviesSideEffectsMiddleware.TriggerOnPageChanged(index))
     }
 
     fun navigateToMovieDetails(movieId: Int) = intent {
-        discoverMoviesMiddleware.navigateToMovieDetails(movieId)
+        initDiscoverFeatureMiddleware.reduce(DiscoverMoviesSideEffectsMiddleware.NavigateToMovie(movieId))
     }
 
     /**

@@ -50,7 +50,6 @@ class DiscoverMoviesMiddleware @Inject constructor(
         }
     }
 
-
     /**
      * > Get the current page and scroll offset of the upcoming movies list
      */

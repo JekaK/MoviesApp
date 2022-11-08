@@ -2,6 +2,7 @@ package com.krykun.movieapp.feature.discover.middleware
 
 import androidx.paging.PagingData
 import com.krykun.domain.model.remote.MovieDiscoverItem
+import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffectsMiddleware
 import com.krykun.movieapp.feature.discover.presentation.DiscoverMoviesSideEffects
 import com.krykun.movieapp.state.AppState
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,26 @@ class InitDiscoverFeatureMiddleware constructor(
     ) {
         middlewareList.forEach {
             it.init(container, viewModelScope, callback)
+        }
+    }
+
+    fun reduce(discoverMiddlewaresMoviesSideEffects: DiscoverMoviesSideEffectsMiddleware) {
+        val discoverMoviesMiddleware = middlewareList.find {
+            it is DiscoverMoviesMiddleware
+        } as DiscoverMoviesMiddleware
+        when (discoverMiddlewaresMoviesSideEffects) {
+            is DiscoverMoviesSideEffectsMiddleware.TriggerOnPageChanged -> {
+                discoverMoviesMiddleware.triggerOnPageChanged(discoverMiddlewaresMoviesSideEffects.index)
+            }
+            is DiscoverMoviesSideEffectsMiddleware.GetCurrentDiscoverPageAndScrollOffset -> {
+                discoverMoviesMiddleware.getCurrentPageAndScrollOffset()
+            }
+            is DiscoverMoviesSideEffectsMiddleware.NavigateToMovie -> {
+                discoverMoviesMiddleware.navigateToMovieDetails(discoverMiddlewaresMoviesSideEffects.movieId)
+            }
+            is DiscoverMoviesSideEffectsMiddleware.SetLastScrolledPage->{
+                discoverMoviesMiddleware.setLastScrolledPage(discoverMiddlewaresMoviesSideEffects.page)
+            }
         }
     }
 }

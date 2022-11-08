@@ -9,3 +9,10 @@ sealed class DiscoverMoviesSideEffects {
     object TryReloadDiscoverPage : DiscoverMoviesSideEffects()
     object NavigateToMovie : DiscoverMoviesSideEffects()
 }
+
+sealed class DiscoverMoviesSideEffectsMiddleware {
+    data class TriggerOnPageChanged(val index: Int) : DiscoverMoviesSideEffectsMiddleware()
+    object GetCurrentDiscoverPageAndScrollOffset : DiscoverMoviesSideEffectsMiddleware()
+    data class SetLastScrolledPage(val page: Int) : DiscoverMoviesSideEffectsMiddleware()
+    data class NavigateToMovie(val movieId: Int) : DiscoverMoviesSideEffectsMiddleware()
+}
