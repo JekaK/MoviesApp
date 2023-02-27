@@ -73,6 +73,7 @@ class TrendingViewModel @Inject constructor(
                                     .cachedIn(scope = viewModelScope)
                         }
                     }
+                    else -> {}
                 }
                 it.toTrendingProps()
             }

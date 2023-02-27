@@ -45,6 +45,7 @@ fun SearchItemView(
         MediaType.TV -> TvSeriesView(modifier = Modifier.clickable {
             searchItem.id?.let { viewModel.navigateToTvState(it) }
         }, searchItem = searchItem)
+        else -> {}
     }
 }
 
